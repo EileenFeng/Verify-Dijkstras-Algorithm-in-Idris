@@ -4,9 +4,14 @@ module CNat
 %access export
 
 public export
+
 data Comparison = Gt | Eq | Lt
 
-infixl 6 =??
+data Smaller : a -> Bool -> Type where
+  SmallerT : prop -> Smaller prop True
+  SmallerF : prop -> Smaller prop False
+
+infix 6 =??
 (=??) : Nat -> Nat -> Comparison
 (=??) Z m = case m of
            Z => Eq
@@ -14,27 +19,28 @@ infixl 6 =??
 (=??) (S n) m = case m of
                Z => Gt                                                                       
                S m' => (=??) n m'
-
-infixl 6 =?
+{-
+infix 6 =?
 (=?) : Nat -> Nat -> Bool
-(=?) n m = case (n =?? m) of
-       	   Eq => True
-	   _ => False
+Z =? Z           = True
+(S n) =? (S m)   = n =? m
+_ =? _ = False
+-}
 
-infixl 6 <=?
+infix 6 <=?
 (<=?) : Nat -> Nat -> Bool
-(<=?) n m = case (n =?? m) of
-      	    Gt => False
-	    _ => True
+Z <=? _ = True
+_ <=? Z = False
+(S n) <=? (S m) = n <=? m
 
-infixl 6 >=?
+infix 6 >=?
 (>=?) : Nat -> Nat -> Bool
 (>=?) n m = m <=? n
 
-infixl 6 <?
+infix 6 <?
 (<?) : Nat -> Nat -> Bool
 (<?) n m = (S n) <=? m
 
-infixl 6 >?
+infix 6 >?
 (>?) : Nat -> Nat -> Bool
 (>?) n m = m <? n
