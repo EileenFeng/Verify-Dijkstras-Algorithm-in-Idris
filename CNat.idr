@@ -1,9 +1,7 @@
 module CNat
 -- Nat.compare in Coq
 
-%access export
-
-public export
+%access public export
 
 data Comparison = Gt | Eq | Lt
 
@@ -17,15 +15,15 @@ infix 6 =??
            Z => Eq
            _ => Lt
 (=??) (S n) m = case m of
-               Z => Gt                                                                       
+               Z => Gt                                                                      
                S m' => (=??) n m'
-{-
+
 infix 6 =?
 (=?) : Nat -> Nat -> Bool
 Z =? Z           = True
 (S n) =? (S m)   = n =? m
 _ =? _ = False
--}
+
 
 infix 6 <=?
 (<=?) : Nat -> Nat -> Bool

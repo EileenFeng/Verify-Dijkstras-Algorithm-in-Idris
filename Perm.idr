@@ -1,7 +1,7 @@
 module Perm
 import CNat
 import Decidable.Equality
---%default total 
+%default total 
 
 infixl 7 /\
 data (/\) : a -> b -> Type where
@@ -11,11 +11,13 @@ infixl 6 <->
 data (<->) : a -> b -> Type where
      Iff : (a -> b) -> (b -> a) -> (a <-> b)
 
+{-
 infix 6 =?
 (=?) : Nat -> Nat -> Bool
 Z =? Z = True
 (S n) =? (S m) = n =? m
 _ =? _ = False
+-}
 
 data PReflect : a -> Bool -> Type
   where ReflectT : prop -> PReflect prop True
@@ -42,12 +44,6 @@ nat_induction _ pZ _ Z = pZ
 nat_induction _ pZ ps (S n) = ps _ (nat_induction _ pZ ps n)
 
 {- Properties for `=?` -}
-beq_nat_succ : (n : Nat) -> 
-               (m : Nat) -> 
-               ((n =? m) = True) -> 
-               ((S n =? S m) = True)
-beq_nat_succ n m _ with (S n =? S m) | True = Refl
-
 beq_nat_reflex : (n : Nat) -> ((n =? n) = True)
 beq_nat_reflex Z = Refl
 beq_nat_reflex (S n') = let rec = beq_nat_reflex n' in
@@ -70,7 +66,7 @@ beq_nat_comm n = nat_induction prop h1 h2 n
          ((m : Nat) -> ((n1 =? m) = True) -> ((m =? n1) = True)) ->
          (m : Nat) -> ((S n1 =? m) = True) -> ((m =? S n1) = True)
     h2 n1 ih Z Refl impossible  --with (S n1 =? Z) | False = void $ trueNotFalse $ sym eq
-    h2 n1 ih (S m') _ = ?hole0 --ih m' Refl
+    h2 n1 ih (S m') refl = ih m' refl
       --refl with (S m' =? S n1) | True = Refl  
     
 -- proof for `beq_nat_true_iff` (Nat.eqb_eq)
@@ -111,8 +107,8 @@ beq_nat_true_2 n = nat_induction prop h1 h2 n
       -> ((m : Nat) -> ((n1 =? m) = True) -> (n1 = m))
       -> (m : Nat) -> ((S n1 =? m) = True) -> (S n1 = m)
     h2 n1 ih Z Refl impossible  --notEq with (S n1 =? 0) | False = void $ trueNotFalse $ sym notEq
-    h2 n1 ih (S m') _ = ?hole1 --beq_nat_succ n1 m' $ ih m' Refl --ih m' Refl
-       
+    h2 n1 ih (S m') refl = let rec = ih m' refl in 
+                               rewrite rec in Refl
     
 beq_nat_true_iff : (n = m) <-> ((n =? m) = True)
 beq_nat_true_iff {n} {m} = Iff (beq_nat_true_1 n m) (beq_nat_true_2 n m)
@@ -121,7 +117,8 @@ beq_reflect : PReflect (x = y) (x =? y)
 beq_reflect {x} {y} = iff_reflect $ beq_nat_true_iff {n = x} {m = y}
 				     
 -- Proof for blt_reflect
-ltb_lt_1 : (n : Nat) -> (m : Nat) -> ((n <? m) = True) -> (n < m)
+
+ltb_lt_1 : (n : Nat) -> (m : Nat) -> ((n <? m) = True) -> ((n < m) = True)
 ltb_lt_1 n = nat_induction prop h1 h2 n
   where
     prop : Nat -> Type
@@ -133,7 +130,6 @@ ltb_lt_1 n = nat_induction prop h1 h2 n
     h2 : (n1 : Nat) -> 
          ((m : Nat) -> ((n1 <? m) = True) -> (n1 < m)) ->
          (m : Nat) -> ((S n1 <? m) = True) -> (S n1 < m)
-         
 
 ltb_lt : ((n <? m) = True) <-> (n < m)
 
