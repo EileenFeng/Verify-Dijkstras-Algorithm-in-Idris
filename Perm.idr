@@ -1,138 +1,233 @@
 module Perm
 import CNat
-import Decidable.Equality
-%default total 
+import Logics
+import Data.Vect
 
-infixl 7 /\
-data (/\) : a -> b -> Type where
-     Conj : a -> b -> (a /\ b)
+%default total
 
-infixl 6 <->
-data (<->) : a -> b -> Type where
-     Iff : (a -> b) -> (b -> a) -> (a <-> b)
+{- Sorting a Vect -}
+insert : Nat -> Vect m Nat -> Vect (S m) Nat
+insert n Nil = n :: Nil
+insert n v@(x :: xs)
+  = case (gt n x) of True  => x :: (insert n xs)
+                     False => n :: v
+
+vect_ins_sort : Vect n1 Nat -> Vect n1 Nat
+vect_ins_sort Nil = Nil
+vect_ins_sort (x' :: xs') = insert x' $ vect_ins_sort xs'
+
+vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> (l = l') -> (a :: l = a :: l')
+vect_cons_eq _ Nil Nil _ = Refl
+vect_cons_eq _ (x :: xs) _ refl = rewrite refl in Refl
+
+gt_inv : (x, y : Nat) -> (gt (S x) (S y) = True) -> (gt x y = True)
+gt_inv Z Z      Refl impossible
+gt_inv Z (S _ ) Refl impossible
+gt_inv (S _)  Z Refl = Refl
+gt_inv (S x) (S y) r1 = r1
+
+
+gt_anti_sym1 : (x, y : Nat) -> ((gt x y) = True) -> ((gt y x) = True) -> Void
+gt_anti_sym1 Z Z Refl Refl impossible
+gt_anti_sym1 (S x') Z Refl Refl impossible
+gt_anti_sym1 Z (S y') Refl Refl impossible
+gt_anti_sym1 (S x') (S y') r1 r2 = gt_anti_sym1 x' y' (gt_inv x' y' r1) (gt_inv y' x' r2)
+
+
+gt_anti_sym : (x, y : Nat) -> ((gt x y) = True) -> ((gt y x) = False)
+gt_anti_sym Z _ Refl impossible
+gt_anti_sym (S _) Z Refl = Refl
+gt_anti_sym (S x') (S y') refl = ?hole
+
 
 {-
-infix 6 =?
-(=?) : Nat -> Nat -> Bool
-Z =? Z = True
-(S n) =? (S m) = n =? m
-_ =? _ = False
+gt_anti_eq : (x : Nat) -> 
+             (y : Nat) -> 
+             (nil : Vect Z Nat) ->
+             ((gt x y) = True) ->
+             (y :: x :: nil = x :: y :: nil) ->
+             Void 
+gt_anti_eq Z       _   Nil Refl Refl impossible
+gt_anti_eq (S _)   Z   Nil Refl Refl impossible
+gt_anti_eq (S x) (S y) Nil r1 r2 = gt_anti_eq x y Nil r1 r2 
 -}
 
-data PReflect : a -> Bool -> Type
-  where ReflectT : prop -> PReflect prop True
-        ReflectF : Not prop -> PReflect prop False
+vect_eq_impossible : (nil : Vect Z Nat) -> (x, y : Nat) -> ((x > y)=True) -> (x :: y :: nil) = (y :: x :: nil) -> Void
+
+insert_commutes : (insert x $ insert y l = insert y $ insert x l)
+insert_commutes {l = Nil} {x} {y} with (gt x y)
+  | True with (gt y x) proof gt_anti_sym1
+    | True = ?tthole  -- True impossible
+    | False = Refl
+  | False with (gt y x)
+    | True  = Refl
+    | False = ?ffhole
+insert_commutes {l = (v :: vs)} {x} {y} with (gt x v)
+  | True with (gt y v) 
+    | True with (gt x v) 
+      | True = vect_cons_eq v (insert x (insert y vs)) (insert y (insert x vs)) $ insert_commutes {l=vs} {x=x} {y=y}
+  | False = ?f
+
+{-with (gt x v)
+  | True with (gt y v) 
+    | True = ?xv_yv
+    | False = ?xv_vy
+  | False with (gt y v)
+    | True = ?vx_yv
+    | False with (gt x y)
+      | True with (gt y x) 
+        | False with (gt x v)
+          | False = Refl
+-}
 
 
-iff_reflect : (prop <-> (bool=True)) -> PReflect prop bool
-iff_reflect {bool} (Iff pTob bToP)
-  = case bool of
-    	 True => ReflectT (bToP Refl)
-	 False => ReflectF (\p => case (pTob p) of
-	       	       Refl impossible)
-	 --ReflectF (\p => trueNotFalse $ sym (pTob p))
-
-iff_comm : (prop1 <-> prop2) -> (prop2 <-> prop1)
-iff_comm (Iff p1 p2) = Iff p2 p1
-
--- induction on Nats, reference to http://docs.idris-lang.org/en/latest/proofs/inductive.html 
-nat_induction : (P : Nat -> Type) ->
-	      	(P Z) -> 
-	      	((n : Nat) -> P n -> P (S n)) ->
-		(x : Nat) -> P x
-nat_induction _ pZ _ Z = pZ
-nat_induction _ pZ ps (S n) = ps _ (nat_induction _ pZ ps n)
-
-{- Properties for `=?` -}
-beq_nat_reflex : (n : Nat) -> ((n =? n) = True)
-beq_nat_reflex Z = Refl
-beq_nat_reflex (S n') = let rec = beq_nat_reflex n' in
-                            rewrite rec in Refl
-
-beq_nat_comm : (n : Nat) -> 
-               (m : Nat) -> 
-               ((n =? m) = True) -> 
-               ((m =? n) = True)
-beq_nat_comm n = nat_induction prop h1 h2 n 
-  where 
-    prop : Nat -> Type
-    prop = \n1 => (m : Nat) -> ((n1 =? m) = True) -> ((m =? n1) = True)
-    
-    h1 : (m : Nat) -> ((0 =? m) = True) -> ((m =? 0) = True)
-    h1 Z _ = Refl --with (0 =? 0) | True = Refl
-    h1 (S m') Refl impossible --eq with (0 =? (S m')) | False = void $ trueNotFalse $ sym eq
-    
-    h2 : (n1 : Nat) -> 
-         ((m : Nat) -> ((n1 =? m) = True) -> ((m =? n1) = True)) ->
-         (m : Nat) -> ((S n1 =? m) = True) -> ((m =? S n1) = True)
-    h2 n1 ih Z Refl impossible  --with (S n1 =? Z) | False = void $ trueNotFalse $ sym eq
-    h2 n1 ih (S m') refl = ih m' refl
-      --refl with (S m' =? S n1) | True = Refl  
-    
--- proof for `beq_nat_true_iff` (Nat.eqb_eq)
-beq_nat_true_1 : (n : Nat) -> 
-                 (m : Nat) -> 
-                 (n = m) -> 
-                 ((n =? m)=True) 
-beq_nat_true_1 n = nat_induction prop h1 h2 n
-  where 
-    prop : Nat -> Type
-    prop = \n1 => (m : Nat) -> (n1 = m) -> ((n1 =? m) = True)
-    
-    h1 : (m : Nat) -> (0 = m) -> ((0 =? m) = True)
-    h1 Z _  = Refl  -- with (0 =? 0) | True = Refl
-    h1 (S m') Refl impossible
-    
-    h2 : (n1 : Nat) 
-      -> ((m : Nat) -> (n1 = m) -> ((n1 =? m) = True))
-      -> (m : Nat) -> (S n1 = m) -> ((S n1 =? m) = True)
-    h2 _ ih Z Refl impossible
-    h2 _ ih (S m') Refl  = ih m' Refl  --beq_nat_succ m' m' $ (ih m' Refl)
-    
-
-beq_nat_true_2 : (n : Nat) -> 
-                 (m : Nat) -> 
-                 ((n =? m)=True) -> 
-                 (n = m)
-beq_nat_true_2 n = nat_induction prop h1 h2 n
-  where 
-    prop : Nat -> Type
-    prop = \n1 => (m : Nat) -> ((n1 =? m) = True) -> (n1 = m)
-    
-    h1 : (m : Nat) -> ((0 =? m) = True) -> (0 = m)
-    h1 Z _ = Refl
-    h1 (S m') Refl impossible  --eq with (0 =? S m') | False = void $ trueNotFalse $ sym eq
-    
-    h2 : (n1 : Nat) 
-      -> ((m : Nat) -> ((n1 =? m) = True) -> (n1 = m))
-      -> (m : Nat) -> ((S n1 =? m) = True) -> (S n1 = m)
-    h2 n1 ih Z Refl impossible  --notEq with (S n1 =? 0) | False = void $ trueNotFalse $ sym notEq
-    h2 n1 ih (S m') refl = let rec = ih m' refl in 
-                               rewrite rec in Refl
-    
-beq_nat_true_iff : (n = m) <-> ((n =? m) = True)
-beq_nat_true_iff {n} {m} = Iff (beq_nat_true_1 n m) (beq_nat_true_2 n m)
-		       	   
-beq_reflect : PReflect (x = y) (x =? y)
-beq_reflect {x} {y} = iff_reflect $ beq_nat_true_iff {n = x} {m = y}
-				     
--- Proof for blt_reflect
-
-ltb_lt_1 : (n : Nat) -> (m : Nat) -> ((n <? m) = True) -> ((n < m) = True)
-ltb_lt_1 n = nat_induction prop h1 h2 n
-  where
-    prop : Nat -> Type
-    prop = \n1 => (m : Nat) -> ((n <? m) = True) -> (n < m)
-    
-    h1 : (m : Nat) -> ((0 <? m) = True) -> (n < m)
-    h1 Z Refl impossible
-    
-    h2 : (n1 : Nat) -> 
-         ((m : Nat) -> ((n1 <? m) = True) -> (n1 < m)) ->
-         (m : Nat) -> ((S n1 <? m) = True) -> (S n1 < m)
-
-ltb_lt : ((n <? m) = True) <-> (n < m)
+{- permutations -}
+permutation : Vect n Nat -> Vect n Nat -> Type
+permutation v1 v2 = (vect_ins_sort v1 = vect_ins_sort v2)
 
 
-blt_reflect : PReflect (n < m) (n <? m)
-blt_reflect = iff_reflect $ iff_comm ltb_lt
+perm_skip : (x : Nat) ->
+            (permutation v1 v2) ->
+            (permutation (x :: v1) (x :: v2))
+perm_skip _ refl = rewrite refl in Refl
+
+
+perm_swap : (x, y: Nat) ->
+            (permutation (x :: y :: l) (y :: x :: l))
+perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {x=x} {y=y}
+
+
+perm_trans : (permutation l1 l2) -> (permutation l2 l3) -> (permutation l1 l3)
+perm_trans _ _ {l1=Nil} {l3=Nil} = Refl
+perm_trans _ _ {l1 = x1 :: xs1} {l3 = x3 :: xs3} = ?trans_rhs
+
+{- properties of permutations-}
+permutation_refl : (l : Vect n Nat) -> permutation l l
+permutation_refl Nil = Refl
+permutation_refl (x :: xs) = Refl
+
+
+vect_append : Vect m Nat -> Vect n Nat -> Vect (plus n m) Nat
+vect_append l' l {m} {n} = rewrite (plusCommutative n m) in (l' ++ l)
+
+
+permutation_app_comm : (l : Vect n Nat) -> 
+                       (l' : Vect m Nat) -> 
+                       (permutation (l ++ l') (vect_append l' l))  
+permutation_app_comm Nil Nil = Refl
+permutation_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
+permutation_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
+
+
+data Forall : (p : a -> Type) -> (vec : Vect n a) -> Type where
+  Forall_nil : Forall p Nil
+  Forall_cons : (p x) -> Forall p xs -> Forall p (x :: xs)
+
+{- theorem Forall_Perm -}
+forall_perm : (p : Nat -> Type) -> 
+              (permutation al bl) -> 
+              (Forall p al) -> 
+              (Forall p bl)
+
+{- Permutations -}
+{-
+data Permutation : (Vect n Nat) -> (Vect n Nat) -> Type where
+  Perm_nil : Permutation Nil Nil
+  Perm_refl : (vec : Vect n Nat) -> Permutation vec vec
+  Perm_skip : (x : Nat) -> Permutation v1 v2 -> Permutation (x :: v1) (x :: v2)
+  Perm_swap : (x : Nat) -> (y : Nat) -> (vec : Vect n Nat) -> Permutation (x :: y :: vec) (y :: x :: vec)
+  Perm_trans : Permutation v1 v2 -> Permutation v2 v3 -> Permutation v1 v3
+-}
+
+-- {- permutations must equal after sorting -}
+-- perm_equal : --(v1 : Vect n Nat) ->
+--              --(v2 : Vect n Nat) ->
+--              Permutation v1 v2 ->
+--              (vect_ins_sort v1 = vect_ins_sort v2)
+-- perm_equal Perm_nil      = Refl
+-- perm_equal (Perm_refl _) = Refl
+-- perm_equal (Perm_skip x perm) = ?pe_rhs2
+-- perm_equal (Perm_swap x y vec) = ?pe_swap
+-- {-
+--   = case x < y of
+--          True  => list_add_equal x $ list_add_equal y Refl
+--          False => ?pe_2
+-- -}
+-- perm_equal (Perm_trans x y) = ?perm_equal_rhs_4
+--
+--
+-- equal_perm : (v1 : Vect n Nat) ->
+--              (v2 : Vect n Nat) ->
+--              (vect_ins_sort v1 = vect_ins_sort v2) ->
+--              Permutation v1 v2
+--
+-- {- two lists are permutations iff and only iff they are the same after sorting -}
+-- iff_perm_equal : (perm : Permutation v1 v2) -> (perm <-> (vect_ins_sort v1 = vect_ins_sort v2))
+-- iff_perm_equal perm {v1} {v2} = ?hole_iff--Iff (perm_equal perm) (equal_perm v1 v2)
+--
+--
+-- -- Inverse cons for permutation
+-- permutation_cons_inv : Permutation (a :: v1) (a :: v2) -> Permutation v1 v2
+-- permutation_cons_inv Perm_nil impossible
+-- permutation_cons_inv (Perm_refl (_ :: xs)) = Perm_refl xs
+-- permutation_cons_inv (Perm_skip _ p) = p
+-- permutation_cons_inv (Perm_swap x x vect) = Perm_skip x $ Perm_refl vect
+-- permutation_cons_inv (Perm_trans p1 p2) = ?hole
+--
+--
+-- vect_append : (v1 : Vect n Nat) -> (x : Nat) -> (v2 : Vect m Nat) -> Vect (S (plus n m)) Nat
+-- vect_append v1 x v2 {n} {m} = rewrite (plus_commutes_S m n) in v1 ++ [x] ++ v2
+--
+-- -- Permutations eliminate same element should also results in permuation
+-- permutation_elim_one : (x : Nat) ->
+--                        (p1 : Vect (n + m) Nat) ->
+--                        (p21 : Vect n Nat) ->
+--                        (p22 : Vect m Nat) ->
+--                        (Permutation (x :: p1) (vect_append p21 x p22)) ->
+--                        (Permutation p1 (p21 ++ p22))
+--
+-- permutation_sym : Permutation v1 v2 -> Permutation v2 v1
+--
+-- {-
+-- permutation_app_comm : (v1 : Vect n Nat) ->
+--                        (v2 : Vect m Nat) ->
+--                        Permutation (v1 ++ v2) (v2 ++ v1)
+-- -}
+-- -- some example for permutation
+-- p1 : Permutation (3 :: 1 :: 2 :: Nil) (3 :: 2 :: 1 :: Nil)
+-- p1 = Perm_skip 3 $ Perm_swap 1 2 Nil
+--
+-- p2 : Permutation (3 :: 2 :: 1 :: Nil) (2 :: 3 :: 1 :: Nil)
+-- p2 = Perm_swap 3 2 $ (1 :: Nil)
+--
+-- p3 : Permutation (3 :: 1 :: 2 :: Nil) (2 :: 3 :: 1 :: Nil)
+-- p3 = Perm_trans p1 p2
+--
+--
+--
+-- {-
+-- permutation_cons_inv (Perm_swap x y p) impossible
+-- permutation_cons_inv (Perm_swap x x p)  = Perm_skip x p
+-- permutation_cons_inv (Perm_skip _ perm) = perm
+-- permutation_cons_inv (Perm_trans (Perm_skip x p1) (Perm_skip x p2)) = Perm_trans p1 p2
+-- permutation_cons_inv (Perm_trans (Perm_skip x p1) p2@(Perm_swap x x _))
+--   = Perm_trans p1 $ permutation_cons_inv p2
+-- permutation_cons_inv (Perm_trans (Perm_skip x p1) p2@(Perm_trans _ _))
+--   = Perm_trans p1 $ permutation_cons_inv p2
+-- permutation_cons_inv p@(Perm_trans p1@(Perm_swap x y p3) p2)
+--   = ?hole1 --Perm_trans (permutation_cons_inv p1) (permutation_cons_inv p2)
+-- permutation_cons_inv p@(Perm_trans p1@(Perm_trans x y) p2)
+--   = ?hole2 --Perm_trans x $ Perm_trans y z
+-- -}
+--
+-- -- vect_merge_sort : Vect n Nat -> Vect n Nat
+-- -- vect_merge_sort Nil = Nil
+-- -- vect_merge_sort v@(_ :: Nil) = v
+-- -- vect_merge_sort vec = merge firstHalf secHalf
+-- --   where
+-- --     len : Nat
+-- --     len = divNatNZ (length vec) 2 SIsNotZ
+-- --     firstHalf : Vect len Nat
+-- --     firstHalf = vect_merge_sort $ (fst $ splitAt len vec)
+-- --     secHalf : Vect (length vec - len) Nat
+-- --     secHalf = vect_merge_sort $ (snd $ splitAt len vec)
