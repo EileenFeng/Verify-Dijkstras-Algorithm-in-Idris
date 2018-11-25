@@ -54,20 +54,41 @@ gt_anti_eq (S x) (S y) Nil r1 r2 = gt_anti_eq x y Nil r1 r2
 
 vect_eq_impossible : (nil : Vect Z Nat) -> (x, y : Nat) -> ((x > y)=True) -> (x :: y :: nil) = (y :: x :: nil) -> Void
 
-insert_commutes : (insert x $ insert y l = insert y $ insert x l)
-insert_commutes {l = Nil} {x} {y} with (gt x y)
-  | True with (gt y x) proof gt_anti_sym1
+{- `gt` is transitive -}
+gt_trans : (x, y, z : Nat) -> ((gt x y) = True) -> ((gt y z) = True) -> ((gt x z) = True)
+gt_trans (S x') (S y') Z _ _ = Refl
+gt_trans (S x') (S y') (S z') r1 r2 = gt_trans x' y' z' r1 r2
+gt_trans (S x') Z _ _ Refl impossible
+gt_trans Z _ _ Refl _ impossible
+
+
+insert_commutes : (insert a $ insert b l = insert b $ insert a l)
+insert_commutes {l = Nil} {a} {b} with (gt a b)
+  | True with (gt b a) proof gt_anti_sym1
     | True = ?tthole  -- True impossible
     | False = Refl
-  | False with (gt y x)
+  | False with (gt b a)
     | True  = Refl
     | False = ?ffhole
-insert_commutes {l = (v :: vs)} {x} {y} with (gt x v)
-  | True with (gt y v) 
-    | True with (gt x v) 
-      | True = vect_cons_eq v (insert x (insert y vs)) (insert y (insert x vs)) $ insert_commutes {l=vs} {x=x} {y=y}
-  | False = ?f
-
+insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) 
+  | True with (gt b v) proof gt_trans
+    | True with (gt a v) 
+      | True = vect_cons_eq v (insert a (insert b vs)) 
+                              (insert b (insert a vs)) 
+                              $ insert_commutes {l=vs} {a=a} {b=b}
+      | False = ?ttf -- invalid case
+    | False = ?tf -- use `gt_trans`?
+  | False with (gt b v) 
+    | True with (gt a v) 
+      | True = ?ftt -- invalid case
+      | False = ?ftf -- a < v, b > v, use `gt_trans`
+    | False with (gt a b)
+      | True = ?fft
+      | False with (gt b a) 
+        | True with (gt b v) 
+          | True = ?ffftt -- invalid case
+          | False = Refl
+        | False = ?ffff -- invalid case
 {-with (gt x v)
   | True with (gt y v) 
     | True = ?xv_yv
@@ -94,7 +115,7 @@ perm_skip _ refl = rewrite refl in Refl
 
 perm_swap : (x, y: Nat) ->
             (permutation (x :: y :: l) (y :: x :: l))
-perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {x=x} {y=y}
+perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {a=x} {b=y}
 
 
 perm_trans : (permutation l1 l2) -> (permutation l2 l3) -> (permutation l1 l3)
