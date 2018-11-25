@@ -89,17 +89,7 @@ insert_commutes {l = (v :: vs)} {a} {b} with (gt a v)
           | True = ?ffftt -- invalid case
           | False = Refl
         | False = ?ffff -- invalid case
-{-with (gt x v)
-  | True with (gt y v) 
-    | True = ?xv_yv
-    | False = ?xv_vy
-  | False with (gt y v)
-    | True = ?vx_yv
-    | False with (gt x y)
-      | True with (gt y x) 
-        | False with (gt x v)
-          | False = Refl
--}
+
 
 
 {- permutations -}
