@@ -91,7 +91,6 @@ insert_commutes {l = (v :: vs)} {a} {b} with (gt a v)
         | False = ?ffff -- invalid case
 
 
-
 {- permutations -}
 permutation : Vect n Nat -> Vect n Nat -> Type
 permutation v1 v2 = (vect_ins_sort v1 = vect_ins_sort v2)
