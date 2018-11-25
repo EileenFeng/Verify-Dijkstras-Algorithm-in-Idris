@@ -96,6 +96,9 @@ permutation : Vect n Nat -> Vect n Nat -> Type
 permutation v1 v2 = (vect_ins_sort v1 = vect_ins_sort v2)
 
 
+perm_reduce : permutation (x :: xs) (y :: ys) -> (xy : Vect n Nat) -> permutation (x :: y :: xy) (x :: y :: xy)
+perm_reduce {x} {y} _ Nil = Refl
+
 perm_skip : (x : Nat) ->
             (permutation v1 v2) ->
             (permutation (x :: v1) (x :: v2))
@@ -109,7 +112,7 @@ perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {a=x} {b=y}
 
 perm_trans : (permutation l1 l2) -> (permutation l2 l3) -> (permutation l1 l3)
 perm_trans _ _ {l1=Nil} {l3=Nil} = Refl
-perm_trans _ _ {l1 = x1 :: xs1} {l3 = x3 :: xs3} = ?trans_rhs
+perm_trans _ _ {l1 = x :: xs} {l3 = z :: zs} = ?trans_rhs
 
 {- properties of permutations-}
 permutation_refl : (l : Vect n Nat) -> permutation l l
