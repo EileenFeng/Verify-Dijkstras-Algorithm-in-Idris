@@ -73,6 +73,27 @@ vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> l = l' -> a :: l = a :: l'
 vect_cons_eq _ Nil Nil _ = Refl
 vect_cons_eq _ (x :: xs) _ refl = rewrite refl in Refl
 
+-- pattern match on ys
+insert_elem_tail : Elem x ys -> Elem x (insert a ys)
+insert_elem_tail {x} {a} Here with (gt a x) 
+  | True = Here
+  | False = There Here
+insert_elem_tail {a} {ys=y::xs} (There e) with (gt a y)
+  | True = There $ insert_elem_tail e 
+  | False = There $ There e
+
+
+insert_elem_head : Elem x (insert x l')
+insert_elem_head {l'=Nil} = Here
+insert_elem_head {x} {l'=y :: ys} with (gt x y) 
+  | True = There insert_elem_head 
+  | False = Here
+
+
+vect_ins_elem : Elem x al -> Elem x (vect_ins_sort al)
+vect_ins_elem Here = insert_elem_head
+vect_ins_elem (There e) = insert_elem_tail $ vect_ins_elem e
+
 
 insert_reduce : insert a (vect_ins_sort l1) = insert a (vect_ins_sort l2) -> 
                 vect_ins_sort l1 = vect_ins_sort l2
@@ -158,10 +179,12 @@ perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {a=x} {b=y}
 
 
 perm_trans : (permutation l1 l2) -> (permutation l2 l3) -> (permutation l1 l3)
-perm_trans _ _ {l1=Nil} {l3=Nil} = Refl
+perm_trans p12 p23 = rewrite p12 in (rewrite p23 in Refl)
+
+{-perm_trans _ _ {l1=Nil} {l3=Nil} = Refl
 perm_trans _ _ {l1 = x :: xs} {l2 = y :: ys} {l3 = z :: zs} 
   = ?ptrans
-
+-}
 
 
 {--------------------- Properties of Permutations ---------------------}
@@ -182,15 +205,23 @@ perm_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
 perm_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
 
 
+{- insert sort elem proof above-}
+perm_elem : permutation al bl -> (Elem x al) -> (Elem x bl)
+perm_elem {al=Nil} _ e = absurd $ noEmptyElem e
+
+
 data Forall : (p : a -> Type) -> (vec : Vect n a) -> Type where
   Forall_nil : Forall p Nil
   Forall_cons : (p x) -> Forall p xs -> Forall p (x :: xs)
 
+
+{- write proof for the other version of `forall` on the forall_perm first, and then prove that that `forall` and the above `Forall` definition are bidirectional -}
 {- theorem Forall_Perm -}
 forall_perm : (p : Nat -> Type) -> 
               (permutation al bl) -> 
               (Forall p al) -> 
               (Forall p bl)
+--forall_perm _ _ Forall_nil = Forall_nil
 
 
 
