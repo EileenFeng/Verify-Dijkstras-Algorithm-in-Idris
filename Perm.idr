@@ -5,17 +5,7 @@ import Data.Vect
 
 %default total
 
-{- Sorting a Vect -}
-insert : Nat -> Vect m Nat -> Vect (S m) Nat
-insert n Nil = n :: Nil
-insert n v@(x :: xs)
-  = case (gt n x) of True  => x :: (insert n xs)
-                     False => n :: v
-
-vect_ins_sort : Vect n1 Nat -> Vect n1 Nat
-vect_ins_sort Nil = Nil
-vect_ins_sort (x' :: xs') = insert x' $ vect_ins_sort xs'
-
+{--------------------------- Properties of `gt` ---------------------------}
 gt_inv_t : (x, y : Nat) -> (gt (S x) (S y)) = True -> (gt x y) = True
 gt_inv_t Z Z      Refl impossible
 gt_inv_t Z (S _ ) Refl impossible
@@ -34,16 +24,6 @@ gt_anti_sym1 (S x') Z Refl Refl impossible
 gt_anti_sym1 Z (S y') Refl Refl impossible
 gt_anti_sym1 (S x') (S y') r1 r2 = gt_anti_sym1 x' y' (gt_inv_t x' y' r1) (gt_inv_t y' x' r2)
 
-gt_anti_sym2 : (x, y : Nat) -> (gt x y) = False -> (gt y x) = False -> Void
-{-
-gt_anti_sym2 (S x') Z Refl Refl impossible
-gt_anti_sym2 Z (S y') Refl Refl impossible
-gt_anti_sym2 (S x') (S y') r1 r2 = gt_anti_sym2 x' y' (gt_inv_f x' y' r1) (gt_inv_f y' x' r2)
--}
-
---vect_eq_impossible : (nil : Vect Z Nat) -> (x, y : Nat) -> ((x > y)=True) -> (x :: y :: nil) = (y :: x :: nil) -> Void
-
-
 {- `gt` is transitive -}
 gt_trans : (x, y, z : Nat) -> (gt x y) = True -> (gt y z) = True -> (gt x z) = True
 gt_trans (S x') (S y') Z _ _ = Refl
@@ -51,6 +31,7 @@ gt_trans (S x') (S y') (S z') r1 r2 = gt_trans x' y' z' r1 r2
 gt_trans (S x') Z _ _ Refl impossible
 gt_trans Z _ _ Refl _ impossible
 
+{-   (x > z = True) -> (y > z = False) -> (x > y = True)   -}
 gt_deduce : (x, y, z : Nat) -> (gt x z) = True -> (gt y z) = False -> (gt x y) = True
 gt_deduce (S x') Z (S z') _ _ = Refl
 gt_deduce (S x') Z Z Refl Refl = Refl
@@ -59,22 +40,48 @@ gt_deduce (S x') (S y') (S z') r1 r2 = gt_deduce x' y' z' r1 r2
 gt_deduce Z _ _ Refl _ impossible 
 
 
-vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> l = l' -> a :: l = a :: l'
-vect_cons_eq _ Nil Nil _ = Refl
-vect_cons_eq _ (x :: xs) _ refl = rewrite refl in Refl
+{-   (a > b = True) -> (b > a = False)   -}
+gt_imply : (a, b : Nat) -> (gt a b) = True -> (gt b a) = False
+gt_imply (S a') Z _ = Refl
+gt_imply (S a') (S b') r1 = gt_imply a' b' r1
+gt_imply Z _ Refl impossible
 
-{-
-  rewrite does not work with case statements: https://github.com/idris-lang/Idris-dev/issues/4001 
--}
 
 onlyTrueOrFalse : (P : Bool) -> (P = True) -> (P = False) -> Void
 onlyTrueOrFalse True Refl Refl impossible
 onlyTrueOrFalse False Refl _ impossible
 
-gt_imply : (a, b : Nat) -> (gt a b) = True -> (gt b a) = False
-gt_imply (S a') Z _ = Refl
-gt_imply (S a') (S b') r1 = gt_imply a' b' r1
-gt_imply Z _ Refl impossible
+
+
+{--------------------------- Sorting a Vect ---------------------------}
+insert : Nat -> Vect m Nat -> Vect (S m) Nat
+insert n Nil = n :: Nil
+insert n v@(x :: xs)
+  = case (gt n x) of True  => x :: (insert n xs)
+                     False => n :: v
+
+vect_ins_sort : Vect n1 Nat -> Vect n1 Nat
+vect_ins_sort Nil = Nil
+vect_ins_sort (x' :: xs') = insert x' $ vect_ins_sort xs'
+
+
+vect_ins_nil : (v : Vect Z Nat) -> vect_ins_sort v = Nil
+vect_ins_nil Nil = Refl
+
+
+vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> l = l' -> a :: l = a :: l'
+vect_cons_eq _ Nil Nil _ = Refl
+vect_cons_eq _ (x :: xs) _ refl = rewrite refl in Refl
+
+
+insert_reduce : insert a (vect_ins_sort l1) = insert a (vect_ins_sort l2) -> 
+                vect_ins_sort l1 = vect_ins_sort l2
+insert_reduce {l1 = Nil} {l2} _ = rewrite (vect_ins_nil l2) in Refl
+insert_reduce {l1 = x1 :: l1'} {l2 = x2 :: l2'} refl  = ?insert_reduce_rhs_1
+
+{-
+  rewrite does not work with case statements: https://github.com/idris-lang/Idris-dev/issues/4001 
+-}
 
 
 insert_commutes : (insert a $ insert b l = insert b $ insert a l)
@@ -118,18 +125,31 @@ insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) proof gt_a_v
         | False = ?ffff -- a == b?
 
 
-{- permutations -}
+
+{---------------------------- permutations -------------------------------}
+
 permutation : Vect n Nat -> Vect n Nat -> Type
 permutation v1 v2 = (vect_ins_sort v1 = vect_ins_sort v2)
 
 
-perm_reduce : permutation (x :: xs) (y :: ys) -> (xy : Vect n Nat) -> permutation (x :: y :: xy) (x :: y :: xy)
-perm_reduce {x} {y} _ Nil = Refl
+perm_reformat : (x, y : Nat) ->
+                (xs, ys : Vect (S n) Nat) -> 
+                (xy : Vect n Nat) ->  
+                permutation (x :: xs) (y :: ys) -> 
+                (xs = y :: xy) -> 
+                (ys = x :: xy) -> 
+                permutation (x :: y :: xy) (x :: y :: xy)
+perm_reformat x y xs ys Nil p e1 e2 = ?hole
+
 
 perm_skip : (x : Nat) ->
-            (permutation v1 v2) ->
-            (permutation (x :: v1) (x :: v2))
+            permutation v1 v2 ->
+            permutation (x :: v1) (x :: v2)
 perm_skip _ refl = rewrite refl in Refl
+
+
+perm_skip_reverse : permutation (x :: v1) (x :: v2) -> permutation v1 v2
+perm_skip_reverse p = insert_reduce p
 
 
 perm_swap : (x, y: Nat) ->
@@ -139,24 +159,27 @@ perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {a=x} {b=y}
 
 perm_trans : (permutation l1 l2) -> (permutation l2 l3) -> (permutation l1 l3)
 perm_trans _ _ {l1=Nil} {l3=Nil} = Refl
-perm_trans _ _ {l1 = x :: xs} {l3 = z :: zs} = ?trans_rhs
+perm_trans _ _ {l1 = x :: xs} {l2 = y :: ys} {l3 = z :: zs} 
+  = ?ptrans
 
-{- properties of permutations-}
-permutation_refl : (l : Vect n Nat) -> permutation l l
-permutation_refl Nil = Refl
-permutation_refl (x :: xs) = Refl
+
+
+{--------------------- Properties of Permutations ---------------------}
+
+perm_refl : (l : Vect n Nat) -> permutation l l
+perm_refl Nil = Refl
+perm_refl (x :: xs) = Refl
 
 
 vect_append : Vect m Nat -> Vect n Nat -> Vect (plus n m) Nat
 vect_append l' l {m} {n} = rewrite (plusCommutative n m) in (l' ++ l)
 
-
-permutation_app_comm : (l : Vect n Nat) -> 
+perm_app_comm : (l : Vect n Nat) -> 
                        (l' : Vect m Nat) -> 
                        (permutation (l ++ l') (vect_append l' l))  
-permutation_app_comm Nil Nil = Refl
-permutation_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
-permutation_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
+perm_app_comm Nil Nil = Refl
+perm_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
+perm_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
 
 
 data Forall : (p : a -> Type) -> (vec : Vect n a) -> Type where
@@ -168,6 +191,18 @@ forall_perm : (p : Nat -> Type) ->
               (permutation al bl) -> 
               (Forall p al) -> 
               (Forall p bl)
+
+
+
+
+
+
+
+
+
+
+
+
 
 {- Permutations -}
 {-
