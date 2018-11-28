@@ -16,79 +16,106 @@ vect_ins_sort : Vect n1 Nat -> Vect n1 Nat
 vect_ins_sort Nil = Nil
 vect_ins_sort (x' :: xs') = insert x' $ vect_ins_sort xs'
 
-vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> (l = l') -> (a :: l = a :: l')
-vect_cons_eq _ Nil Nil _ = Refl
-vect_cons_eq _ (x :: xs) _ refl = rewrite refl in Refl
+gt_inv_t : (x, y : Nat) -> (gt (S x) (S y)) = True -> (gt x y) = True
+gt_inv_t Z Z      Refl impossible
+gt_inv_t Z (S _ ) Refl impossible
+gt_inv_t (S _)  Z Refl = Refl
+gt_inv_t (S x) (S y) r1 = r1
 
-gt_inv : (x, y : Nat) -> (gt (S x) (S y) = True) -> (gt x y = True)
-gt_inv Z Z      Refl impossible
-gt_inv Z (S _ ) Refl impossible
-gt_inv (S _)  Z Refl = Refl
-gt_inv (S x) (S y) r1 = r1
+gt_inv_f : (x, y : Nat) -> (gt (S x) (S y)) = False -> (gt x y) = False
+gt_inv_f Z Z Refl = Refl
+gt_inv_f Z (S _) Refl = Refl
+gt_inv_f (S _) Z Refl impossible
+gt_inv_f (S x) (S y) r1 = r1
 
-
-gt_anti_sym1 : (x, y : Nat) -> ((gt x y) = True) -> ((gt y x) = True) -> Void
+gt_anti_sym1 : (x, y : Nat) -> (gt x y) = True -> (gt y x) = True -> Void
 gt_anti_sym1 Z Z Refl Refl impossible
 gt_anti_sym1 (S x') Z Refl Refl impossible
 gt_anti_sym1 Z (S y') Refl Refl impossible
-gt_anti_sym1 (S x') (S y') r1 r2 = gt_anti_sym1 x' y' (gt_inv x' y' r1) (gt_inv y' x' r2)
+gt_anti_sym1 (S x') (S y') r1 r2 = gt_anti_sym1 x' y' (gt_inv_t x' y' r1) (gt_inv_t y' x' r2)
 
-
-gt_anti_sym : (x, y : Nat) -> ((gt x y) = True) -> ((gt y x) = False)
-gt_anti_sym Z _ Refl impossible
-gt_anti_sym (S _) Z Refl = Refl
-gt_anti_sym (S x') (S y') refl = ?hole
-
-
+gt_anti_sym2 : (x, y : Nat) -> (gt x y) = False -> (gt y x) = False -> Void
 {-
-gt_anti_eq : (x : Nat) -> 
-             (y : Nat) -> 
-             (nil : Vect Z Nat) ->
-             ((gt x y) = True) ->
-             (y :: x :: nil = x :: y :: nil) ->
-             Void 
-gt_anti_eq Z       _   Nil Refl Refl impossible
-gt_anti_eq (S _)   Z   Nil Refl Refl impossible
-gt_anti_eq (S x) (S y) Nil r1 r2 = gt_anti_eq x y Nil r1 r2 
+gt_anti_sym2 (S x') Z Refl Refl impossible
+gt_anti_sym2 Z (S y') Refl Refl impossible
+gt_anti_sym2 (S x') (S y') r1 r2 = gt_anti_sym2 x' y' (gt_inv_f x' y' r1) (gt_inv_f y' x' r2)
 -}
 
-vect_eq_impossible : (nil : Vect Z Nat) -> (x, y : Nat) -> ((x > y)=True) -> (x :: y :: nil) = (y :: x :: nil) -> Void
+--vect_eq_impossible : (nil : Vect Z Nat) -> (x, y : Nat) -> ((x > y)=True) -> (x :: y :: nil) = (y :: x :: nil) -> Void
+
 
 {- `gt` is transitive -}
-gt_trans : (x, y, z : Nat) -> ((gt x y) = True) -> ((gt y z) = True) -> ((gt x z) = True)
+gt_trans : (x, y, z : Nat) -> (gt x y) = True -> (gt y z) = True -> (gt x z) = True
 gt_trans (S x') (S y') Z _ _ = Refl
 gt_trans (S x') (S y') (S z') r1 r2 = gt_trans x' y' z' r1 r2
 gt_trans (S x') Z _ _ Refl impossible
 gt_trans Z _ _ Refl _ impossible
 
+gt_deduce : (x, y, z : Nat) -> (gt x z) = True -> (gt y z) = False -> (gt x y) = True
+gt_deduce (S x') Z (S z') _ _ = Refl
+gt_deduce (S x') Z Z Refl Refl = Refl
+gt_deduce (S x') (S y') Z r1 Refl impossible
+gt_deduce (S x') (S y') (S z') r1 r2 = gt_deduce x' y' z' r1 r2
+gt_deduce Z _ _ Refl _ impossible 
+
+
+vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> l = l' -> a :: l = a :: l'
+vect_cons_eq _ Nil Nil _ = Refl
+vect_cons_eq _ (x :: xs) _ refl = rewrite refl in Refl
+
+{-
+  rewrite does not work with case statements: https://github.com/idris-lang/Idris-dev/issues/4001 
+-}
+
+onlyTrueOrFalse : (P : Bool) -> (P = True) -> (P = False) -> Void
+onlyTrueOrFalse True Refl Refl impossible
+onlyTrueOrFalse False Refl _ impossible
+
+gt_imply : (a, b : Nat) -> (gt a b) = True -> (gt b a) = False
+gt_imply (S a') Z _ = Refl
+gt_imply (S a') (S b') r1 = gt_imply a' b' r1
+gt_imply Z _ Refl impossible
+
 
 insert_commutes : (insert a $ insert b l = insert b $ insert a l)
-insert_commutes {l = Nil} {a} {b} with (gt a b)
-  | True with (gt b a) proof gt_anti_sym1
-    | True = ?tthole  -- True impossible
+insert_commutes {l = Nil} {a} {b} with (gt a b) proof gt_a_b
+  | True with (gt b a) proof gt_b_a
+    | True = absurd (gt_anti_sym1 _ _ (sym gt_a_b) (sym gt_b_a)) -- ?tthole  -- True impossible
     | False = Refl
-  | False with (gt b a)
+  | False with (gt b a) proof gt_b_a
     | True  = Refl
-    | False = ?ffhole
-insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) 
-  | True with (gt b v) proof gt_trans
-    | True with (gt a v) 
+    | False = ?ffhole  -- a == b
+insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) proof gt_a_v
+  | True with (gt b v) proof gt_b_v
+    | True with (gt a v)
       | True = vect_cons_eq v (insert a (insert b vs)) 
                               (insert b (insert a vs)) 
                               $ insert_commutes {l=vs} {a=a} {b=b}
-      | False = ?ttf -- invalid case
-    | False = ?tf -- use `gt_trans`?
-  | False with (gt b v) 
-    | True with (gt a v) 
-      | True = ?ftt -- invalid case
-      | False = ?ftf -- a < v, b > v, use `gt_trans`
-    | False with (gt a b)
-      | True = ?fft
-      | False with (gt b a) 
+      | False = absurd gt_a_v
+    | False with (gt a b) proof gt_a_b
+      | True with (gt a v) 
+        | True = Refl
+        | False = absurd gt_a_v
+      | False = absurd $ onlyTrueOrFalse _ (gt_deduce a b v (sym gt_a_v) (sym gt_b_v)) (sym gt_a_b)
+  | False with (gt b v) proof gt_b_v
+    |True with (gt a v) proof gt_a_v2
+      | True = absurd gt_a_v
+      | False with (gt b a) proof gt_b_a
         | True with (gt b v) 
-          | True = ?ffftt -- invalid case
+          | True = Refl
+          | False = absurd gt_b_v
+        | False = absurd $ onlyTrueOrFalse _ (gt_deduce b a v (sym gt_b_v) (sym gt_a_v2)) (sym gt_b_a)
+    | False with (gt a b) proof gt_a_b
+      | True with (gt a v) 
+        | True = absurd $ gt_a_v
+        | False with (gt b a) proof gt_b_a
+          | True = absurd $ onlyTrueOrFalse _ (sym gt_a_b) (gt_imply b a (sym gt_b_a))
           | False = Refl
-        | False = ?ffff -- invalid case
+      | False with (gt b a) proof gt_b_a
+        | True with (gt b v) 
+          | True = absurd gt_b_v
+          | False = Refl
+        | False = ?ffff -- a == b?
 
 
 {- permutations -}
