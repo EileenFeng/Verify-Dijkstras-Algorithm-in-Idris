@@ -47,6 +47,12 @@ gt_imply (S a') (S b') r1 = gt_imply a' b' r1
 gt_imply Z _ Refl impossible
 
 
+gt_must_eq : (a, b : Nat) -> (gt a b) = False -> (gt b a) = False -> a = b
+gt_must_eq Z Z r1 r2 = Refl
+gt_must_eq Z (S b') _ Refl impossible
+gt_must_eq (S k) Z Refl _ impossible
+gt_must_eq (S a') (S b') r1 r2 = rewrite (gt_must_eq a' b' r1 r2) in Refl
+
 onlyTrueOrFalse : (P : Bool) -> (P = True) -> (P = False) -> Void
 onlyTrueOrFalse True Refl Refl impossible
 onlyTrueOrFalse False Refl _ impossible
@@ -81,7 +87,14 @@ insert_elem_tail {x} {a} Here with (gt a x)
 insert_elem_tail {a} {ys=y::xs} (There e) with (gt a y)
   | True = There $ insert_elem_tail e 
   | False = There $ There e
-
+  
+{-
+insert_elem_tail2 : Elem x ys -> Elem x (insert a ys)
+insert_elem_tail2 {ys=Nil} elem = absurd $ noEmptyElem elem
+insert_elem_tail2 {a} {ys=y::xs} elem with (gt a y) 
+  | True = There $ insert_elem_tail2 
+  | False = There elem 
+-}
 
 insert_elem_head : Elem x (insert x l')
 insert_elem_head {l'=Nil} = Here
@@ -93,6 +106,11 @@ insert_elem_head {x} {l'=y :: ys} with (gt x y)
 vect_ins_elem : Elem x al -> Elem x (vect_ins_sort al)
 vect_ins_elem Here = insert_elem_head
 vect_ins_elem (There e) = insert_elem_tail $ vect_ins_elem e
+
+
+vect_ins_elem_inv : Elem x (vect_ins_sort al) -> Elem x al
+vect_ins_elem_inv {al=Nil} e = absurd $ noEmptyElem e
+vect_ins_elem_inv {al=a::as} e = ?hh
 
 
 insert_reduce : insert a (vect_ins_sort l1) = insert a (vect_ins_sort l2) -> 
@@ -112,7 +130,7 @@ insert_commutes {l = Nil} {a} {b} with (gt a b) proof gt_a_b
     | False = Refl
   | False with (gt b a) proof gt_b_a
     | True  = Refl
-    | False = ?ffhole  -- a == b
+    | False = rewrite (gt_must_eq a b (sym gt_a_b) (sym gt_b_a)) in Refl
 insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) proof gt_a_v
   | True with (gt b v) proof gt_b_v
     | True with (gt a v)
@@ -143,7 +161,7 @@ insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) proof gt_a_v
         | True with (gt b v) 
           | True = absurd gt_b_v
           | False = Refl
-        | False = ?ffff -- a == b?
+        | False = rewrite (gt_must_eq a b (sym gt_a_b) (sym gt_b_a)) in Refl
 
 
 
@@ -151,16 +169,6 @@ insert_commutes {l = (v :: vs)} {a} {b} with (gt a v) proof gt_a_v
 
 permutation : Vect n Nat -> Vect n Nat -> Type
 permutation v1 v2 = (vect_ins_sort v1 = vect_ins_sort v2)
-
-
-perm_reformat : (x, y : Nat) ->
-                (xs, ys : Vect (S n) Nat) -> 
-                (xy : Vect n Nat) ->  
-                permutation (x :: xs) (y :: ys) -> 
-                (xs = y :: xy) -> 
-                (ys = x :: xy) -> 
-                permutation (x :: y :: xy) (x :: y :: xy)
-perm_reformat x y xs ys Nil p e1 e2 = ?hole
 
 
 perm_skip : (x : Nat) ->
@@ -187,6 +195,17 @@ perm_trans _ _ {l1 = x :: xs} {l2 = y :: ys} {l3 = z :: zs}
 -}
 
 
+{-
+perm_reformat : (x, y : Nat) ->
+                (xs, ys : Vect (S n) Nat) -> 
+                (xy : Vect n Nat) ->  
+                permutation (x :: xs) (y :: ys) -> 
+                (xs = y :: xy) -> 
+                (ys = x :: xy) -> 
+                permutation (x :: y :: xy) (x :: y :: xy)
+perm_reformat x y xs ys Nil p e1 e2 = ?hole
+-}
+
 {--------------------- Properties of Permutations ---------------------}
 
 perm_refl : (l : Vect n Nat) -> permutation l l
@@ -208,6 +227,11 @@ perm_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
 {- insert sort elem proof above-}
 perm_elem : permutation al bl -> (Elem x al) -> (Elem x bl)
 perm_elem {al=Nil} _ e = absurd $ noEmptyElem e
+perm_elem {al} {bl} perm e = vect_ins_elem_inv $ rewrite (sym perm) in vect_ins_elem e 
+
+
+forall_elem : (p : a -> Type) -> (vec : Vect n a) -> Type 
+forall_elem {a} p v = (x : a) -> (Elem x v) -> p x
 
 
 data Forall : (p : a -> Type) -> (vec : Vect n a) -> Type where
