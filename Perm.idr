@@ -53,11 +53,10 @@ gt_must_eq Z (S b') _ Refl impossible
 gt_must_eq (S k) Z Refl _ impossible
 gt_must_eq (S a') (S b') r1 r2 = rewrite (gt_must_eq a' b' r1 r2) in Refl
 
+
 onlyTrueOrFalse : (P : Bool) -> (P = True) -> (P = False) -> Void
 onlyTrueOrFalse True Refl Refl impossible
 onlyTrueOrFalse False Refl _ impossible
-
-
 
 {--------------------------- Sorting a Vect ---------------------------}
 insert : Nat -> Vect m Nat -> Vect (S m) Nat
@@ -71,8 +70,13 @@ vect_ins_sort Nil = Nil
 vect_ins_sort (x' :: xs') = insert x' $ vect_ins_sort xs'
 
 
-vect_ins_nil : (v : Vect Z Nat) -> vect_ins_sort v = Nil
-vect_ins_nil Nil = Refl
+vect_nil_ins : (v : Vect Z Nat) -> vect_ins_sort v = Nil
+vect_nil_ins Nil = Refl
+
+
+vect_ins_nil : vect_ins_sort v = Nil -> v = Nil
+vect_ins_nil {v=Nil} refl = Refl
+vect_ins_nil {v=_::_} Refl impossible
 
 
 vect_cons_eq : (a : Nat) -> (l, l' : Vect n Nat) -> l = l' -> a :: l = a :: l'
@@ -103,6 +107,10 @@ insert_elem_head {x} {l'=y :: ys} with (gt x y)
   | False = Here
 
 
+insert_elem : Elem x (insert a xs) -> Elem x xs
+insert_elem e = ?ie_hole
+
+
 vect_ins_elem : Elem x al -> Elem x (vect_ins_sort al)
 vect_ins_elem Here = insert_elem_head
 vect_ins_elem (There e) = insert_elem_tail $ vect_ins_elem e
@@ -110,12 +118,14 @@ vect_ins_elem (There e) = insert_elem_tail $ vect_ins_elem e
 
 vect_ins_elem_inv : Elem x (vect_ins_sort al) -> Elem x al
 vect_ins_elem_inv {al=Nil} e = absurd $ noEmptyElem e
-vect_ins_elem_inv {al=a::as} e = ?hh
+vect_ins_elem_inv {al=x::Nil} e = e
+vect_ins_elem_inv {al=a::as} e = There $ vect_ins_elem_inv {al=as} (insert_elem e)
+
 
 
 insert_reduce : insert a (vect_ins_sort l1) = insert a (vect_ins_sort l2) -> 
                 vect_ins_sort l1 = vect_ins_sort l2
-insert_reduce {l1 = Nil} {l2} _ = rewrite (vect_ins_nil l2) in Refl
+insert_reduce {l1 = Nil} {l2} _ = rewrite (vect_nil_ins l2) in Refl
 insert_reduce {l1 = x1 :: l1'} {l2 = x2 :: l2'} refl  = ?insert_reduce_rhs_1
 
 {-
@@ -189,22 +199,6 @@ perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {a=x} {b=y}
 perm_trans : (permutation l1 l2) -> (permutation l2 l3) -> (permutation l1 l3)
 perm_trans p12 p23 = rewrite p12 in (rewrite p23 in Refl)
 
-{-perm_trans _ _ {l1=Nil} {l3=Nil} = Refl
-perm_trans _ _ {l1 = x :: xs} {l2 = y :: ys} {l3 = z :: zs} 
-  = ?ptrans
--}
-
-
-{-
-perm_reformat : (x, y : Nat) ->
-                (xs, ys : Vect (S n) Nat) -> 
-                (xy : Vect n Nat) ->  
-                permutation (x :: xs) (y :: ys) -> 
-                (xs = y :: xy) -> 
-                (ys = x :: xy) -> 
-                permutation (x :: y :: xy) (x :: y :: xy)
-perm_reformat x y xs ys Nil p e1 e2 = ?hole
--}
 
 {--------------------- Properties of Permutations ---------------------}
 
@@ -215,6 +209,7 @@ perm_refl (x :: xs) = Refl
 
 vect_append : Vect m Nat -> Vect n Nat -> Vect (plus n m) Nat
 vect_append l' l {m} {n} = rewrite (plusCommutative n m) in (l' ++ l)
+
 
 perm_app_comm : (l : Vect n Nat) -> 
                        (l' : Vect m Nat) -> 
@@ -230,22 +225,52 @@ perm_elem {al=Nil} _ e = absurd $ noEmptyElem e
 perm_elem {al} {bl} perm e = vect_ins_elem_inv $ rewrite (sym perm) in vect_ins_elem e 
 
 
-forall_elem : (p : a -> Type) -> (vec : Vect n a) -> Type 
-forall_elem {a} p v = (x : a) -> (Elem x v) -> p x
+{---------------------------- Forall ----------------------------}
+
+data ForallElem : (p : a -> Type) -> (vec : Vect n a) -> Type where 
+  FNil : ForallElem p Nil
+  FElem : (x : a) -> (Elem x v) -> p x -> ForallElem p v
 
 
-data Forall : (p : a -> Type) -> (vec : Vect n a) -> Type where
+data Forall : (a -> Type) -> (Vect n a) -> Type where
   Forall_nil : Forall p Nil
   Forall_cons : (p x) -> Forall p xs -> Forall p (x :: xs)
 
 
+forall_to_forallElem : (p : Nat -> Type) -> (vec : Vect n Nat) -> (Forall p vec) -> (ForallElem p vec)
+forall_to_forallElem _ _ Forall_nil = FNil
+forall_to_forallElem p (x :: xs) (Forall_cons px f') = ?forall_to_forallElem_rhs_1
+
+
+forallElem_to_forall : (p : Nat -> Type) -> (vec : Vect n Nat) -> (ForallElem p vec) -> (Forall p vec)
+forallElem_to_forall _ _ FNil = Forall_nil
+forallElem_to_forall _ _ (FElem x e px) = ?forallElem_to_forall_rhs_1
+
+
+{- two definition for data type forall are bidirectional -}
+forall_iff : (p : Nat -> Type) -> (vec : Vect n Nat) -> (Forall p vec) <-> (ForallElem p vec)
+forall_iff p vec = Iff (forall_to_forallElem p vec) (forallElem_to_forall p vec)
+
+
+
+{- `forall` based on `ForallElem` -}
+forall_elem_perm : (p : Nat -> Type) ->
+                   (permutation al bl) ->
+                   (ForallElem p al) -> 
+                   (ForallElem p bl)
+forall_elem_perm _ _ fa {al=Nil} {bl=Nil} = fa
+forall_elem_perm p perm f@(FElem _ e px) {al} {bl} = FElem _ (perm_elem perm e) px
+
+
 {- write proof for the other version of `forall` on the forall_perm first, and then prove that that `forall` and the above `Forall` definition are bidirectional -}
-{- theorem Forall_Perm -}
+{- forall based on `Forall` -}
 forall_perm : (p : Nat -> Type) -> 
               (permutation al bl) -> 
               (Forall p al) -> 
               (Forall p bl)
---forall_perm _ _ Forall_nil = Forall_nil
+forall_perm p perm f {al} {bl} with (forall_iff p al) 
+  | (Iff pa1 pa2) with (forall_iff p bl) 
+    | (Iff pb1 pb2) = pb2 $ forall_elem_perm p perm (pa1 f)
 
 
 
@@ -255,8 +280,16 @@ forall_perm : (p : Nat -> Type) ->
 
 
 
-
-
+{-
+perm_reformat : (x, y : Nat) ->
+                (xs, ys : Vect (S n) Nat) -> 
+                (xy : Vect n Nat) ->  
+                permutation (x :: xs) (y :: ys) -> 
+                (xs = y :: xy) -> 
+                (ys = x :: xy) -> 
+                permutation (x :: y :: xy) (x :: y :: xy)
+perm_reformat x y xs ys Nil p e1 e2 = ?hole
+-}
 
 
 {- Permutations -}
