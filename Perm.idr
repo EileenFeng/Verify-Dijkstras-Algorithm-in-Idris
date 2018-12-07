@@ -123,11 +123,6 @@ vect_ins_elem_inv {al=a::as} e = There $ vect_ins_elem_inv {al=as} (insert_elem 
 
 
 
-insert_reduce : insert a (vect_ins_sort l1) = insert a (vect_ins_sort l2) -> 
-                vect_ins_sort l1 = vect_ins_sort l2
-insert_reduce {l1 = Nil} {l2} _ = rewrite (vect_nil_ins l2) in Refl
-insert_reduce {l1 = x1 :: l1'} {l2 = x2 :: l2'} refl  = ?insert_reduce_rhs_1
-
 {-
   rewrite does not work with case statements: https://github.com/idris-lang/Idris-dev/issues/4001 
 -}
@@ -187,10 +182,6 @@ perm_skip : (x : Nat) ->
 perm_skip _ refl = rewrite refl in Refl
 
 
-perm_skip_reverse : permutation (x :: v1) (x :: v2) -> permutation v1 v2
-perm_skip_reverse p = insert_reduce p
-
-
 perm_swap : (x, y: Nat) ->
             (permutation (x :: y :: l) (y :: x :: l))
 perm_swap x y {l} = insert_commutes {l= vect_ins_sort l} {a=x} {b=y}
@@ -210,14 +201,14 @@ perm_refl (x :: xs) = Refl
 vect_append : Vect m Nat -> Vect n Nat -> Vect (plus n m) Nat
 vect_append l' l {m} {n} = rewrite (plusCommutative n m) in (l' ++ l)
 
-
+{-
 perm_app_comm : (l : Vect n Nat) -> 
                        (l' : Vect m Nat) -> 
                        (permutation (l ++ l') (vect_append l' l))  
 perm_app_comm Nil Nil = Refl
 perm_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
 perm_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
-
+-}
 
 {- insert sort elem proof above-}
 perm_elem : permutation al bl -> (Elem x al) -> (Elem x bl)
@@ -226,15 +217,82 @@ perm_elem {al} {bl} perm e = vect_ins_elem_inv $ rewrite (sym perm) in vect_ins_
 
 
 {---------------------------- Forall ----------------------------}
-
-data ForallElem : (p : a -> Type) -> (vec : Vect n a) -> Type where 
-  FNil : ForallElem p Nil
-  FElem : (x : a) -> (Elem x v) -> p x -> ForallElem p v
-
-
 data Forall : (a -> Type) -> (Vect n a) -> Type where
   Forall_nil : Forall p Nil
   Forall_cons : (p x) -> Forall p xs -> Forall p (x :: xs)
+
+
+{- other way of defining `forall` -}
+forall_elem : (p : a -> Type) -> (vec : Vect n a) -> Type 
+forall_elem p vec = (b : a) -> Elem b vec -> p b
+
+
+{- this is fun but unexpected ...  -}
+forall_elem_perm : (p : Nat -> Type) -> 
+                   (permutation al bl) -> 
+                   (forall_elem p al) -> 
+                   (forall_elem p bl)
+forall_elem_perm _ _ f {al=Nil} {bl=Nil} _ e = absurd $ noEmptyElem e
+forall_elem_perm p perm f _ e {al} {bl} = f _ (perm_elem (sym perm) e)  
+
+
+
+forall_to_forall_elem : (p : a -> Type) ->
+                        (vec : Vect n a) -> 
+                        (Forall p vec) -> 
+                        (forall_elem p vec)
+forall_to_forall_elem p Nil _ _ e = absurd $ noEmptyElem e
+forall_to_forall_elem _ _ (Forall_cons px f') _ Here = px
+forall_to_forall_elem p (x::xs) (Forall_cons _ f') _ (There e) = forall_to_forall_elem p xs f' _ e
+
+
+
+forall_elem_to_forall : (p : a -> Type) -> 
+                        (vec : Vect n a) -> 
+                        (forall_elem p vec) -> 
+                        (Forall p vec)
+forall_elem_to_forall p Nil f = Forall_nil
+forall_elem_to_forall p (x :: xs) f = Forall_cons (f x Here) (forall_elem_to_forall p xs ?f')
+
+
+
+forall_iff : (p : Nat -> Type) -> (vec : Vect n Nat) -> (Forall p vec) <-> (forall_elem p vec)
+forall_iff p vec = Iff (forall_to_forall_elem p vec) (forall_elem_to_forall p vec)
+
+
+
+forall_perm : (p : Nat -> Type) -> 
+              (permutation al bl) -> 
+              (Forall p al) -> 
+              (Forall p bl)
+forall_perm p perm fa {al} {bl} with (forall_iff p al)
+  | Iff pa1 pa2 with (forall_iff p bl) 
+    | Iff pb1 pb2 = pb2 $ forall_elem_perm p perm (pa1 fa)
+
+
+
+
+
+
+{-
+-- used in perm_skip_reverse, which is not used
+insert_reduce : insert a (vect_ins_sort l1) = insert a (vect_ins_sort l2) -> 
+                vect_ins_sort l1 = vect_ins_sort l2
+insert_reduce {l1 = Nil} {l2} _ = rewrite (vect_nil_ins l2) in Refl
+insert_reduce {l1 = x1 :: l1'} {l2 = x2 :: l2'} refl  = ?insert_reduce_rhs_1
+
+
+-- not used
+perm_skip_reverse : permutation (x :: v1) (x :: v2) -> permutation v1 v2
+perm_skip_reverse p = insert_reduce p
+-}
+  
+{- proofs with the other version for forall_elem definition -}
+{-
+data ForallElem : (p : a -> Type) -> (vec : Vect n a) -> Type where 
+  FNil : ForallElem p Nil
+  FElem : (x : a) -> (Elem x v) -> (p x) -> ForallElem p v
+
 
 
 forall_to_forallElem : (p : Nat -> Type) -> (vec : Vect n Nat) -> (Forall p vec) -> (ForallElem p vec)
@@ -244,7 +302,7 @@ forall_to_forallElem p (x :: xs) (Forall_cons px f') = ?forall_to_forallElem_rhs
 
 forallElem_to_forall : (p : Nat -> Type) -> (vec : Vect n Nat) -> (ForallElem p vec) -> (Forall p vec)
 forallElem_to_forall _ _ FNil = Forall_nil
-forallElem_to_forall _ _ (FElem x e px) = ?forallElem_to_forall_rhs_1
+forallElem_to_forall _ _ (FElem x e) = ?forallElem_to_forall_rhs_1
 
 
 {- two definition for data type forall are bidirectional -}
@@ -259,7 +317,7 @@ forall_elem_perm : (p : Nat -> Type) ->
                    (ForallElem p al) -> 
                    (ForallElem p bl)
 forall_elem_perm _ _ fa {al=Nil} {bl=Nil} = fa
-forall_elem_perm p perm f@(FElem _ e px) {al} {bl} = FElem _ (perm_elem perm e) px
+forall_elem_perm p perm f@(FElem _ e) {al} {bl} = FElem _ (perm_elem perm e)
 
 
 {- write proof for the other version of `forall` on the forall_perm first, and then prove that that `forall` and the above `Forall` definition are bidirectional -}
@@ -271,6 +329,13 @@ forall_perm : (p : Nat -> Type) ->
 forall_perm p perm f {al} {bl} with (forall_iff p al) 
   | (Iff pa1 pa2) with (forall_iff p bl) 
     | (Iff pb1 pb2) = pb2 $ forall_elem_perm p perm (pa1 f)
+
+
+-}
+
+
+
+
 
 
 
