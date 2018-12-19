@@ -53,6 +53,19 @@ gt_must_eq Z (S b') _ Refl impossible
 gt_must_eq (S k) Z Refl _ impossible
 gt_must_eq (S a') (S b') r1 r2 = rewrite (gt_must_eq a' b' r1 r2) in Refl
 
+nat_not_eq :  Not (S a = S b) -> Not (a = b)
+nat_not_eq neq refl = absurd $ neq (cong {f=S} refl)
+
+nat_not_eq_S : Not (a = b) -> Not (S a = S b)
+nat_not_eq_S {a} {b} neq refl = absurd $ neq (succInjective a b refl)
+
+gt_true_not_eq : (a, b : Nat) -> (gt a b) = True -> Not (a = b)
+gt_true_not_eq Z _ Refl impossible
+gt_true_not_eq (S a') Z _ = \p => SIsNotZ p
+gt_true_not_eq (S a') (S b') refl = nat_not_eq_S $ gt_true_not_eq a' b' refl
+
+not_eq_sym : Not (a = b) -> Not (b = a)
+not_eq_sym neq refl = absurd $ neq (sym refl)
 
 onlyTrueOrFalse : (P : Bool) -> (P = True) -> (P = False) -> Void
 onlyTrueOrFalse True Refl Refl impossible
@@ -92,14 +105,7 @@ insert_elem_tail {a} {ys=y::xs} (There e) with (gt a y)
   | True = There $ insert_elem_tail e 
   | False = There $ There e
   
-{-
-insert_elem_tail2 : Elem x ys -> Elem x (insert a ys)
-insert_elem_tail2 {ys=Nil} elem = absurd $ noEmptyElem elem
-insert_elem_tail2 {a} {ys=y::xs} elem with (gt a y) 
-  | True = There $ insert_elem_tail2 
-  | False = There elem 
--}
-
+  
 insert_elem_head : Elem x (insert x l')
 insert_elem_head {l'=Nil} = Here
 insert_elem_head {x} {l'=y :: ys} with (gt x y) 
@@ -107,20 +113,45 @@ insert_elem_head {x} {l'=y :: ys} with (gt x y)
   | False = Here
 
 
-insert_elem : Elem x (insert a xs) -> Elem x xs
-insert_elem e = ?ie_hole
-
-
 vect_ins_elem : Elem x al -> Elem x (vect_ins_sort al)
 vect_ins_elem Here = insert_elem_head
 vect_ins_elem (There e) = insert_elem_tail $ vect_ins_elem e
 
 
+eq : (x, a : Nat) -> (x == a) = True -> x = a
+eq Z Z Refl = Refl
+eq (S _) Z Refl impossible
+eq Z (S _) Refl impossible
+eq (S x') (S a') refl = cong {f=S} $ eq x' a' refl
+
+not_eq : (x, a : Nat) -> (x == a) = False -> Not (x = a) 
+not_eq Z Z Refl impossible
+not_eq (S _) Z _ = SIsNotZ
+not_eq Z (S _) _ = \ZeqS => SIsNotZ $ sym ZeqS 
+not_eq (S x') (S a') refl = \recur => not_eq x' a' refl $ succInjective x' a' recur
+
+elem_eq : Elem x (a :: Nil) -> x = a
+elem_eq Here = Refl
+
+ins_elem_lemma : Elem x (insert a b) -> Not (x = a) -> Elem x b
+ins_elem_lemma {b=Nil} e neq = absurd $ neq (elem_eq e)
+ins_elem_lemma {x} {a} {b=y::ys} e neq with (gt a y) proof gt_a_y
+  | True = case e of 
+           Here => Here
+           There e' => There $ ins_elem_lemma e' neq
+  | False = case e of 
+           Here => absurd $ neq Refl
+           There e' => e'
+
+
 vect_ins_elem_inv : Elem x (vect_ins_sort al) -> Elem x al
 vect_ins_elem_inv {al=Nil} e = absurd $ noEmptyElem e
-vect_ins_elem_inv {al=x::Nil} e = e
-vect_ins_elem_inv {al=a::as} e = There $ vect_ins_elem_inv {al=as} (insert_elem e)
-
+vect_ins_elem_inv {al=a::as} {x} e with (gt x a) proof gt_x_a
+  | True = There $ vect_ins_elem_inv (ins_elem_lemma e $ gt_true_not_eq x a (sym gt_x_a))
+  | False with (gt a x) proof gt_a_x
+    | True = let x_not_a = not_eq_sym $ gt_true_not_eq a x (sym gt_a_x) in 
+                 There $ vect_ins_elem_inv (ins_elem_lemma e x_not_a)
+    | False = rewrite (gt_must_eq x a (sym gt_x_a) (sym gt_a_x)) in Here
 
 
 {-
@@ -201,14 +232,6 @@ perm_refl (x :: xs) = Refl
 vect_append : Vect m Nat -> Vect n Nat -> Vect (plus n m) Nat
 vect_append l' l {m} {n} = rewrite (plusCommutative n m) in (l' ++ l)
 
-{-
-perm_app_comm : (l : Vect n Nat) -> 
-                       (l' : Vect m Nat) -> 
-                       (permutation (l ++ l') (vect_append l' l))  
-perm_app_comm Nil Nil = Refl
-perm_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
-perm_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
--}
 
 {- insert sort elem proof above-}
 perm_elem : permutation al bl -> (Elem x al) -> (Elem x bl)
@@ -232,8 +255,8 @@ forall_elem_perm : (p : Nat -> Type) ->
                    (permutation al bl) -> 
                    (forall_elem p al) -> 
                    (forall_elem p bl)
-forall_elem_perm _ _ f {al=Nil} {bl=Nil} _ e = absurd $ noEmptyElem e
-forall_elem_perm p perm f _ e {al} {bl} = f _ (perm_elem (sym perm) e)  
+--forall_elem_perm _ _ f {al=Nil} {bl=Nil} _ e = absurd $ noEmptyElem e
+forall_elem_perm p perm f _ e = f _ (perm_elem (sym perm) e)  
 
 
 
@@ -252,7 +275,7 @@ forall_elem_to_forall : (p : a -> Type) ->
                         (forall_elem p vec) -> 
                         (Forall p vec)
 forall_elem_to_forall p Nil f = Forall_nil
-forall_elem_to_forall p (x :: xs) f = Forall_cons (f x Here) (forall_elem_to_forall p xs ?f')
+forall_elem_to_forall p (x :: xs) f = Forall_cons (f x Here) (forall_elem_to_forall p xs (\b, e => (f b (There e))))
 
 
 
@@ -271,6 +294,49 @@ forall_perm p perm fa {al} {bl} with (forall_iff p al)
 
 
 
+{-
+perm_app_comm : (l : Vect n Nat) -> 
+                       (l' : Vect m Nat) -> 
+                       (permutation (l ++ l') (vect_append l' l))  
+perm_app_comm Nil Nil = Refl
+perm_app_comm Nil (x :: xs) = ?permutation_app_comm_rhs_1
+perm_app_comm (x :: xs) _ = ?permutation_app_comm_rhs_2
+-}
+
+
+{-
+ins_elem_gt_xa : Elem x (insert a l) -> (gt x a) = True -> Elem x l
+
+ins_elem_gt_ax : Elem x (insert a l) -> (gt a x) = True -> Elem x l
+
+
+ins_isElem_tail : (isElem x l = No ne') -> isElem x (insert a l) = No ne
+
+
+ins_not_elem : (a, x : Nat) -> 
+               (l : Vect n Nat) -> 
+               Not (Elem x l) -> 
+               Not (Elem x (a :: l)) -> 
+               Not (x = a)
+ins_not_elem a x l n1 n2 refl = n2 (rewrite refl in Here)
+
+
+ins_elem_reduce : Elem x (insert a l) -> Not (x = a) -> Elem x l
+ins_elem_reduce {a} {x} {l} e neq with (isElem x l) proof x_is_elem
+  | Yes e' = e'
+  | No ne' = absurd $ neq (elem_head a x l ne' e) 
+
+
+vect_ins_elem_contra : (al : Vect n Nat) -> Not (Elem x al) -> Not (Elem x (vect_ins_sort al))  
+vect_ins_elem_contra Nil n e = n e
+vect_ins_elem_contra {x} (a::as) nal e_al
+  with (isElem x as) proof is_elem_as
+    | Yes e' = void $ nal (There e')
+    | No ne' with (x == a) proof x_a
+      | True = absurd (ins_not_elem a x as ne' nal (eq x a $ sym x_a))
+      | False = vect_ins_elem_contra as ne' $ 
+                    ins_elem_reduce e_al (not_eq x a $ sym x_a) 
+-}
 
 
 
