@@ -124,14 +124,17 @@ eq (S _) Z Refl impossible
 eq Z (S _) Refl impossible
 eq (S x') (S a') refl = cong {f=S} $ eq x' a' refl
 
+
 not_eq : (x, a : Nat) -> (x == a) = False -> Not (x = a) 
 not_eq Z Z Refl impossible
 not_eq (S _) Z _ = SIsNotZ
 not_eq Z (S _) _ = \ZeqS => SIsNotZ $ sym ZeqS 
 not_eq (S x') (S a') refl = \recur => not_eq x' a' refl $ succInjective x' a' recur
 
+
 elem_eq : Elem x (a :: Nil) -> x = a
 elem_eq Here = Refl
+
 
 ins_elem_lemma : Elem x (insert a b) -> Not (x = a) -> Elem x b
 ins_elem_lemma {b=Nil} e neq = absurd $ neq (elem_eq e)
