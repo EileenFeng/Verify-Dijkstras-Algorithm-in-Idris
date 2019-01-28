@@ -22,6 +22,7 @@ import Prelude.List
   4. 
 -}
 
+
 zero : a
 
 infinity : a
@@ -31,18 +32,17 @@ lte_refl : (a : Nat) -> (lte a a = True)
 lte_refl Z = Refl
 lte_refl (S n) = lte_refl n
 
-lte_succ_refl : (a : Nat) -> (b : Nat) -> 
-                (lte (S a) b = True) -> 
+lte_succ_refl : (lte (S a) b = True) -> 
                 (lte a b = True) 
-lte_succ_refl Z Z refl = absurd $ trueNotFalse (sym refl)
-lte_succ_refl Z (S b') refl = refl
-lte_succ_refl (S _) Z refl = absurd $ trueNotFalse (sym refl)
-lte_succ_refl (S a') (S b') refl = lte_succ_refl a' b' refl
+lte_succ_refl {a=Z} {b=Z} refl = absurd $ trueNotFalse (sym refl)
+lte_succ_refl {a=Z} {b=S b'} refl = refl
+lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
+lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
 
 
 -- currently weight type is Nat
 
--- define sorted graph property : ndoes are strictly in ascneding ordered accorfing to their distance value 
+-- define sorted graph property : nodes are strictly in ascneding ordered accorfing to their distance value 
 -- prove that adjusting 
 
 insert_node : (weight : Type) -> 
@@ -95,7 +95,7 @@ sort_nodes Z Nil _ = Nil
 sort_nodes (S size') (x :: xs) dist = insert_node size' x dist $ sort_nodes size' (deleteAt x dist)        
 -}
 
--- weird type checking error in idris: recorded in `update_dist` dijkstras_copy.idr
+-- weird type checking error in idris: recorded in `update_dist` dijkstras_copy.idr: issue at https://github.com/idris-lang/Idris-dev/issues/4313#event-1450393341
 
 -- num and ord
 
@@ -103,53 +103,52 @@ update_dist : (weight : Type) ->
               (gt_w : weight -> weight -> Bool) -> 
               (add : weight -> weight -> weight) -> 
               (size : Nat) -> 
-              (srcVal : Fin size) -> 
+              (srcVal : Fin size) ->
               (adj : NodeSet size weight) -> 
               (dist : Vect size weight) -> 
               (Vect size weight)
-update_dist w gt_w add size src (MKSet _ size Nil) dist = dist
-update_dist w gt_w add size src (MKSet _ size ((MKNode n, edge_w) :: xs)) dist 
-  = case (gt_w (add (Data.Vect.index src dist) edge_w) (Data.Vect.index n dist)) of 
-         True => update_dist w gt_w add size src (MKSet _ size xs) (replaceAt n (add (Data.Vect.index src dist) edge_w) dist)
-         False => update_dist w gt_w add size src (MKSet _ size xs) dist
-
+update_dist _ _ _ _ _ (MKSet _ _ Z Nil) dist = dist
+update_dist _ gt_w add _ src (MKSet _ _ (S k) ((MKNode n, edge_w) :: xs)) dist 
+  = case (gt_w (add (Data.Vect.index src dist) edge_w) (Data.Vect.index n dist)) of
+         True => update_dist _ gt_w add _ src (MKSet _ _ k xs) (replaceAt n (add (Data.Vect.index src dist) edge_w) dist)
+         False => update_dist _ gt_w add _ src (MKSet _ _ k xs) dist
 
 
 run_dijkstras : (weight : Type) -> 
                 (gt_w : weight -> weight -> Bool) -> 
                 (add : weight -> weight -> weight) -> 
                 (size : Nat) -> 
-                (size' : Nat) -> -- number of unexplored nodes
                 (graph : Graph size weight) -> 
                 (dist : Vect size weight) -> 
                 (lte size' size = True) -> 
                 (unexplored : Vect size' (Node size)) -> 
                 (Vect size weight) 
-run_dijkstras _ _ _ Z _ _ dist _ Nil = dist
-run_dijkstras w gt_w add s (S num) g@(MKGraph s w _ edges) dist refl ((MKNode x) :: xs) 
-  = run_dijkstras w gt_w add s num g (update_dist w gt_w add s x (Data.Vect.index x edges) dist) (lte_succ_refl num s refl) xs
+run_dijkstras _ _ _ _ _ dist _ Nil = dist
+run_dijkstras w gt_w add s g@(MKGraph s w _ edges) dist refl ((MKNode x) :: xs) 
+  = run_dijkstras w gt_w add s g (update_dist w gt_w add s x (Data.Vect.index x edges) dist) (lte_succ_refl refl) xs
 
 
 
 dijkstras : (weight : Type) -> 
             (gt_w : weight -> weight -> Bool) -> 
             (add : weight -> weight -> weight) -> 
+            (zero : weight) -> 
+            (infinity : weight) -> 
             (size : Nat) -> 
             (source : Node size) -> 
             (graph : Graph size weight) -> 
             (Vect size weight) 
-dijkstras w gt_w add size src g@(MKGraph size w nodes edges) 
-  = run_dijkstras w gt_w add size size g dist (lte_refl size) unexplored
+dijkstras w gt_w add zero inf size src g@(MKGraph size w nodes edges) 
+  = run_dijkstras w gt_w add size g dist (lte_refl size) unexplored
     where 
       dist = map (\x => if (x == src) then zero else infinity) nodes
       unexplored = sort_nodes w gt_w add size nodes dist
     --new_graph = MKGraph size w (sort_nodes size nodes dist) edges
-    
 
 
 --graph : Graph 5 Nat
 
-
+{-
 n1 : Node 5
 n1 = MKNode FZ
 
@@ -168,7 +167,28 @@ n5 = MKNode 4
 n1_set : NodeSet 5 Nat
 n1_set = MKSet Nat 5 [(n2, 5), (n3, 1)]
 
+n2_set : NodeSet 5 Nat
+n2_set = MKSet Nat 5 [(n4, 3)]
 
+n3_set : NodeSet 5 Nat
+n3_set = MKSet Nat 5 [(n5, 10)]
+
+n4_set : NodeSet 5 Nat
+n4_set = MKSet Nat 5 [(n5, 1)]
+
+n5_set : NodeSet 5 Nat
+n5_set = MKSet Nat 5 []
+
+nodes : Vect 5 (Node 5)
+nodes = [n1, n2, n3, n4, n5]
+
+graph : Graph 5 Nat
+graph = MKGraph 5 Nat [n1, n2, n3, n4, n5] [n1_set, n2_set, n3_set, n4_set, n5_set]
+
+
+res : Vect 5 Nat 
+res = dijkstras Nat gt plus Z 989 5 n1 graph
+-}
 {-
  _____________VERSION 2____________
 

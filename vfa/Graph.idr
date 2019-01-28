@@ -24,11 +24,12 @@ implementation Eq (Node n) where
   (==) (MKNode f1) (MKNode f2) = f1 == f2
   
 
-data NodeSet : (max_size : Nat) -> Type -> Type where 
+data NodeSet : (nodeVal : Nat) -> Type -> Type where 
   MKSet : (weight : Type) -> 
-          (max_size : Nat) -> 
-          List (Node max_size, weight) -> 
-          NodeSet max_size weight
+          (nodeVal : Nat) -> 
+          (size : Nat) -> 
+          Vect size (Node nodeVal, weight) -> 
+          NodeSet nodeVal weight
 
 
 data Graph : Nat -> Type -> Type where
