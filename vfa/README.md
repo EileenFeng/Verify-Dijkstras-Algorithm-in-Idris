@@ -1,1 +1,0 @@
-# verified_functional_algorithms_idris
