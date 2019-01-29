@@ -118,14 +118,17 @@ run_dijkstras : (weight : Type) ->
                 (gt_w : weight -> weight -> Bool) -> 
                 (add : weight -> weight -> weight) -> 
                 (size : Nat) -> 
+                (size' : Nat) -> 
+                (lte size' size = True) -> 
                 (graph : Graph size weight) -> 
                 (dist : Vect size weight) -> 
-                (lte size' size = True) -> 
                 (unexplored : Vect size' (Node size)) -> 
                 (Vect size weight) 
-run_dijkstras _ _ _ _ _ dist _ Nil = dist
-run_dijkstras w gt_w add s g@(MKGraph s w _ edges) dist refl ((MKNode x) :: xs) 
-  = run_dijkstras w gt_w add s g (update_dist w gt_w add s x (Data.Vect.index x edges) dist) (lte_succ_refl refl) xs
+run_dijkstras _ _ _ _ Z _ _ dist Nil = dist
+run_dijkstras w gt_w add s (S s') refl g@(MKGraph s w _ edges) dist ((MKNode x) :: xs) 
+  = run_dijkstras w gt_w add s s' (lte_succ_refl refl) g
+                  (update_dist w gt_w add s x (Data.Vect.index x edges) dist)
+                  (sort_nodes w gt_w add s' xs dist)
 
 
 
@@ -139,7 +142,7 @@ dijkstras : (weight : Type) ->
             (graph : Graph size weight) -> 
             (Vect size weight) 
 dijkstras w gt_w add zero inf size src g@(MKGraph size w nodes edges) 
-  = run_dijkstras w gt_w add size g dist (lte_refl size) unexplored
+  = run_dijkstras w gt_w add size size (lte_refl size) g dist unexplored
     where 
       dist = map (\x => if (x == src) then zero else infinity) nodes
       unexplored = sort_nodes w gt_w add size nodes dist

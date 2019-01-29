@@ -21,7 +21,7 @@
 \begin{document}
 \maketitle
 
-\section{Algorithm Implementation}
+\section{Dijkstra's Algorithm}
 
 \subsection{Pseudocode(Idris)}
 
@@ -29,9 +29,51 @@ $--$ data structures
 \\
 \texttt{Node} : (n : Nat) $\rightarrow$ Fin n
 \\
-\texttt{NodeSet} : List Node \tab $--$ `NodeSet` can represents edges to each node
+\texttt{NodeSet} : List Node \tab $--$ `NodeSet` can represents adjacent edges for each node
 \\
 \texttt{Graph} : (List Node, List NodeSet)
+\newline\newline 
+\texttt{sortNodes} : (weight : Type) $\rightarrow$ \\
+             (gtW : weight $\rightarrow$ weight $\rightarrow$ Bool) $\rightarrow$ \\
+             (add : weight $\rightarrow$ weight $\rightarrow$ weight) $\rightarrow$ \\
+             (size : Nat) $\rightarrow$ \\
+             (nodes : Vect size (Node m)) $\rightarrow$ \\
+             (dist : Vect m weight) $\rightarrow$ \\
+             (Vect size (Node m))\\
+\texttt{sortNodes} w gtW add Z Nil dist = Nil\\
+\texttt{sortNodes} w gtW add (S s') (x :: xs) dist \\ 
+\tab = \texttt{insertSort} x (sortNodes w gtW add s
+ xs dist)
+ \newline\newline
+\texttt{updateDist} : (weight : Type) $\rightarrow$ \\
+            \tab\tab  (gtW : weight $\rightarrow$ weight $\rightarrow$ Bool) $\rightarrow$ \\
+            \tab\tab  (add : weight $\rightarrow$ weight $\rightarrow$ weight) $\rightarrow$ \\
+            \tab\tab  (size : Nat) $\rightarrow$ \\
+            \tab\tab  (cur : Fin size) $\rightarrow$ \\
+            \tab\tab  (adj : NodeSet size weight) $\rightarrow$ \\
+            \tab\tab  (dist : Vect size weight) $\rightarrow$ \\
+            \tab\tab  (Vect size weight)\\
+\texttt{updateDist} w gtW add size cur adj dist \\
+= for Node $n \in adj$: \\ 
+\tab \texttt{if} $dist[cur] + weight[cur -> n] < dist[n]$ \\
+      \tab \texttt{then} $dist[n] = dist[cur] + weight[cur -> n]$\\
+      \tab \texttt{else} continue to the next nodde
+\newline\newline
+$--$ if unexplored is Nil, then we have calculated the min distance for all nodes\\
+\texttt{runDijkstras} $:$ (weight : Type) $\rightarrow$ \\
+            \tab\tab    (gtW: weight $\rightarrow$ weight $\rightarrow$ Bool) $\rightarrow$ \\
+            \tab\tab    (add : weight $\rightarrow$ weight $\rightarrow$ weight) $\rightarrow$ \\
+            \tab\tab    (size : Nat) $\rightarrow$ \\ 
+            \tab\tab    (size' : Nat) $\rightarrow$ $--$ number of unexplored nodes \\
+            \tab\tab    (graph : Graph size weight) $\rightarrow$ \\
+            \tab\tab    (dist : Vect size weight) $\rightarrow$ \\
+            \tab\tab    (lte size' size = True) $\rightarrow$ \\ 
+            \tab\tab    (unexplored : Vect size' (Node size)) $\rightarrow$ \\
+            \tab\tab    (Vect size weight) \\
+\texttt{runDijkstras} \_ \_ \_ \_ Z g dist \_ Nil = dist \\
+\texttt{runDijkstras} w gtW add \_ (S s') g dist refl ((MKNode x) :: xs) \\
+\tab = updateDist w gtW add \_ x adj\_x dist \\
+\tab call (\texttt{runDijkstras} \_ \_ \_ \_ s' g dist' refl (sortNodes w gtW add s' xs dist))\\
 \newline\newline
 \texttt{dijkstras} :  (weight : Type) $\rightarrow$ \\
                 \tab\tab (gtW : weight $\rightarrow$ weight $\rightarrow$ Bool) $\rightarrow$ \\
@@ -41,58 +83,19 @@ $--$ data structures
             	\tab\tab(graph : Graph size weight) $\rightarrow$ \\
             	\tab\tab(Vect size weight)\\
 \texttt{dijkstras} weight gtW add size source g@(nodes, edges) \\
-\tab  = \texttt{runDijkstras} weight gtW add size size g dist reflProof nodes \\
+\tab  = \texttt{runDijkstras} weight gtW add size size g dist reflProof (sortNodes weight gtW add size nodes) \\
 \tab\tab where \\
 \tab\tab\tab \texttt{dist} = list of nodes and their distance to source. $dist[source] = 0$\\
 \tab\tab\tab \texttt{reflProof} = proof of \texttt{(lte size size = True)}
-\newline\newline
-$--$ if unexplored is Nil, then we have calculated the min distance for all nodes\\
-\texttt{runDijkstras} $:$ (weight : Type) $\rightarrow$ \\
-            \tab\tab    (gtW: weight $\rightarrow$ weight $\rightarrow$ Bool) $\rightarrow$ \\
-            \tab\tab    (add : weight $\rightarrow$ weight $\rightarrow$ weight) $\rightarrow$ \\
-            \tab\tab    (size : Nat) $\rightarrow$ \\ 
-            \tab\tab    (size' : Nat) $\rightarrow$ $-- number of unexplored nodes$ \\
-            \tab\tab    (graph : Graph size weight) $\rightarrow$ \\
-            \tab\tab    (dist : Vect size weight) $\rightarrow$ \\
-            \tab\tab    (lte size' size = True) $\rightarrow$ \\ 
-            \tab\tab    (unexplored : Vect size' (Node size)) $\rightarrow$ \\
-            \tab\tab    (Vect size weight) \\
-\texttt{runDijkstras} \_ \_ \_ \_ Z g dist \_ Nil = dist \\
-\texttt{runDijkstras} \_ \_ \_ \_ (S s') g dist refl ((MKNode x) :: xs) \\
-\tab = $let$ \texttt{dist'} = \texttt{dist} after updating distance for each adjacent node of \texttt{x} $in$ \\
-\tab\tab call (\texttt{runDijkstras} \_ \_ \_ \_ s' g dist' refl xs)
 
-% \SetKwFunction{dijkstras}{dijkstras}
-% \SetKwProg{Fn}{Function}{}{}
-% \dijkstras $:$  (weight : Type) $\rightarrow$ \\
-%                 (comparator : (w1 : weight) $\rightarrow$ (w2 : weight) $\rightarrow$ Bool) $\rightarrow$ \\
-%                 (explored : nodeset weight) $\rightarrow$ \\
-%                 (unexplored : nodeset weight) $\rightarrow$ \\
-%                 weight
+\section{Proof of Correctness} 
 
-% {
-%   \If{arg1} {
-%     \Return arg1
-%   } \Else {
-%     \For{e $\in$ list1} {
-%       do this
-%     }
-%     flag = True
-
-%     \While{flag} {
-%       flag = False
-%     }
-%   }
-% }
-
-
-\subsection{Time Analysis}
-Time Analysis goes here. $O(n^2)$
-
+\subsection{Proof of Termination}
+As the size of list \texttt{unexplored} decreases by one during each call to \texttt{runDijkstras}, the function \texttt{runDijkstras} is guaranteed to terminate, thus function \texttt{dijkstras} terminates. 
 
 \subsection{Proof of Correctness}
 \begin{lemma}
-Lemma goes here
+
 \end{lemma}
 
 \begin{proof}
@@ -103,8 +106,6 @@ Inductive Hypothesis:
 Inductive Step
 \end{proof}
 
-\section*{Collaboration}
-Name1, Name2, ...
 
 \end{document}
 
