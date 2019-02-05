@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1548731488 "dijkstras.tex" "dijkstras.pdf" "dijkstras" 1548731489
+["pdflatex"] 1548771850 "dijkstras.tex" "dijkstras.pdf" "dijkstras" 1548771850
   "/usr/local/texlive/2017/texmf-dist/fonts/map/fontname/texfonts.map" 1480098670 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1480098698 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -70,9 +70,9 @@
   "/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1495593472 2350277 a699055bee05bf8a40b0504752487295 ""
   "/usr/local/texlive/2017/texmf-var/web2c/pdftex/pdflatex.fmt" 1495593487 4129592 0e6cfee100d68e6d96b92c0258f2ff73 ""
   "/usr/local/texlive/2017/texmf.cnf" 1495593465 577 2b71d4d888f9e5560b2e99985915a9fa ""
-  "dijkstras.aux" 1548731489 430 9aa721e04450de1704936801527c958a ""
-  "dijkstras.tex" 1548731488 4612 4459e4cf4a7a17a8531b9d8d5704edfb ""
+  "dijkstras.aux" 1548771850 508 22b97450d1d49f7d2fe74b73e3f272a6 ""
+  "dijkstras.tex" 1548771849 5018 1778b2114b38be8416e1849ad90e9cb8 ""
   (generated)
   "dijkstras.pdf"
-  "dijkstras.log"
   "dijkstras.aux"
+  "dijkstras.log"

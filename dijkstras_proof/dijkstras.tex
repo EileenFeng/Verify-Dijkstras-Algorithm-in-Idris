@@ -90,10 +90,19 @@ $--$ if unexplored is Nil, then we have calculated the min distance for all node
 
 \section{Proof of Correctness} 
 
+\subsection{Assumptions}
+\begin{enumerate}
+  \item Valid source node: source node provided is in the corresponding graph. 
+  \item Valid nodes: all nodes in the \texttt{nodes} list are valid for indexing distance list and adjacency list. 
+  \item Path : given source $s$ and node $n$, if distance from $s$ to $n$ is infinity ($dist[n] = infinity$), then there is no path from $s$ to $n$
+\end{enumerate}
+
 \subsection{Proof of Termination}
 As the size of list \texttt{unexplored} decreases by one during each call to \texttt{runDijkstras}, the function \texttt{runDijkstras} is guaranteed to terminate, thus function \texttt{dijkstras} terminates. 
 
 \subsection{Proof of Correctness}
+
+
 \begin{lemma}
 
 \end{lemma}

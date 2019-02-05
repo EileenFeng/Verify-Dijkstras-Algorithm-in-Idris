@@ -17,6 +17,49 @@ import Data.Vect
 
 -- restrict the size of NodeSet, Graph according to the number of Nodes
  
+{- `distance` and `weight` types -} 
+
+
+
+-- wraps all operations for a given weight type
+data WeightOps : Type -> Type where
+  -- needs to make sure that for (a,b : weight) -> 
+  MKWeight : (weight : Type) -> 
+             (gt_w : weight -> weight -> Bool) -> 
+             (add : weight -> weight -> weight) -> 
+             WeightOps weight
+
+
+-- any value added to infinity should be infinity
+-- need to define arithmetics for Distance type
+data Distance : Type -> Type where
+  DZero : (weight : Type) -> Distance weight
+  DInf : (weight : Type) -> Distance weight
+  DVal : (val : weight) -> Distance weight
+
+
+-- plus for Distance type
+dplus : (ops : WeightOps weight) -> 
+        (Distance weight) -> 
+        (Distance weight) -> 
+        (Distance weight) 
+dplus _ dval  (DZero _) = dval
+dplus _ (DZero _) dval = dval
+dplus _ (DInf _) _ = DInf _
+dplus _ _ (DInf _) = DInf _ 
+dplus (MKWeight _ _ add) (DVal v1) (DVal v2) = DVal $ add v1 v2
+
+-- greater than for Distance type
+dgt : (ops : WeightOps weight) -> 
+      Distance weight -> 
+      Distance weight -> Bool
+dgt _ (DZero _) _ = False
+dgt _ _ (DZero _) = True
+dgt _ _ (DInf _) = False
+dgt _ (DInf _)  _ = True
+dgt (MKWeight _ gtw _) (DVal v1) (DVal v2) = gtw v1 v2
+
+
 data Node : Nat -> Type where
   MKNode : Fin n -> Node n
 
@@ -24,21 +67,21 @@ implementation Eq (Node n) where
   (==) (MKNode f1) (MKNode f2) = f1 == f2
   
 
-data NodeSet : (nodeVal : Nat) -> Type -> Type where 
+data NodeSet : (nodeVal : Nat) -> (size : Nat) -> Type -> Type where 
   MKSet : (weight : Type) -> 
-          (nodeVal : Nat) -> 
           (size : Nat) -> 
-          Vect size (Node nodeVal, weight) -> 
-          NodeSet nodeVal weight
+          (nodeVal : Nat) -> 
+          Vect size (Node nodeVal, Distance weight) -> 
+          NodeSet nodeVal size weight
 
-
+{- existential -}
 data Graph : Nat -> Type -> Type where
   MKGraph : (size : Nat) -> 
             (weight : Type) -> 
-            (nodes : Vect size (Node size)) -> 
-            (edges : Vect size (NodeSet size weight)) -> 
+            (edges : Vect size (NodeSet size len weight)) -> 
             Graph size weight
-            
+
+                        
 {-
 data Dist : Nat -> Type -> Type where
   MKDist : (size : Nat) -> 

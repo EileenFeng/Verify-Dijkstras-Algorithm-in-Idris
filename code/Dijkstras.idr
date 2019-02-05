@@ -1,6 +1,7 @@
 module Dijkstras
 
 import Graph
+import PriorityQueue
 import Data.Vect
 import Prelude.Basics
 import Prelude.List
@@ -23,6 +24,72 @@ import Prelude.List
 -}
 
 
+lte_refl : (a : Nat) -> (lte a a = True)
+lte_refl Z = Refl
+lte_refl (S n) = lte_refl n
+
+lte_succ_refl : (lte (S a) b = True) -> 
+                (lte a b = True) 
+lte_succ_refl {a=Z} {b=Z} refl = absurd $ trueNotFalse (sym refl)
+lte_succ_refl {a=Z} {b=S b'} refl = refl
+lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
+lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
+
+
+-- need ot take in priority queue
+update_dist : (weight : Type) -> 
+              (gsize : Nat) -> 
+              (cur_dist : Distance weight) -> 
+              (adj_len : Nat) -> 
+              (adj : NodeSet gsize adj_len weight) -> 
+              (ql : Nat) -> 
+              (old_q : PriorityQueue ql gsize weight) -> 
+              (PriorityQueue ql gsize weight) 
+update_dist _ _ _ Z (MKSet _ Z _ Nil) _ q = q
+update_dist w gsize cur_d (S a) (MKSet w (S a) gsize ((MKNode xv, edge_w) :: xs)) ql q@(MKQueue ops ql _ dist)
+  = case (dgt ops (dplus ops cur_d edge_w) (Data.Vect.index xv dist)) of 
+         True => update_dist w gsize cur_d a (MKSet w a gsize xs) ql q
+         False => update_dist w gsize cur_d a (MKSet w a gsize xs) ql $ update_elem q (MKNode xv) (dplus ops cur_d edge_w)
+{-              
+update_dist _ _ _ _ (MKSet _ Z _ Nil) dist = dist
+update_dist w ops gsize cur_d (MKSet w (S len') gsize ((MKNode xv, edge_w) :: xs)) dist
+  = case (dgt (dplus cur_d edge_w) (Data.Vect.index xv dist)) of 
+         True => 
+         False => 
+-}
+
+
+run_dijkstras : (weight : Type) -> 
+                (gsize : Nat) -> 
+                (qsize : Nat) -> 
+                (lte psize gsize = True) -> 
+                (graph : Graph gsize weight) -> 
+                (queue : PriorityQueue qsize gsize weight) -> 
+                (Vect gsize (Distance weight))
+run_dijkstras _ _ Z _ _ (MKQueue _ Z Nil dist) = dist
+run_dijkstras w gsize (S qsize') refl g@(MKGraph gsize w edges) q@(MKQueue ops (S qsize') (x@(MKNode xv) :: xs) dist)
+  = run_dijkstras w gsize qsize' refl g 
+      $ update_dist w gsize (Data.Vect.index xv dist) len adj qsize' (MKQueue ops qsize' xs dist)
+      where
+        adj =  Data.Vect.index xv edges
+        len = length adj
+--run_dijkstras w ops gsize (S vsize') refl g@(MKGraph size w edges) ((MKNode xv) :: xs) dist 
+  --= run_dijkstras w ops gsize vsize' (lte_succ_refl refl) g xs $ update_dist w ops gsize 
+    -- where 
+      --  adj = Data.Vect.index xv edges
+
+
+dijkstras : (size : Nat) -> 
+            (weight : Type) -> 
+            (source : Node size) -> 
+            (ops : WeightOps weight) -> 
+            (graph : Graph size weight) -> 
+            (Vect size (Distance weight))
+dijkstras size w src ops g@(MKGraph size w edges) = ?k
+
+
+
+{-
 zero : a
 
 infinity : a
@@ -110,8 +177,8 @@ update_dist : (weight : Type) ->
 update_dist _ _ _ _ _ (MKSet _ _ Z Nil) dist = dist
 update_dist _ gt_w add _ src (MKSet _ _ (S k) ((MKNode n, edge_w) :: xs)) dist 
   = case (gt_w (add (Data.Vect.index src dist) edge_w) (Data.Vect.index n dist)) of
-         True => update_dist _ gt_w add _ src (MKSet _ _ k xs) (replaceAt n (add (Data.Vect.index src dist) edge_w) dist)
-         False => update_dist _ gt_w add _ src (MKSet _ _ k xs) dist
+         True => update_dist _ gt_w add _ src (MKSet _ _ k xs) dist
+         False => update_dist _ gt_w add _ src (MKSet _ _ k xs) (replaceAt n (add (Data.Vect.index src dist) edge_w) dist)
 
 
 run_dijkstras : (weight : Type) -> 
@@ -128,10 +195,10 @@ run_dijkstras _ _ _ _ Z _ _ dist Nil = dist
 run_dijkstras w gt_w add s (S s') refl g@(MKGraph s w _ edges) dist ((MKNode x) :: xs) 
   = run_dijkstras w gt_w add s s' (lte_succ_refl refl) g
                   (update_dist w gt_w add s x (Data.Vect.index x edges) dist)
-                  (sort_nodes w gt_w add s' xs dist)
+                  (sort_nodes w gt_w add s' xs $ update_dist w gt_w add s x (Data.Vect.index x edges) dist)
 
 
-
+{- properties of weight-}
 dijkstras : (weight : Type) -> 
             (gt_w : weight -> weight -> Bool) -> 
             (add : weight -> weight -> weight) -> 
@@ -147,7 +214,7 @@ dijkstras w gt_w add zero inf size src g@(MKGraph size w nodes edges)
       dist = map (\x => if (x == src) then zero else infinity) nodes
       unexplored = sort_nodes w gt_w add size nodes dist
     --new_graph = MKGraph size w (sort_nodes size nodes dist) edges
-
+-}
 
 --graph : Graph 5 Nat
 
