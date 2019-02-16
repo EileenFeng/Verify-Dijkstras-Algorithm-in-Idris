@@ -20,21 +20,22 @@ import Data.Vect
 {- `distance` and `weight` types -} 
 
 
-
+-- implement WeightOps as Record 
 -- wraps all operations for a given weight type
-data WeightOps : Type -> Type where
-  -- needs to make sure that for (a,b : weight) -> 
-  MKWeight : (weight : Type) -> 
-             (gt_w : weight -> weight -> Bool) -> 
-             (add : weight -> weight -> weight) -> 
-             WeightOps weight
+using (weight : type) 
+  record WeightOps weight where 
+    constructor MKWeight
+    gtw : weight -> weight -> Bool
+    add : weight -> weight -> weight
+    triangle_ineq : (a : weight) -> (b : weight) -> gtw (add a b) a = True
+    add_comm : (a : weight) -> (b : weight) -> add a b = add b a
 
 
 -- any value added to infinity should be infinity
 -- need to define arithmetics for Distance type
 data Distance : Type -> Type where
-  DZero : (weight : Type) -> Distance weight
-  DInf : (weight : Type) -> Distance weight
+  DZero : Distance weight
+  DInf : Distance weight
   DVal : (val : weight) -> Distance weight
 
 
@@ -43,43 +44,158 @@ dplus : (ops : WeightOps weight) ->
         (Distance weight) -> 
         (Distance weight) -> 
         (Distance weight) 
-dplus _ dval  (DZero _) = dval
-dplus _ (DZero _) dval = dval
-dplus _ (DInf _) _ = DInf _
-dplus _ _ (DInf _) = DInf _ 
-dplus (MKWeight _ _ add) (DVal v1) (DVal v2) = DVal $ add v1 v2
+dplus _ dval DZero = dval
+dplus _ DZero dval = dval
+dplus _ DInf _ = DInf
+dplus _ _ DInf = DInf 
+dplus ops (DVal v1) (DVal v2) = DVal $ (add ops) v1 v2
 
 -- greater than for Distance type
 dgt : (ops : WeightOps weight) -> 
       Distance weight -> 
       Distance weight -> Bool
-dgt _ (DZero _) _ = False
-dgt _ _ (DZero _) = True
-dgt _ _ (DInf _) = False
-dgt _ (DInf _)  _ = True
-dgt (MKWeight _ gtw _) (DVal v1) (DVal v2) = gtw v1 v2
+dgt _ DZero _ = False
+dgt _ _ DZero = True
+dgt _ _ DInf = False
+dgt _ DInf  _ = True
+dgt ops (DVal v1) (DVal v2) = (gtw ops) v1 v2
 
 
 data Node : Nat -> Type where
   MKNode : Fin n -> Node n
 
+NodeInjective : {f1 : Fin n} -> {f2 : Fin n} -> (MKNode f1 = MKNode f2) -> (f1 = f2)
+NodeInjective Refl = Refl
+
+
 implementation Eq (Node n) where 
   (==) (MKNode f1) (MKNode f2) = f1 == f2
   
+implementation DecEq (Node n) where 
+  decEq (MKNode n1) (MKNode n2) with (decEq n1 n2) 
+    | Yes refl = Yes $ cong refl
+    | No neq   = No $ \h : MKNode n1 = MKNode n2 => neq $ NodeInjective h
+  
+  
+get_nval : Node gsize -> Fin gsize
+get_nval (MKNode v) = v
 
-data NodeSet : (nodeVal : Nat) -> (size : Nat) -> Type -> Type where 
+-- define NodeSet as type synonym(List) : gsize weight
+nodeset : (gsize : Nat) -> (weight : Type) -> Type
+nodeset gsize weight = List (Node gsize, weight) 
+
+
+{- return true if 'ns' contains an entry for node 'n', false otherwise-}
+inNodeset : (n : Node gsize) -> 
+            (ns : nodeset gsize weight) ->
+            Bool
+inNodeset _ Nil = False
+inNodeset n ((x, w) :: xs) 
+  = case (x == n) of 
+         True => True
+         False => inNodeset n xs
+
+
+{- Properties of inNodeset -}
+   
+
+{- unsafe get_weight
+{- get weight value for node 'n' in the given nodeset -}
+get_weight : (edges : nodeset gsize weight) -> 
+             (n : Node gsize) -> 
+             weight
+get_weight Nil n = ?g
+get_weight ((x, w) :: xs) n
+  = case (x == n) of 
+         True => w
+         False => get_weight xs n
+-}       
+
+data Graph : Nat -> Type -> Type where
+  MKGraph : (gsize : Nat) -> 
+            (weight : Type) -> 
+            (edges : Vect gsize (nodeset gsize weight)) -> 
+            Graph gsize weight
+
+
+{- if a node value is smaller than graph size, then it is in the graph
+gelem : (g : Graph gsize weight) -> (n : Node gsize) -> Type 
+gelem (MKGraph _ _ edge) (MKNode nv) = (lte (finToNat nv) gsize = True)
+-}
+
+
+
+{-give the edges of a certain node 'n' in graph 'g' -}
+adj_nodes : (g : Graph gsize weight) -> 
+            (n : Node gsize) -> 
+            (nodeset gsize weight)
+adj_nodes (MKGraph _ _ edges) (MKNode nv) = index nv edges
+
+
+{- there is an edge from node 'n' to node 'm' -}
+adj_n_m : {g : Graph gsize weight} -> 
+          (n, m : Node gsize) -> Type
+adj_n_m {g} n m = (inNodeset m (adj_nodes g n) = True)
+
+
+
+{- get the weight of certain edge adjacent to m, helper of edge_weight-}
+get_weight : (ns : nodeset gsize weight) -> 
+             (m : Node gsize) -> 
+             (inNodeset m ns = True) -> 
+             weight
+get_weight Nil m inset = absurd $ trueNotFalse (sym inset)
+get_weight ((x, w) :: xs) m inset
+  with (x == m) proof x_eq_m
+   | True = w
+   | False = get_weight xs m inset
+
+
+
+{- weight of edge from node 'n' to 'm' in graph 'g' -}
+edge_weight : (g : Graph gsize weight) -> 
+              (n : Node gsize) -> 
+              (m : Node gsize) -> 
+              (adj_n_m {g=g} n m) -> 
+              weight
+edge_weight g n m adj = get_weight (adj_nodes g n) m adj
+
+
+
+
+
+
+
+{- old node set 
+data NodeSet : (gsize : Nat) -> (ssize : Nat) -> Type -> Type where 
   MKSet : (weight : Type) -> 
-          (size : Nat) -> 
-          (nodeVal : Nat) -> 
-          Vect size (Node nodeVal, Distance weight) -> 
-          NodeSet nodeVal size weight
+          (ssize : Nat) -> 
+          (gsize : Nat) -> 
+          Vect ssize (Node gsize, weight) -> 
+          NodeSet gsize ssize weight
+
 
 {- existential -}
 data Graph : Nat -> Type -> Type where
   MKGraph : (size : Nat) -> 
             (weight : Type) -> 
-            (edges : Vect size (NodeSet size len weight)) -> 
+            (edges : Vect size (len : Nat ** NodeSet size len weight)) -> 
             Graph size weight
+-} 
+
+
+
+{- old WeightOps data type
+data WeightOps : Type -> Type where
+  -- needs to make sure that for (a,b : weight) -> 
+  MKWeight : (weight : Type) -> 
+             (gt_w : weight -> weight -> Bool) -> 
+             (add : weight -> weight -> weight) -> 
+             (triangle_ineq : (a : weight) -> (b : weight) -> gt_w (add a b) a = True) -> 
+             (add_comm : (a : weight) -> (b : weight) -> add a b = add b a) -> 
+             WeightOps weight
+-}
+
 
                         
 {-

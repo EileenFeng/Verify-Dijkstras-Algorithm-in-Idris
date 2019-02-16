@@ -101,18 +101,29 @@ $--$ if unexplored is Nil, then we have calculated the min distance for all node
 As the size of list \texttt{unexplored} decreases by one during each call to \texttt{runDijkstras}, the function \texttt{runDijkstras} is guaranteed to terminate, thus function \texttt{dijkstras} terminates. 
 
 \subsection{Proof of Correctness}
-
+Let Let $g$ be the input graph, $s$ be the source node, $dist$ be the list of pairs of each node and its distance to $s$, and $explored$ be the list of explored nodes. We want to show that Dijkstra's algorithm indeed calculates the shortest distance from $s$ for each node $n \in g$. 
 
 \begin{lemma}
-
+For any node $n$ added to the $explored$ list, $dist[n]$ is indeed the shortest distance value from source $s$ to $u$. 
 \end{lemma}
 
 \begin{proof}
-Base Case:
+We will prove this lemma by inducting on the size of $explored$ list. \\
+Let P(n) be: forall nodes $m$ in $explored$ list of size $n$, $dist[m]$ is the shortest distance value from source $s$. \\
+\textbf{\texttt{Base Case}}: P(0). 
+\\
+When size is 0, $explored$ is empty, then according to the algorithm, the first node added to $explored$ is the source node $s$. Since $dist[s] = 0$ is indeed the shortest distance value from $s$ to $s$, then the lemma holds. \\\\
+\textbf{\texttt{Inductive Hypothesis}}: Suppose P(k) holds, that is, forall nodes $m$ in $explored$ list of size $k$, $dist[m]$ is the shortest distance value from source $s$
+\\
+\textbf{\texttt{Inductive Step}}: we shall show P(k+1) holds. 
+\\
+Suppose $m'$ is the (k+1)th element added into $explored$. To show $dist[m']$ is indeed the shortest distance value, we shall show for all nodes $p$ that has an edge to $m'$ in graph $g$, $dist[m'] \leq dist[p] + weight(m', p)$. 
+\\
+\texttt{Case 1}: $p$ is not in $explored$. \\
+Since Dijkstra's chooses the node with minimum distance value from the unexplored list, we have $dist[m'] \leq dist[p]$, hence $dist[m'] \leq dist[p] + weight(m', p)$ holds. 
 
-Inductive Hypothesis:
+\texttt{Case 2}: $p$ is in $explored$\\
 
-Inductive Step
 \end{proof}
 
 

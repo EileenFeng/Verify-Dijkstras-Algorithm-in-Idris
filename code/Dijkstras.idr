@@ -37,6 +37,7 @@ lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
 
 
 -- need ot take in priority queue
+-- helper function recur on the list of adj_nodes
 update_dist : (weight : Type) -> 
               (gsize : Nat) -> 
               (cur_dist : Distance weight) -> 
