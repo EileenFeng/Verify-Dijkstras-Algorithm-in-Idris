@@ -1,5 +1,8 @@
 \documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
 \usepackage{geometry,graphicx}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsthm}
 \geometry{
   top = 23mm,
   left = 18mm, 
@@ -13,9 +16,6 @@
 \newcommand\tsp[1][0.2cm]{\hspace*{#1}}
 \usepackage[]{algorithm2e}
 \geometry{letterpaper}
-\usepackage{graphicx}
-\usepackage{amssymb}
-\usepackage{amsthm}
 \usepackage{titlesec}
 \titlespacing*{\section}
 {0pt}{1.5\baselineskip}{1\baselineskip}
@@ -221,7 +221,7 @@ Since we proved both (1) and (2) for the $k^{th}$ iteration, forall $k \leq 1$, 
 
 \begin{proof}\textbf{Prove of Correctness}
 \\\\
-By applying Lemma (1) to each iteration of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
+By applying Lemma (1) to the last iteration of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
 \end{proof}
 \end{document}
 

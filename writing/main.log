@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  17 FEB 2019 17:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  17 FEB 2019 21:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -8,8 +8,8 @@ LaTeX2e <2017-04-15>
 Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
-(/usr/local/texlive/2017/texmf-dist/tex/latex/base/size12.clo
-File: size12.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
 \c@section=\count80
@@ -1483,6 +1483,8 @@ Package: blindtext 2012/01/06 V2.0 blindtext-Package
 \c@blind@pangramcount=\count182
 \c@blind@pangrammax=\count183
 )
+\c@definition=\count184
+
 (/usr/local/texlive/2017/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2010/09/12 v5.6 Page Geometry
 
@@ -1496,9 +1498,9 @@ Package ifvtex Info: VTeX not detected.
 (/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-\Gm@cnth=\count184
-\Gm@cntv=\count185
-\c@Gm@tempcnt=\count186
+\Gm@cnth=\count185
+\Gm@cntv=\count186
+\c@Gm@tempcnt=\count187
 \Gm@bindingoffset=\dimen274
 \Gm@wd@mp=\dimen275
 \Gm@odd@mp=\dimen276
@@ -1827,7 +1829,7 @@ LaTeX Info: Redefining \ttfamily on input line 94.
 )
 (/usr/local/texlive/2017/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2017/01/02 v2.4 e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count187
+\etb@tempcnta=\count188
 )
 (/usr/local/texlive/2017/texmf-dist/tex/latex/fontaxes/fontaxes.sty
 Package: fontaxes 2014/03/23 v1.0d Font selection axes
@@ -1844,7 +1846,7 @@ Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
 \XKV@toks=\toks41
 \XKV@tempa@toks=\toks42
 )
-\XKV@depth=\count188
+\XKV@depth=\count189
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 )))
 (/usr/local/texlive/2017/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
@@ -1864,7 +1866,7 @@ Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip64
 \bibsep=\skip65
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count189
+\c@NAT@ctr=\count190
 )
 (/usr/local/texlive/2017/texmf-dist/tex/latex/har2nat/har2nat.sty
 Package: har2nat 2005/12/01 1.0 Harvard to natbib
@@ -1873,61 +1875,61 @@ Package: har2nat 2005/12/01 1.0 Harvard to natbib
 Package: suffix 2006/07/15 1.5a Variant command support
 ))
 LaTeX Font Info:    Try loading font information for T1+XCharter-TLF on input l
-ine 117.
+ine 130.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/xcharter/T1XCharter-TLF.fd
 File: T1XCharter-TLF.fd 2013/10/27 (autoinst) Font definitions for T1/XCharter-
 TLF.
 )
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 117.
+(Font)              scaled to size 10.0pt on input line 130.
 
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 117.
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 117.
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 117.
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 117.
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 117.
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 117.
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 117.
-LaTeX Font Info:    Try loading font information for LY1+ptm on input line 117.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 130.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 130.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 130.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 130.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 130.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 130.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 130.
+LaTeX Font Info:    Try loading font information for LY1+ptm on input line 130.
 
  (/usr/local/texlive/2017/texmf-dist/tex/latex/ly1/ly1ptm.fd
 File: ly1ptm.fd 2001/02/01 font definitions for LY1/ptm using Berry names.
 )
-LaTeX Font Info:    ... okay on input line 117.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 117.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 117.
+LaTeX Font Info:    ... okay on input line 130.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 130.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 130.
 
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 117.
+LaTeX Font Info:    ... okay on input line 130.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 117.
+(Font)              scaled to size 10.95pt on input line 130.
 
 ABD: EveryShipout initializing macros
 (/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count190
+\scratchcounter=\count191
 \scratchdimen=\dimen282
 \scratchbox=\box56
-\nofMPsegments=\count191
-\nofMParguments=\count192
+\nofMPsegments=\count192
+\nofMParguments=\count193
 \everyMPshowfont=\toks43
-\MPscratchCnt=\count193
+\MPscratchCnt=\count194
 \MPscratchDim=\dimen283
-\MPnumerator=\count194
-\makeMPintoPDFobject=\count195
+\MPnumerator=\count195
+\makeMPintoPDFobject=\count196
 \everyMPtoPDFconversion=\toks44
 ) (/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2017/03/19 v0.25 Utility functions of pdfTeX for LuaTeX (HO
@@ -1994,12 +1996,12 @@ e
 * \topmargin=-15.36449pt
 * \headheight=12.0pt
 * \headsep=25.0pt
-* \topskip=12.0pt
+* \topskip=11.0pt
 * \footskip=30.0pt
-* \marginparwidth=35.0pt
+* \marginparwidth=50.0pt
 * \marginparsep=10.0pt
 * \columnsep=10.0pt
-* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
 * \hoffset=0.0pt
 * \voffset=0.0pt
 * \mag=1000
@@ -2009,70 +2011,229 @@ e
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\c@mv@tabular=\count196
-\c@mv@boldtabular=\count197
+\c@mv@tabular=\count197
+\c@mv@boldtabular=\count198
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 20.74pt on input line 124.
+(Font)              scaled to size 17.28pt on input line 137.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 14.4pt on input line 124.
-LaTeX Font Info:    Try loading font information for U+msa on input line 124.
+(Font)              scaled to size 12.0pt on input line 137.
+LaTeX Font Info:    Try loading font information for U+msa on input line 137.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 124.
+LaTeX Font Info:    Try loading font information for U+msb on input line 137.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 124.
-LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 137.
+(Font)              scaled to size 14.4pt on input line 150.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 17.28pt on input line 137.
+(Font)              scaled to size 14.4pt on input line 150.
 
-Overfull \hbox (7.86227pt too wide) in paragraph at lines 142--143
-[]\T1/XCharter-TLF/m/n/12 In this work we fo-cuses on ver-i-fy-ing sim-ple pro-
-grams that im-ple-ment Di-js-tra's and Bellman-
+Underfull \hbox (badness 10000) in paragraph at lines 151--153
+
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 154--156
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 157--159
+
+ []
+
+LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
+(Font)              scaled to size 12.0pt on input line 160.
 [1
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 14.4pt on input line 156.
-LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 168.
+(Font)              scaled to size 10.95pt on input line 194.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/it' will be
-(Font)              scaled to size 12.0pt on input line 203.
+(Font)              scaled to size 10.95pt on input line 195.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 195.
+
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+Underfull \hbox (badness 10000) in paragraph at lines 194--198
+
+ []
 
 
 Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 14.49998pt.
+ Make it at least 13.59999pt.
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[2] (./main.bbl
+LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
+(Font)              scaled to size 9.0pt on input line 198.
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 223--257
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 223--257
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 223--257
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 223--257
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 223--257
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 223--257
+
+ []
+
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 267--275
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 267--275
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 283--295
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 283--295
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 283--295
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 283--295
+
+ []
+
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 296--304
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 296--304
+
+ []
+
+<p1.png, id=30, 639.38875pt x 471.7625pt>
+File: p1.png Graphic file (type png)
+ <use p1.png>
+Package pdftex.def Info: p1.png used on input line 305.
+(pdftex.def)             Requested size: 223.78941pt x 165.11934pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 308--329
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 308--329
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 308--329
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 308--329
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 308--329
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 308--329
+
+ []
+
+[5 <./p1.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 331--338
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 331--338
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 331--338
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 331--338
+
+ []
+
+[6]
+Underfull \hbox (badness 10000) in paragraph at lines 342--345
+
+ []
+
+[7] (./main.bbl
 
 Package natbib Warning: Empty `thebibliography' environment on input line 3.
 
 ) [1] [1] [2] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 25681 strings out of 492995
- 517204 string characters out of 6132704
- 569508 words of memory out of 5000000
- 28771 multiletter control sequences out of 15000+600000
- 69204 words of font info for 46 fonts, out of 8000000 for 9000
+ 25746 strings out of 492995
+ 518264 string characters out of 6132704
+ 576712 words of memory out of 5000000
+ 28821 multiletter control sequences out of 15000+600000
+ 73557 words of font info for 61 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,11n,82p,10467b,275s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,11n,82p,10467b,365s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips
-/xcharter/xch_tuu2ww.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/public
-/xcharter/XCharter-Bold.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/pub
-lic/xcharter/XCharter-Roman.pfb>
-Output written on main.pdf (5 pages, 49431 bytes).
+/cm-super/cm-super-t1.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/x
+charter/xch_tuu2ww.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/public/x
+charter/XCharter-Bold.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publi
+c/xcharter/XCharter-Italic.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/
+public/xcharter/XCharter-Roman.pfb></usr/local/texlive/2017/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2017/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmr8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/c
+m-super/sfit1095.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-
+super/sftt1095.pfb>
+Output written on main.pdf (10 pages, 220328 bytes).
 PDF statistics:
- 32 PDF objects out of 1000 (max. 8388607)
- 22 compressed objects within 1 object stream
+ 93 PDF objects out of 1000 (max. 8388607)
+ 66 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 13 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 18 words of extra memory for PDF output out of 10000 (max. 10000000)
 
