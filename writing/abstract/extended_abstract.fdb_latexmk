@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex thesis"] 1550795880 "thesis.aux" "thesis.bbl" "thesis" 1550796373
+["bibtex extended_abstract"] 1550810569 "extended_abstract.aux" "extended_abstract.bbl" "extended_abstract" 1550810571
   "/usr/local/texlive/2017/texmf-dist/bibtex/bst/harvard/apsr.bst" 1480098435 25357 c990a86d1a60aa9370f76a9507b609ec ""
+  "extended_abstract.aux" 1550810571 2336 1d4f84b3ec42187d171360dbab031112 ""
   "literature.bib" 1550448048 255 3790af6da05e875daba0c7b5b3a83621 ""
-  "thesis.aux" 1550795881 2332 63134f81d3eea5c6b33ef63bca9e2a84 ""
   (generated)
-  "thesis.bbl"
-  "thesis.blg"
-["pdflatex"] 1550795880 "thesis.tex" "thesis.pdf" "thesis" 1550796373
+  "extended_abstract.bbl"
+  "extended_abstract.blg"
+["pdflatex"] 1550810570 "extended_abstract.tex" "extended_abstract.pdf" "extended_abstract" 1550810571
   "/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1480098666 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/xcharter/xch_tuu2ww.enc" 1483401670 3152 5b56711b87754e305ee9f71ebb964b21 ""
   "/usr/local/texlive/2017/texmf-dist/fonts/map/fontname/texfonts.map" 1480098670 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -226,13 +226,13 @@
   "/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1495593472 2350277 a699055bee05bf8a40b0504752487295 ""
   "/usr/local/texlive/2017/texmf-var/web2c/pdftex/pdflatex.fmt" 1495593487 4129592 0e6cfee100d68e6d96b92c0258f2ff73 ""
   "/usr/local/texlive/2017/texmf.cnf" 1495593465 577 2b71d4d888f9e5560b2e99985915a9fa ""
+  "extended_abstract.aux" 1550810571 2336 1d4f84b3ec42187d171360dbab031112 ""
+  "extended_abstract.bbl" 1550810570 51 644c51d86f43488906f29305195f1859 "bibtex extended_abstract"
+  "extended_abstract.out" 1550810571 919 6d1c0b3d2f0b92b1c40ebc320c9f3ecd ""
+  "extended_abstract.tex" 1550810533 34681 2a8a16b506869bc9f55fbe9bda58c0f1 ""
   "p1.png" 1550380300 42052 2fab1cebcf4d642b64c6fb24472a652b ""
-  "thesis.aux" 1550795881 2332 63134f81d3eea5c6b33ef63bca9e2a84 ""
-  "thesis.bbl" 1550795880 51 644c51d86f43488906f29305195f1859 "bibtex thesis"
-  "thesis.out" 1550795881 915 01236737b44ed90335d513f9a6d6c728 ""
-  "thesis.tex" 1550796372 31953 1e947f4f317090e883287e6b961351c1 ""
   (generated)
-  "thesis.out"
-  "thesis.log"
-  "thesis.aux"
-  "thesis.pdf"
+  "extended_abstract.out"
+  "extended_abstract.log"
+  "extended_abstract.pdf"
+  "extended_abstract.aux"

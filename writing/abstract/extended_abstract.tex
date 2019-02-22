@@ -54,8 +54,8 @@
 \geometry{
   top=2cm, % Defines top margin
   bottom=2cm, % Defines bottom margin
-  left=3cm, % Defines left margin
-  right=3cm, % Defines right margin
+  left=2.5cm, % Defines left margin
+  right=2.5cm, % Defines right margin
   includehead, % Includes space for a header
   %includefoot, % Includes space for a footer
   %showframe, % Uncomment if you want to show how it looks on the page 
@@ -165,16 +165,16 @@ Yazhe Feng % Add your first and last name
 \setcounter{page}{1} % Sets counter of page to 1
 
 \section{Introduction} % Add a section title
-Shortest path problems deal with finding the path with minimum distance value between two nodes in a given graph. One variation of shortest path problem is single-source shortest path problem, which focuses on finding the path with minimum distance value from one source to all other vertices within the graph. Dijkstra's and Bellman-Ford are the most renowned single-source shortest path algorithms, and are implemented by software concerning various fields in real-life applications, such as finding the shortest path in road map, or routing path with minimum cost in networks. 
+Shortest path problems deal with finding the path with minimum distance value between two nodes in a given graph. One variation of shortest path problem is single-source shortest path problem, which focuses on finding the path with minimum distance value from one source to all other vertices within the graph. Dijkstra's and Bellman-Ford are the most renowned single-source shortest path algorithms, and are implemented by software concerning various fields in real-life applications, such as finding the shortest path in road map, or routing path with minimum cost in networks[6][7][8]. 
 \\
 
-Given the importance of Dijkstra's and Bellman-Ford in real-life applications, we are interested in verifying the implementation of both algorithms. We start with providing a concrete implementation for both algorithms. Then with respect to our programs, we will define functions describing properties that should hold for any correct implementation of Dijkstra's and Bellman-Ford, for instance returning the minimum distance value from the source to each node in the graph. Having these functions type checked will then ensure the correctness of our algorithm implementation, and that any program with problematic implementation will fail to compile at the type checking level. Our work will be done with the Idris functional programming language, which embraces powerful tools and features that are siginificantly helpful in program verification.
+Given the importance of Dijkstra's and Bellman-Ford in real-life applications, we are interested in verifying the implementation of both algorithms. We will provide concrete implementations for both algorithms. Based on the specific implementation, we then define functions with precise type signatures which carry out specifications that should hold for any correct implementations of Dijkstra's and Bellman-Ford algorithms, for instance returning the minimum distance value from the source to each node in the graph. Having these functions type checked will then ensure the correctness of our algorithm implementation, and that any program with problematic implementation will fail to compile at the type checking level. Our implementation will use the Idris functional programming language, which embraces powerful tools and features that are siginificantly helpful in program verification.
 \\
 
-Existing work on verifying Dijkstra's algorithm is relatively limited, and few resources are found for the verification of Bellman-Ford algorithm. Robin Mange and Jonathan Kuhn [3] demonstrates an implementation that verifies Dijkstra's algorithm with the Jahob verification system in their report on efficient proving of Java implementations[6]. Although few resource has been found on the concrete implementation of this work, the report illustrates that as Jahob allows programmers to provide specification of their function's behaviors in high-level logic(HOL), program verification can be reduced to the problem of the validity of HOL formulas. 
+Existing work on verifying Dijkstra's algorithm is relatively limited, and few resources are found for the verification of Bellman-Ford algorithm. Robin Mange and Jonathan Kuhn demonstrates an implementation that verifies Dijkstra's algorithm with the Jahob verification system in their report on efficient proving of Java implementations[3]. Although few resource has been found on the concrete implementation of this work, the report illustrates that as Jahob allows programmers to provide specification of their function's behaviors in high-level logic(HOL), program verification can be reduced to the problem of the validity of HOL formulas. 
 \\
 
-Klasen et. al. [1] from the University of Koblenz and Landau present a concrete implementation of Dijkstra's algorithm in Java and its verification with the KeY system. The verification process involves specifying the behavior of each function with preconditions, postconditions, and invariants, and the KeY system checks a function as correct with respect to its specifications if the postconditions hold after execution. Jean-Christophe Filliâtre[4], a senior researcher from the National Center for Scientific Research(CNRS), offers an implementation of Dijkstra's algorithm along with its verification in Why3, a deductive program verification platform that relies on external theorem provers[5]. Both verifications above are largely dependent on theorem proving systems. Unlike Filliâtre and Klasen et. al., our work relies on a significantly smaller trusted code base, indicating that considerable amount of proofs will be presented explicitly in our implementation rather than provided by external theorem provers.
+Klasen et. al. from the University of Koblenz and Landau present a concrete implementation of Dijkstra's algorithm in Java and its verification with the KeY system[1]. The verification process involves specifying the behavior of each function with preconditions, postconditions, and invariants, and the KeY system checks a function as correct with respect to its specifications if the postconditions hold after execution. Jean-Christophe Filliâtre, a senior researcher from the National Center for Scientific Research(CNRS), offers an implementation of Dijkstra's algorithm along with its verification in Why3, a deductive program verification platform that relies on external theorem provers[4][5]. Both verifications above are largely dependent on theorem proving systems. Unlike Filliâtre and Klasen et. al., our work relies on a significantly smaller trusted code base, indicating that considerable amount of proofs will be presented explicitly in our implementation rather than provided by external theorem provers.
 
 \subsubsection*{Contribution}
 (To be finished. )
@@ -257,20 +257,20 @@ Dijkstra's algorithm is a greedy algorithm that finds the shortest path from a g
 Dijkstra's algorithm takes in a directed graph with non-negative edge weights, and computes the shortest path distance from one single source node to all other reachable nodes in the graph. The algorithm maintains a list of unexplored nodes and their distance values to the source node. Initially, the list of unexplored nodes contains all nodes in the input graph, and the distance value of all node are set as infinity except for the source node itself, which is set to zero. The algorithm extracts the node $v$ with minimum distance value from the unexplored list during each iteration, and for each neighbor $v'$ of $v$, if the path from source to $v'$ via $v$ contributes a smaller distance value, then the distance value of $v'$ is updated. 
 
 \subsubsection*{Bellman-Ford Algorithm}
-
-
-
+Bellman-Ford algorithm was first introduced by Alfonso Shimbel in 1955, and was published by Richard Bellman and Lester Ford, Jr in 1958 and 1956 respectively. The algorithm solves the issue of calculating the minimum distance value from a single source to all other nodes in a given graph, and different from Dijkstra's algorithm, Bellman-Ford algorithm allows negative edge weights in the input graph, and is capable of detecting the existence of negative cycle(a cycle whose edge weights sum up to a negative value). Applications of Bellman-Ford includes routing protocols such as the Routing Information Protocol. 
 
 \section{High-Level Contribution}
-\subsection{Dijkstra's Algorithms}
-We implemented Dijkstra's algorithm with the Idris functional programming languages. Below presents the pseudocode of our implementation. 
+\subsection{Dijkstra's Algorithm}
+\subsubsection{Data Structures}
+As Dijkstra's algorithm requires non-negative edge weights and valid input graph, the data structures in our implementation are designed to ensure these properties of input values. Let \texttt{gsize} denote the size of graph(i.e., the number of vertices in a graph). A node is defined as a data type carrying a value of type \texttt{Fin gsize}, which indicates that the size of the set of nodes cannot exceed the graph size. An adjacent list of a node in the graph is defined as a list containing tuples of neighboring node and the corresponding edge weight, and finally, a graph is defined as a vector of length \texttt{gsize} with adjacent lists as elements. The \texttt{Fin gsize} value carried by each node is used as the index for identifying the adjacent list of each node. As the graph is a vector of length \texttt{gsize}, the definition of node data type ensures that any well-typed nodes are valid inputs, and each indexing to the graph data structure are guaranteed to be in-bound. 
+
 \subsubsection{Pseudocode}
-Given input graph $g$ and source node $s$ with types:
+We denote $(u, v)$ as an edge from node $u$ to $v$, $weight(u, v)$ as the weight of edge $(u, v)$. Let \texttt{gsize} denote the size of the input graph, i.e., the number of nodes in the graph. The type \texttt{Graph gsize weight} specifies a graph with \texttt{gsize} nodes and edge weight of type \texttt{weight}. Given input graph $g$ and source node $s$ of type:
 \\\\
   \tab g : Graph gsize weight\\
   \tab s : Node gsize
 \\\\
-We denote $(u, v)$ as an edge from node $u$ to $v$, $weight(u, v)$ as the weight of edge $(u, v)$. We define $unexplored$ as the list of unexplored nodes, and $dist$ as the list storing distance from $s$ to each node $n \in g$
+We define $unexplored$ as the list of unexplored nodes, and $dist$ as the list storing distance from $s$ to each node $n \in g$
 \\\\
 \tab (initially $unexplored$ contains all nodes in graph $g$)\\
 \tab $unexplored : List (Node \tsp gsize)$\\
@@ -299,13 +299,6 @@ The Dijkstra's Algorithm runs as follows:
   \tab\tab input the new $unexplored'$ and $dist'$ to the $k^{th}$ iteration of the while loop \\
   \tab $\}$
 }
-
-\subsubsection{Assumption}
-\begin{enumerate}
-  \item Weight of edges are positive
-  \item Distance value can only be zero, infinity, or summation of edge weights
-  \item All nodes $n$ and edge $e$ are valid: $n, e \in g$
-\end{enumerate}
 
 \subsubsection{Correctness Proof}
 We first provide definitions of key concepts used in our proof.
@@ -336,9 +329,11 @@ $\forall p' \in path(s, v)$, $\delta(v) = length(\Delta(s, v)) \leq length(p')$
 \end{center}
 \end{definition}
 
-
 \subsubsection{Proof of Correctness}
-
+\textit{(Correctness proof below are still under construction)}
+\\\\
+We provide a theoretical proof for the correctness of our Dijkstra's implementation, which serves as the foundation for implementing our verification program. 
+\\\\
 \textbf{Proof of Termination}
 \\
 The inner for loop is guaranteed to terminate as the algorithm goes through each adjacent node exactly once. As the size of list \texttt{unexplored} decreases by one during each iteration of the while loop, the algorithm is guaranteed to terminate. 
@@ -402,7 +397,7 @@ Hence $dist_{k+1}[w_2] < dist_{k+2}[v]$([3]).
 \\
 Based on our assumption, during the $(k+1)^{th}$ generation, $w_2 \notin explored$ and $v$ is selected by the algorithm, then we must have $dist_{k+1}[w_2] \geq dist_{k+1}[v]$, which contradicts with [3]. Hence by the principle of prove by contradiction, there does not exsist $w \in unexplored$, such that $\delta(v) > \delta(w)$. (1) holds for the $(k+1)^{th}$ iteration. 
 
-(Proof below are not modified yet)
+(Proof below are still under construction)
 \item $dist[v] = \delta(v)$
 \\\\
 Suppose $dist[v]$ is associates with path $p \in path(s, v)$ during the $k^{th}$ iteration, and assume the shortest path from $s$ to $v$ is some path $p' \in path(s, v)$ different than $p$, $length(p') = \delta(v) < dist[v]$([b]). Suppose $v'$ is the node just before $v$ in $p'$. 
@@ -459,17 +454,22 @@ By applying Lemma (1) to the last iteration of the algorithm, we obtained that f
 
 \bibliography{literature.bib} % Add the filename of your bibliography
 \bibliographystyle{apsr} % Defines your bibliography style
-[3] \url{https://lara.epfl.ch/w/_media/dijkstra.pdf} 
+[1] V. Klasen, "Verifying dijkstra's algorithm with key," in Diploma Thesis, Universitat Koblenz-Landau, 2010.%\url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
 \newline
-[2] \url{http://www.cse.chalmers.se/~peterd/papers/DependentTypesAtWork.pdf}
+[2] Bove, Ana, and Peter Dybjer. “Dependent Types at Work.” Language Engineering and Rigorous Software Development Lecture Notes in Computer Science, 2009, pp. 57–99., \url{doi:10.1007/978-3-642-03153-3_2}. %\url{http://www.cse.chalmers.se/~peterd/papers/DependentTypesAtWork.pdf}
 \newline
-[1] \url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
+[3] R. Mange and J. Kuhn, "Verifying dijkstra algorithm in jahob," 2007, student project, EPFL.%\url{https://lara.epfl.ch/w/_media/dijkstra.pdf} 
 \newline
-[4] \url{http://toccata.lri.fr/gallery/dijkstra.en.html}
+[4] Filliâtre, Jean-Christophe. “Toccata.” Dijkstra's Shortest Path Algorithm, \url{toccata.lri.fr/gallery/dijkstra.en.html}.%\url{http://toccata.lri.fr/gallery/dijkstra.en.html}
 \newline
-[5]\url{http://why3.lri.fr/#provers}
+[5] “Why3.” Why3, May 2015, \url{why3.lri.fr/#provers}. %\url{http://why3.lri.fr/#provers}
 \newline
-[6] \url{http://lara.epfl.ch/w/jahob_system}
+%[6] \url{http://lara.epfl.ch/w/jahob_system}
+[6] E. W. Dijkstra. A note on two problems in connexion with graphs. Numerische Mathematik, 1:269–271, 1959.
+\newline 
+[7] Richard E. Bellman. On a routing problem. Quarterly of Applied Mathematics, 16:87–90, 1958.
+\newline
+[8] A. Shimbel. Structure in communication nets. Polytechnic Press of the Poly- technic Institute of Brooklyn, page 199–203, 1955.
 % For citing, please see this sheet: http://merkel.texture.rocks/Latex/natbib.php
 
 %----------------------------------------------------------------------------------------
