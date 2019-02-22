@@ -1,0 +1,80 @@
+\documentclass[12pt, oneside]{article}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+%\usepackage[T1][fontize=12]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}
+\title{\Large{\textbf{Shortest Path Algorithms Verification with Idris}} \\ \textbf{\large{Thesis Outline}}}
+\author{Yazhe Feng}
+%\date{}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+\section{Introduction}
+\begin{itemize}
+	\item State the problem: Dijkstra's and Bellman-Ford algorithms are widely used in real-life applications, however existing work for verifying shortest path algorithms are limited
+	\item Contributions
+	\item Structure of thesis
+\end{itemize}
+
+\section{Motivation}
+\begin{itemize}
+	\item Show the importance of verification in assisting people to ensure the behavior of programs
+	\item Given the significance of Dijkstra's and Bellman-Ford in real-life applications, it is important to verify their correctness
+	\item Present algorithm verification as a programming issue: with programming languages such as Idris, we can implement programs that verify other programs
+\end{itemize}
+
+\section{Background}
+\begin{itemize}
+	\item Introduce Idris programming languages and its features (dependent types etc.)
+	\item Brief introduction of Dijkstra's and Bellman-Ford algorithms
+\end{itemize}
+
+\section{High-level Contribution}
+\begin{itemize}
+	\item Pseudocode for Dijkstra's and Bellman-Ford, followed up by overview of the implementation of both algorithms in Idris 
+	\item Theoretical proofs of Dijktra's and Bellman-Ford based on the Idris implementation 
+\end{itemize}
+
+\section{Low-level Contribution}
+\begin{itemize}
+	\item Details on the implementation of Dijkstra's and Bellman-Ford in Idris: data structures, functions, program control flow, and assumptions
+	\item Assumptions of the proof (expected qualities of input data etc.)
+	\item Overall structure of our verification, and details on the proof: provide type signatures and interpretation of types for key lemmas
+\end{itemize}
+
+\section{Discussion}
+\begin{itemize}
+	\item Progress on verification versus initial expectations
+	\item Things that have been tried but failed to achieve
+	\item Reflection on the process of program verification: useful tips and advices etc. 
+\end{itemize}
+
+\section{Related Work}
+\begin{itemize}
+	\item Present existing work of Dijkstra's verification
+		\begin{enumerate}
+			\item Verifying Dijkstra's Algorithm with KeY: \url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
+			\item Verifying Dijkstra’s algorithm in Jahob: \url{http://lara.epfl.ch/w/_media/dijkstra.pdf}
+		\end{enumerate}
+	\item Comparison with existing works
+		\begin{enumerate}
+			\item Verifying in Idris versus other languages or proof assistance
+			\item Different approaches taken during verification
+		\end{enumerate}
+\end{itemize}
+
+\section{Conclusion}
+\begin{itemize}
+	\item Briefly conclude motivations, goals, and contributions
+\end{itemize}
+
+
+
+\end{document}
+
+
