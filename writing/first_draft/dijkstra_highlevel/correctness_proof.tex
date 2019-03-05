@@ -1,0 +1,21 @@
+\subsubsection{Proof of Correctness}
+This section provides a theoretical proof for our Dijkstra's implementation, which includes proof of program termination and proof of correct program behavior.
+
+\paragraph{Lemmas}
+\tab\\
+Denote $explored$ as the list of nodes in $g$ but not in $unexplored$, i.e., $explored$ stored all nodes whose neighbors have been updated by the algorithm. We index $explored$ by the number of iterations, such that $explored_i$ denotes the value of $explored$ at the beginning of the $i^{th}$ iteration.
+\tab\\
+\import{./}{lemma_41}
+\import{./}{lemma_42}
+\import{./}{lemma_43}
+\import{./}{lemma_44}
+
+\paragraph{Proof of Termination} 
+\begin{proof}
+The inner for loop is guaranteed to terminate as the algorithm goes through each adjacent node exactly once. As the size of list \texttt{unexplored} decreases by one during each iteration of the while loop, the algorithm is guaranteed to terminate. 
+\end{proof}
+
+\paragraph{Prove of Correctness}
+\begin{proof}
+By applying \texttt{Lemma 3.4} to the last iteration of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
+\end{proof}

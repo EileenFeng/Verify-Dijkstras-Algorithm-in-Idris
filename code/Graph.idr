@@ -1,4 +1,4 @@
-module Graph
+                             module Graph
 import Data.Vect
 
 %access public export 

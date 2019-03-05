@@ -1,0 +1,15 @@
+Shortest path problems deal with finding the path with minimum distance value between two nodes in a given graph. One variation of shortest path problem is single-source shortest path problem, which focuses on finding the path with minimum distance value from one source to all other vertices within the graph. Dijkstra's and Bellman-Ford are the most renowned single-source shortest path algorithms, and are implemented by software concerning various fields in real-life applications, such as finding the shortest path in road map, or routing path with minimum cost in networks[6][7][8]. 
+\\
+
+Given the importance of Dijkstra's and Bellman-Ford in real-life applications, we are interested in verifying the implementation of both algorithms. We will provide concrete implementations for both algorithms. Based on the specific implementation, we then define functions with precise type signatures which carry out specifications that should hold for the correct implementations of Dijkstra's and Bellman-Ford algorithms, for instance returning the minimum distance value from the source to each node in the graph. Having these functions type checked will then ensure the correctness of our algorithm implementation, and that any program with problematic implementation will fail to compile at the type checking level. Our implementation will use the Idris functional programming language, which embraces powerful tools and features that are siginificantly helpful in program verification.
+
+\subsubsection*{Contribution}
+(To be finished. )
+\\
+
+% Specifically, our (expected) contributions are: 
+% \begin{itemize}
+%   \item Concrete implementations of Dijkstra's and Bellman-Ford algorithms in Idris 
+%   \item Verification of Dijkstra's algorithms
+% \end{itemize}
+The structure of the paper is as follows. Section 2 describes the significance and value of algorithm verification, and reasons of choosing Idris as the language for verifying programs. Section 3 provides some background on Dijkstra's and Bellman-Ford algorithms, follows up by briefly introduction on the Idris functional programming language. Section 4 includes an overview of our verification program, including definition of key concepts, assumptions made by our program, and details on the pseudocode and theoretical proof of Dijkstra's and Bellman-Ford, which serves as important guideline in implementation our verification program. Section 5 covers more details of our verification program, including function type signatures and code of the proof for key lemmas. Section 6 is discussion of our work. Section 7 presents and compares related work, and section 8 gives a breif conclusion.  

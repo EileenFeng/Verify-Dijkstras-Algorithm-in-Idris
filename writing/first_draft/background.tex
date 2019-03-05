@@ -1,0 +1,54 @@
+
+\subsection{Introduction of Idris}
+Idris is a general-purpose functional programming language with dependent types. Many aspects of Idris is influenced by Haskell and ML. Features of Idris include but not limit to dependent types, \texttt{with} rule, \texttt{case} expressions, lambda binding, as well as interactive editing. 
+
+\subsubsection*{Data Declaration}
+As an example of data declaraction in Idris, below shows the definition of natural numbers in Idris standard library: 
+\begin{lstlisting}
+      -- natural number can be either zero(Z) or plus one of another natural number (S Nat)
+      data Nat = Z | S Nat
+\end{lstlisting}
+Another syntax similar to that of GADT in Haskell for data declaration is also allowed: 
+\begin{lstlisting}
+      -- declaration of List data type in Idris standard library
+      data List : (elem : Type) -> Type where
+        Nil : List elem
+        (::) : (x : elem) -> (xs : List elem) -> List elem
+\end{lstlisting}
+
+\subsubsection*{Dependent Types}
+Dependent types are types that depend on elements of other types[2]. It allows programmers to specify certain properties of data types explicitly in their type signature. Consider the following definition of a vector data type, where \texttt{len} specifies the length of the vector, and \texttt{elem} is the element type. 
+\begin{lstlisting}
+      -- declaration of Vect data type in Idris standard library
+      data Vect : (len : Nat) -> (elem : Type) -> Type where
+        Nil  : Vect Z elem
+        (::) : (x : elem) -> 
+               (xs : Vect len elem) -> 
+               Vect (S len) elem
+\end{lstlisting}
+The type \texttt{Vect len elem} is dependent on the value of type variables \texttt{len} and \texttt{elem}, specifying that \texttt{Vect} is a vector of length \texttt{len} containing element of type \texttt{elem}. With dependent types, programmers can ensure the behaviors of functions through their type signatures by defining more precise types. Consider the function \texttt{concat} below that concantenates two vectors. Given two input vectors $V_1$ and $V_2$, the output value of \texttt{concat} should be a vector of length $|V_1| + |V_2|$.  
+\begin{lstlisting}
+      concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+\end{lstlisting}
+The type siganture of \texttt{concat} establishes that the resulting vector of concatenating two vectors of length $n$ and $m$ must be of length $(n+m)$, otherwise \texttt{concat} will fail to type check. 
+
+\subsubsection*{Pattern Matching and Totality Checking}
+Pattern matching is the process of matching values against specific patterns. In Idris, functions are implemented by pattern matching on possible values of inputs. Continuing with the above example of \texttt{concat} function that concatenates two vectors, to define \texttt{concat}, we need to provide definitions on all possible values of \texttt{Vect}, which can either be \texttt{Nil}, i.e., a vector of length zero, or a non-empty vector of the pattern \texttt{(x :: xs)}. 
+\begin{lstlisting}
+      concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+      concat Nil v2 = v2
+      concat v1 Nil = v1
+      concat (x :: xs) v2 = x :: concat xs v2
+\end{lstlisting}
+
+Functions defined for all possible values of input are total functions, and are guaranteed to produce a result in finite time given well-typed inputs. Partial functions are not total, and hence might crash for some inputs. To secure the termination of programs, every function definition in Idris are checked for totality after type checking. Specifically, Idris decides whether a function terminates based on two aspects: first, function must be defined for all possible inputs; and second, if a function definition includes a recursive call, then there must be an argument that strictly decreases over each recursion, and converges towards a base case. An error or warning will be given for any function that fails totality checking. 
+
+\subsection{Dijkstra's and Bellman-Ford algorithms}
+\subsubsection*{Dijkstra's Algorithm}
+Dijkstra's algorithm is a greedy algorithm that finds the shortest path from a given source to all other nodes in a directed graph with weighted edges. It was first introduced in 1959 by Edsger Wybe Dijkstra, and it is widely applied in many real-life applications, including shortest path finding in road map, or Internet routing protocols such as the Open Shortest Path First protocol. 
+\\
+
+Dijkstra's algorithm takes in a directed graph with non-negative edge weights, and computes the shortest path distance from one single source node to all other reachable nodes in the graph. The algorithm maintains a list of unexplored nodes and their distance values to the source node. Initially, the list of unexplored nodes contains all nodes in the input graph, and the distance value of all node are set as infinity except for the source node itself, which is set to zero. The algorithm extracts the node $v$ with minimum distance value from the unexplored list during each iteration, and for each neighbor $v'$ of $v$, if the path from source to $v'$ via $v$ contributes a smaller distance value, then the distance value of $v'$ is updated. 
+
+\subsubsection*{Bellman-Ford Algorithm}
+Bellman-Ford algorithm was first introduced by Alfonso Shimbel in 1955, and was published by Richard Bellman and Lester Ford, Jr in 1958 and 1956 respectively. The algorithm solves the issue of calculating the minimum distance value from a single source to all other nodes in a given graph, and different from Dijkstra's algorithm, Bellman-Ford algorithm allows negative edge weights in the input graph, and is capable of detecting the existence of negative cycle(a cycle whose edge weights sum up to a negative value). Applications of Bellman-Ford includes routing protocols such as the Routing Information Protocol. 

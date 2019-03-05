@@ -1,0 +1,34 @@
+\subsubsection{Definition}
+Our implementation and correctness proof are based on the following definitions of key concepts used in Dijkstra's algorithm. 
+\theoremstyle{definition}
+\begin{definition}\textbf{Path}\\
+\textit{(We adopt the definition of $path$ presented in the \texttt{Discrete Mathematics with Applications} book by \texttt{SUSANNA S. EPP}.)}
+\\\\
+A path from node $v$ to $w$ is a finite alternating sequence of adjacent vertices and edges of G, which does not contain any repeated edge or vertex. A path from $v$ to $w$ has the form: 
+\begin{center}
+ $ve_0v_0e_1v_2....v_{n-1}e_nw$ 
+\end{center}
+where $e_i$ is an edge in $g$ with endpoints $v_{i-1}, v_i$. We denote the set of paths from $v$ to $w$ as $path(v, w)$.
+\end{definition}
+\tab
+\begin{definition}\textbf{Prefix of Path}\\
+Given a path from node $v$ to $w$ : $p(v, w) = ve_0v_0e_1v_2....v_{n-1}e_nw$, the prefix of this $v-w$ path is defined as the subsequence of $p(v, w)$ that starts with $v$ and ends with some node $w' \in p(v, w)$ ($w'$ is a vertex in the sequence $p(v, w)$). 
+\end{definition}
+\tab
+\begin{definition}\textbf{Length of Path} \\
+The length of a path $p = ve_0v_0e_1v_2....v_{n-1}e_nw$ is the sum of the weights of all edges in $p$. We write: 
+\begin{center}
+  $length(p) = \sum weight(e_i), \forall e_i \in p$. 
+\end{center} 
+\end{definition}
+\tab
+\begin{definition}\textbf{Shortest Path}\\
+Denote $\Delta(s, v)$ as the shortest path from $s$ to $v$, and $\delta(v)$ as the length of $\Delta(s, v)$. $\Delta(s, v)$ must fulfills: 
+\begin{center}
+$\Delta(s, v) \in path(s, v)$ 
+\\
+and 
+\\
+$\forall p' \in path(s, v)$, $\delta(v) = length(\Delta(s, v)) \leq length(p')$
+\end{center}
+\end{definition}
