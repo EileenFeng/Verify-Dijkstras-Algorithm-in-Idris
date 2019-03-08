@@ -10,7 +10,6 @@
   right = 18mm,
   bottom = 25mm,
 }
-\renewcommand{\baselinestretch}{1.05}
 \newcommand\tab[1][1cm]{\hspace*{#1}}
 \newcommand\ftab[1][5cm]{\hspace*{#1}}
 \newcommand\ttab[1][2cm]{\hspace*{#1}}
@@ -20,6 +19,7 @@
 \geometry{letterpaper}
 \usepackage{titlesec}
 \setcounter{secnumdepth}{4}
+\renewcommand{\baselinestretch}{1.05}
 \titlespacing*{\section}
 {0pt}{1.3\baselineskip}{1\baselineskip}
 \theoremstyle{definition}
@@ -65,7 +65,7 @@ Given graph $g$ and source node $s$, $dist$ stores the distance value from $s$ t
 \texttt{
   \tab\tab choose $u_k \in unexplored_k$ and $\forall u' \in unexplored_k, dist_k[u_k] \leq dist_k[u']$ \\
   \tab\tab $unexplored_{k+1} = unexplored_k - \{u_k\}$                    \\
-  \tab\tab for($\forall v \in g$) $\{$
+  \tab\tab $\forall v \in g$, \\
   \tab\[
         dist_{k+1}[v] = \left.
        \begin{cases} 
@@ -74,7 +74,7 @@ Given graph $g$ and source node $s$, $dist$ stores the distance value from $s$ t
         \end{cases}
         \right\}
       \]
-  \tab\tab $\}$ \\
+  \tab\tab \\
   % \tab while (unexplored is not Nil)  \\
   % \tab$\{$ \\
   % \tab\tab choose $u \in unexplored_k$ s.t.$\forall u' \in unexplored_k, dist_k[u] \leq dist_k[u']$     \\
@@ -157,7 +157,7 @@ Fenote the path after the node $q$ as $p(q, w) = q v_j....v_{n-1}e_nw$, since $\
 \\\\
 \tab$length(\Delta(v, w)) = length(p(v, q)) + length(p(q, w)) \leq length(p), \forall p \in path(v, w)$
 \\\\
-Since $p(v, q)$ is not the shortest path from $v$ to $q$ by assumption, then based on the definition of shortest path, $length(p(v, q)) < length(\Delta(v, w))$. Hence there exists another $v-w$ path $p'(v, w)$ such that: 
+Since $p(v, q)$ is not the shortest path from $v$ to $q$ by assumption, there exists another $v-w$ path $p'(v, w)$ such that: 
 \\\\
 \ftab $p'(v, w) \in path(v, w)$\\
 \ftab $p'(v, w) = \Delta(v, q) + p(q, w)$ \\ 

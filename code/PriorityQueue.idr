@@ -14,6 +14,7 @@ import Data.Vect
   `dist` holds the distance value for all nodes in the graph regardless of the number of nodes in the queue
 -}
 -- (X) adding a property that the queue is indeed sorted
+{-
 data PriorityQueue : (gsize : Nat) -> (nodes : Vect len (Node gsize)) -> Type -> Type where 
   QNil : PriorityQueue gsize Nil weight
   QCons : (n : Node gsize) -> 
@@ -32,7 +33,7 @@ find_min : (queue : PriorityQueue gsize nodes weight) ->
            (Elem nodes cur) -> 
            
 {- not helpful
-{- find the index of the node with min distance -}
+ find the index of the node with min distance -}
                            find_min : () ->
            (cur : Node gsize) -> 
            (res : Vect len (Node gsize)) -> 
@@ -57,16 +58,13 @@ get_min q@(MKQueue ops (S len) nodes@((MKNode xv) :: xs) dist)
 
 
 
-{- this version of priorityqueue always keeps the list of nodes sorted
+ -- this version of priorityqueue always keeps the list of nodes sorted
 data PriorityQueue : (len : Nat) -> (gsize : Nat) -> Type -> Type where
   MKQueue : (ops : WeightOps weight) -> 
-            (gsize : Nat) -> 
+            (len : Nat) -> 
             (nodes : Vect len (Node gsize)) -> 
             (dist : Vect gsize (Distance weight)) -> 
             PriorityQueue len gsize weight
-
-
-
 
 
 get_min : PriorityQueue (S len) nval weight -> Node nval
@@ -122,4 +120,3 @@ update_elem : {len : Nat} ->
 update_elem {len = Z} q@(MKQueue _ Z Nil _) _ _ = q
 update_elem (MKQueue ops (S len) nodes dist) (MKNode nv) new_d 
   = sort_queue {len = S len} (MKQueue ops (S len) nodes (updateAt nv (\x => new_d) dist)) 
--}

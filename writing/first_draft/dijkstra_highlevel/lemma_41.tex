@@ -1,8 +1,11 @@
+%-----------------------------------------------------------------------------------------------
+% Dijkstra's lemma4.1
+%-----------------------------------------------------------------------------------------------
 \begin{sublemma}
 Given any two nodes $v, w$, the prefix of the shortest path $\Delta(v, w)$ is also a shortest path. 
 \end{sublemma}
 \begin{proof}
-We will prove Lemma 3.1 by contradiction. 
+We will prove Lemma 4.1 by contradiction. 
 \\
 Consider any node $q$ in the sequence of $\Delta(v, w)$, we have $\Delta(v, w) = ve_0v_0e_1v_2...v_i q v_j....v_{n-1}e_nw$. Suppose the prefix of $\Delta(v, w)$ from $v$ to $q$, denote as $p(v, q)$, is not the shortest path from $v$ to $q$. Then we know $p(v, q) = ve_0v_0e_1v_2...v_iq$ is a path from $v$ to $q$ and $length(p(v, q)) > length(\Delta(v, q))$. 
 \\
@@ -22,6 +25,6 @@ Since $p(v, q)$ is not the shortest path from $v$ to $q$ by assumption, then bas
 \ftab\tab\tab\htab\tsp$< length(p(v, q)) + length(p(q, w))$ \\
 \ftab i.e. $length(p'(v, w)) < length(\Delta(v, w))$
 \\\\
-Hence we have reached a contradiction. Thus by the principle of prove by contradiction, for any the prefix $p(v, q)$ of $\Delta(v, w)$ is the shortest path from $v$ to $q$. Lemma 3.1 holds. 
+Hence we have reached a contradiction. Thus by the principle of prove by contradiction, for any the prefix $p(v, q)$ of $\Delta(v, w)$ is the shortest path from $v$ to $q$. Lemma 4.1 holds. 
 \end{proof}
 \tab \\

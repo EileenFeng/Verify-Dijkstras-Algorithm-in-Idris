@@ -1,8 +1,11 @@
+%-----------------------------------------------------------------------------------------------
+% Dijkstra's lemma 4.3
+%-----------------------------------------------------------------------------------------------
 \begin{sublemma}
 For any node $v \in g$, if after the $i^{th}$ iteration, $dist_{i+1}[v] = \delta(v)$, then for each proceeding $j^{th}$ iteration, $j > i$, $dist_{j+1}[v] = dist_{i+1}[v] = \delta(v)$. 
 \end{sublemma}
 \begin{proof}
-We will prove \texttt{Lemma 3.3} by induction on the number iterations after the $i^{th}$ iteration. 
+We will prove \texttt{Lemma 4.3} by induction on the number iterations after the $i^{th}$ iteration. 
 \\
 Let P(n) be: For any node $v \in g$, if after the $i^{th}$ iteration, $dist_{i+1}[v] = \delta(v)$, then for the $(i+n)^{th}$ iteration, $n \geq 1$, $dist_{i+n+1}[v] = dist_{i+1}[v] = \delta(v)$
 
@@ -51,6 +54,6 @@ P(k+1) holds under \texttt{Case 1}.
 \\
 Since $u_{i+k+1}$ does not have an edge to $v$, then $dist_{i+k+2}[v] = dist_{i+k+1}[v]$. Based on the inductive hypothesis, $dist_{i+k+1}[v] = dist_{i+1}[v] = \delta(v)$. then $dist_{i+k+2}[v] = dist_{i+1}[v] = \delta(v)$. P(k+1) holds for \texttt{Case (2)}. 
 \\
-Thus P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{Lemma 3.3} proved. 
+Thus P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{Lemma 4.3} proved. 
 
 \end{proof}

@@ -1,5 +1,6 @@
-
-
+%-----------------------------------------------------------------------------------------------
+% Dijkstra's lemma 4.4 
+%-----------------------------------------------------------------------------------------------
 \begin{sublemma}
 Assume $g$ is a connected graph, that the source node $s$ has a path to every node in $g$. After the $n^{th}$ iteration of the algorithm for $n \geq 1$, forall node $v \in explored_{n+1}$, we have:
 \begin{enumerate}
@@ -8,7 +9,7 @@ Assume $g$ is a connected graph, that the source node $s$ has a path to every no
 \end{enumerate}
 \end{sublemma}
 \begin{proof}
-We will prove \texttt{Lemma 3.4} by inducting on the number of iterations. 
+We will prove \texttt{Lemma 4.4} by inducting on the number of iterations. 
 \\
 Let P(n) be: After the $n^{th}$ iteration of the algroithm for $n \geq 1$, forall node $w \in explored_{n+1}$: (1) $\delta(w) \leq \delta(w')$, $\forall w' \in unexplored_{n+1}$; (2) $dist_{n+1}[w] = \delta(w)$. 
 
@@ -59,8 +60,8 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\
   We will prove (b.1) by contradiction. Suppose there exists $w \in unexplored_{k+2}$, such that $\delta(u_{k+1}) > \delta(w)$. 
   \\
-  %if there does not exists a path from s to v, then dist_{k+1}[v] = infinity, which still holds
-  The assumption states that source $s$ has a path to every node in $g$, then $dist_{k+1}[u_{k+1}] \neq infinity$. Thus \texttt{Lemma 3.2} implies that $dist_{k+1}[u_{k+1}]$ is the length of some $s-v$ path. Based on the definition of shortest path, $\delta(u_{k+1}) \leq dist_{k+1}[u_{k+1}]$. Since $\delta(u_{k+1}) > \delta(w)$ and $\delta(u_{k+1}) \leq dist_{k+1}[u_{k+1}]$, then we have $\delta(w) < dist_{k+1}[u_{k+1}]$([NE1]). 
+  %if there does not exists a path from s to v, then dist_{k+1}[v] = \infty, which still holds
+  The assumption states that source $s$ has a path to every node in $g$, then $dist_{k+1}[u_{k+1}] \neq \infty$. Thus \texttt{Lemma 3.2} implies that $dist_{k+1}[u_{k+1}]$ is the length of some $s-v$ path. Based on the definition of shortest path, $\delta(u_{k+1}) \leq dist_{k+1}[u_{k+1}]$. Since $\delta(u_{k+1}) > \delta(w)$ and $\delta(u_{k+1}) \leq dist_{k+1}[u_{k+1}]$, then we have $\delta(w) < dist_{k+1}[u_{k+1}]$([NE1]). 
   \\
   Consider the shortest path $\Delta(s, w)$ from $s$ to $w$, $\delta(w) = length(\Delta(s, w))$. Since $w \notin explored_{k+2}$, then there must exists some node in $\Delta(s, w)$ that are not in $explored_{k+2}$. Suppose the first node along $\Delta(s, w)$ that is not in the $explored_{k+2}$ list is $w_2$, and the node right before $w_2$ in the $s$ to $w_2$ subpath is $w_1$, thus $w_1 \in explored_{k+2}$. The image below illustrates this construction: 
   \\
@@ -119,7 +120,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \tab\tab $dist_{i+1}[w_2] = min(dist_i[w_2], dist_i[w_1] + weight(w_1 + w_2))$ \\
   \tab\tab\tab $= min(dist_i[w_2], \delta(w_1) + weight(w_1 + w_2))$
   \\\\
-  Based on [E1] we know that $\delta(w_2) =  \delta(w_1) + weight(w_1 + w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2))$. If $dist_i[w_2] = infinity$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. If $dist_i[w_2] \neq infinity$, then based on \texttt{Lemma 3.2}, $dist_i[w_2]$ is the length of some $s-w_2$ path. Since $\delta(w_2) \leq length(p), \forall p \in path(s, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. Hence in either cases, we conclude that $dist_{i+1}[w_2] = \delta(w_2)$. 
+  Based on [E1] we know that $\delta(w_2) =  \delta(w_1) + weight(w_1 + w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2))$. If $dist_i[w_2] = \infty$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. If $dist_i[w_2] \neq \infty$, then based on \texttt{Lemma 3.2}, $dist_i[w_2]$ is the length of some $s-w_2$ path. Since $\delta(w_2) \leq length(p), \forall p \in path(s, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. Hence in either cases, we conclude that $dist_{i+1}[w_2] = \delta(w_2)$. 
   \\
   Since $dist_{i+1}[w_2] = \delta(w_2)$ and $i < k+1$, then based on \texttt{Lemma 3.3}, we have $dist_{k+1}[w_2] = dist_{i+1} = \delta(w_2)$. Based on [E2], $\delta(w_2) < \delta(w)$, then $dist_{k+1}[w_2] < \delta(w)$ [NE2]. Combining with [NE1], we have: 
   \\\\
@@ -142,5 +143,5 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   Based on (a.1) and (b.1), after the $(k+1)^{th}$ iteration, for all nodes $q \in unexplored_{k+2}$, $\delta(q) \geq \delta(u_{k+1})$, and $\delta(v') \leq \delta(u_{k+1})$, then $v'$ cannot be in $unexplored_{k+2}$. Since $unexplored_{k+1} = unexplored_{k+2} \cup u_{k+1}$, then $v' \notin unexplored_{k+1}$. Hence at the beginning of the $(k+1)^{th}$ iteration, $v'$ is already explored. Since $v'$ is explored before the $(k+1)^{th}$ iteration and $v'$ has an edge to $u_{k+1}$, then the algorithm must have considered $(\delta(v') + weight(v', u_{k+1}))$ against $dist_{k+1}[u_{k+1}]$ and chose $min((\delta(v') + weight(v', u_{k+1})), dist_{k+1}[u_{k+1}])$, which is $dist_{k+1}[u_{k+1}]$. Thus $dist_{k+1}[u_{k+1}] \leq (\delta(v') + weight(v', u_{k+1}))$, i.e. $dist_{k+1}[u_{k+1}] \leq \delta(u_{k+1})$, which contradicts with our assumption [NE3]. Hence by the principle of prove by contradiction, $dist_{k+1}[u_{k+1}] = \delta(u_{k+1})$. (b.2) holds. 
   %\end{enumerate}
 \end{itemize}
-Since we have proved both (1) and (2) forall nodes in $explored_{k+1}$ after the $(k+1)^{th}$ iteration, P(k+1) holds. Then by the principle of prove by induction, \texttt{Lemma 3.4} holds. 
+Since we have proved both (1) and (2) forall nodes in $explored_{k+1}$ after the $(k+1)^{th}$ iteration, P(k+1) holds. Then by the principle of prove by induction, \texttt{Lemma 4.4} holds. 
 \end{proof}
