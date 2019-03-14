@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  14 MAR 2019 02:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  14 MAR 2019 19:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -460,87 +460,87 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 213.
 
-Underfull \hbox (badness 10000) in paragraph at lines 226--227
+Underfull \hbox (badness 10000) in paragraph at lines 221--222
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 236--249
+Underfull \hbox (badness 10000) in paragraph at lines 231--244
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 236--249
+Underfull \hbox (badness 10000) in paragraph at lines 231--244
 
  []
 
 [4]
-Underfull \hbox (badness 10000) in paragraph at lines 253--269
+Underfull \hbox (badness 10000) in paragraph at lines 248--260
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 253--269
+Underfull \hbox (badness 10000) in paragraph at lines 248--260
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 253--269
+Underfull \hbox (badness 10000) in paragraph at lines 248--260
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 253--269
+Underfull \hbox (badness 10000) in paragraph at lines 248--260
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 294--310
+Underfull \hbox (badness 10000) in paragraph at lines 274--275
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 294--310
+Underfull \hbox (badness 10000) in paragraph at lines 295--303
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 294--310
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 294--310
+Underfull \hbox (badness 10000) in paragraph at lines 295--303
 
  []
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 327--350
+Underfull \hbox (badness 10000) in paragraph at lines 317--318
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--350
+Underfull \hbox (badness 10000) in paragraph at lines 333--345
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--350
+Underfull \hbox (badness 10000) in paragraph at lines 333--345
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--350
+Underfull \hbox (badness 10000) in paragraph at lines 333--345
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--350
+Underfull \hbox (badness 10000) in paragraph at lines 333--345
 
  []
 
 
-Overfull \hbox (1.51027pt too wide) in paragraph at lines 327--350
+Underfull \hbox (badness 10000) in paragraph at lines 333--345
+
+ []
+
+
+Overfull \hbox (1.51027pt too wide) in paragraph at lines 333--345
 \OT1/cmr/m/n/10.95 Suppose $\OML/cmm/m/it/10.95 u[]$ \OT1/cmr/m/n/10.95 is the 
 node added into $\OML/cmm/m/it/10.95 explored$ \OT1/cmr/m/n/10.95 dur-ing the $
 (\OML/cmm/m/it/10.95 k \OT1/cmr/m/n/10.95 + 1)[]$ it-er-a-tion, then $\OML/cmm/
@@ -548,23 +548,18 @@ m/it/10.95 explored[] \OT1/cmr/m/n/10.95 = \OML/cmm/m/it/10.95 explored[] \OMS/
 cmsy/m/n/10.95 [
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 354--377
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 354--377
+[6]
+Underfull \hbox (badness 10000) in paragraph at lines 349--360
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 354--377
+Underfull \hbox (badness 10000) in paragraph at lines 349--360
 
  []
 
 
-Overfull \hbox (4.98616pt too wide) in paragraph at lines 354--377
+Overfull \hbox (4.98616pt too wide) in paragraph at lines 349--360
 \OT1/cmtt/m/n/10.95 Proof of (L3)\OT1/cmr/m/n/10.95 : Since for each node $\OML
 /cmm/m/it/10.95 q \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 explored[]$\OT1/cmr
 /m/n/10.95 , the in-duc-tion hy-poth-e-sis im-plies that $\OML/cmm/m/it/10.95 d
@@ -572,114 +567,136 @@ ist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 q\OT1/cmr/m/n/10.95 ] =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 354--377
+Underfull \hbox (badness 10000) in paragraph at lines 349--360
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 354--377
-
- []
-
-[6]
-Underfull \hbox (badness 10000) in paragraph at lines 387--390
+Underfull \hbox (badness 10000) in paragraph at lines 349--360
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 393--402
+Underfull \hbox (badness 10000) in paragraph at lines 349--360
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 393--402
+Overfull \hbox (5.21812pt too wide) in paragraph at lines 364--367
+\OT1/cmr/m/n/10.95 Specifically, we want to show: (L1) $\OML/cmm/m/it/10.95 dis
+t[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] \OML/cmm/m/i
+t/10.95 < \OMS/cmsy/m/n/10.95 1$\OT1/cmr/m/n/10.95 ; (L2) $\OML/cmm/m/it/10.95 
+dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] \OMS/cmsy
+/m/n/10.95 ^^T \OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 v
+[]\OT1/cmr/m/n/10.95 )$, $\OMS/cmsy/m/n/10.95 8\OML/cmm/m/it/10.95 v[] \OMS/cms
+y/m/n/10.95 2 \OML/cmm/m/it/10.95 unexplored[]$\OT1/cmr/m/n/10.95 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 370--376
 
  []
 
-<p1.png, id=35, 639.38875pt x 471.7625pt>
+
+Underfull \hbox (badness 10000) in paragraph at lines 376--382
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 376--382
+
+ []
+
+[7] <p1.png, id=39, 639.38875pt x 471.7625pt>
 File: p1.png Graphic file (type png)
  <use p1.png>
-Package pdftex.def Info: p1.png used on input line 403.
+Package pdftex.def Info: p1.png used on input line 383.
 (pdftex.def)             Requested size: 223.78941pt x 165.11934pt.
- [7]
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
+
+Underfull \hbox (badness 10000) in paragraph at lines 401--413
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
+Underfull \hbox (badness 10000) in paragraph at lines 401--413
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
+Underfull \hbox (badness 10000) in paragraph at lines 401--413
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 421--440
-
+Overfull \hbox (33.40552pt too wide) in paragraph at lines 401--413
+\OT1/cmr/m/n/10.95 Suppose the node right be-fore $\OML/cmm/m/it/10.95 u[]$ \OT
+1/cmr/m/n/10.95 in $^^A(\OML/cmm/m/it/10.95 s; u[]\OT1/cmr/m/n/10.95 )$ is $\OM
+L/cmm/m/it/10.95 w[]$\OT1/cmr/m/n/10.95 . We know $\OML/cmm/m/it/10.95 length\O
+T1/cmr/m/n/10.95 (^^A(\OML/cmm/m/it/10.95 s; u[]\OT1/cmr/m/n/10.95 )) = \OML/cm
+m/m/it/10.95 length\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 
+(\OML/cmm/m/it/10.95 s; w[]\OT1/cmr/m/n/10.95 )) +
  []
 
 [8 <./p1.png>]
-Overfull \hbox (17.02005pt too wide) in paragraph at lines 454--466
-\OT1/cmr/m/n/10.95 Based on [E1] we know that $\OML/cmm/m/it/10.95 ^^N\OT1/cmr/
-m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) = \OML/cmm/m/it/10.95 ^^
-N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) + \OML/cmm/m/i
-t/10.95 weight\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]; w[]\OT1/cmr/m/n/10.9
-5 )$, then $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 w
-[]\OT1/cmr/m/n/10.95 ] = \OML/cmm/m/it/10.95 min\OT1/cmr/m/n/10.95 (\OML/cmm/m/
-it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ]\
-OML/cmm/m/it/10.95 ; ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n
-/10.95 ))$.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 454--466
+Underfull \hbox (badness 10000) in paragraph at lines 435--438
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 454--466
+Underfull \hbox (badness 10000) in paragraph at lines 435--438
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 454--466
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 468--505
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 468--505
-
+Overfull \hbox (34.0534pt too wide) in paragraph at lines 454--458
+\OT1/cmr/m/n/10.95 Based on [E3.5.2] we know that $\OML/cmm/m/it/10.95 ^^N\OT1/
+cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) = \OML/cmm/m/it/10.9
+5 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) + \OML/cmm
+/m/it/10.95 weight\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]; w[]\OT1/cmr/m/n/
+10.95 )$, then $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.
+95 w[]\OT1/cmr/m/n/10.95 ] = \OML/cmm/m/it/10.95 min\OT1/cmr/m/n/10.95 (\OML/cm
+m/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.9
+5 ]\OML/cmm/m/it/10.95 ; ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr
+/m/n/10.95 ))$.
  []
 
 [9]
-Underfull \hbox (badness 10000) in paragraph at lines 540--543
+Underfull \hbox (badness 10000) in paragraph at lines 472--477
 
  []
 
-[10] (./dijkstras_writeup.aux) )
+
+Underfull \hbox (badness 10000) in paragraph at lines 477--482
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 493--499
+
+ []
+
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 511--521
+
+ []
+
+
+Overfull \hbox (4.19113pt too wide) in paragraph at lines 511--521
+\OT1/cmr/m/n/10.95 based on the def-i-ni-tion of short-est path, $\OML/cmm/m/it
+/10.95 length\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\OML/
+cmm/m/it/10.95 s; v[]\OT1/cmr/m/n/10.95 )) \OMS/cmsy/m/n/10.95 ^^T \OML/cmm/m/i
+t/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 v[]\OT1/cmr/m/n/10.95 )$, an
+d thus $\OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 v[]\OT1/
+cmr/m/n/10.95 ) + \OML/cmm/m/it/10.95 weight\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/1
+0.95 v[]; u[]\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 ^^T
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 526--529
+
+ []
+
+[11] (./dijkstras_writeup.aux) )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 1061 ({)
@@ -687,11 +704,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 540--543
 Here is how much of TeX's memory you used:
  4280 strings out of 492995
  60055 string characters out of 6132704
- 146276 words of memory out of 5000000
+ 147276 words of memory out of 5000000
  7763 multiletter control sequences out of 15000+600000
  12034 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 39i,8n,28p,986b,2254s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 39i,8n,28p,723b,2245s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmbx10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/c
@@ -706,10 +723,10 @@ pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb
 </usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></
 usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></u
 sr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on dijkstras_writeup.pdf (10 pages, 215000 bytes).
+Output written on dijkstras_writeup.pdf (11 pages, 219587 bytes).
 PDF statistics:
- 96 PDF objects out of 1000 (max. 8388607)
- 67 compressed objects within 1 object stream
+ 99 PDF objects out of 1000 (max. 8388607)
+ 69 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

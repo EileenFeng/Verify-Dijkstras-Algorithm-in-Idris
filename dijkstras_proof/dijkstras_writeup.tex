@@ -95,7 +95,7 @@ Given graph $g$ and source node $s$, $dist$ stores the distance value from $s$ t
 
 \subsection{Assumptions}
 \begin{enumerate}
-  \item Weight of edges are non-negative
+  \item Weight of edges in graph are non-negative and smaller than infinity
   \item Distance value can only be zero, infinity, or summation of edge weights
   \item All nodes $n$ and edge $e$ are valid: $n, e \in g$
 \end{enumerate}
@@ -216,11 +216,6 @@ Based on the algorithm, we have $dist_{k+2}[v] = min(dist_{k+1}[v], dist_{k+1}[u
   \item \texttt{Case 2: $dist_{k+1}[v] \geq dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)$}\\
   Under this case, $dist_{k+2}[v] = dist_{k+1}[u_{k+1}] + weight(w, v)$. If $dist_{k+2}[v] \neq infinity$, then it follows that $dist_{k+1}[u_{k+1}] = dist_{k+2}[v] - weight(u_{k+1}, v) \neq infinity$. Then the inductive hypothesis implies that $dist_{k+1}[u_{k+1}]$ must be the length of some $s-u_{k+1}$ path, denote as $p(s, u_{k+1})$. Since there is an edge $(u_{k+1}, v) \in g$, then $dist_{k+2}[v] = dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)$ must be the length of the $s-v$ path through $u_{k+1}$. P(k+1) holds. 
 \end{itemize}
-% Hence P(k+1) holds under under \texttt{Case(1)}. 
-% \\\\
-% \texttt{Case (2): $u_{k+1}$ does not have an edge to $v$}
-% \\
-% Under this case, our algorithm indicates that $dist_{k+2}[v] = dist_{k+1}[v]$, and that $dist_{k+1}[v]$ and $dist_{k+2}[v]$ are the length of the same $s-v$ path if there exists one. If $dist_{k+1}[v] = dist_{k+2}[v] \neq infinity$, then based on the inductive hypothesis, $dist_{k+1}[v]$ is the length of some $s-v$ path, and hence $dist_{k+2}[v]$ is the length of some $s-v$ path. P(k+1) holds under \texttt{Case(2)}. 
 Hence P(k+1) holds for $u_{k+1}$ and all nodes $v \in g$ other than $u_{k+1}$. By the principle of prove by induction, P(n) holds. \texttt{\texttt{Lemma 3.2}} proved. 
 \end{proof}
 \tab\\ 
@@ -256,10 +251,6 @@ Hence $dist_{i+2}[v] = dist_{i+1}[v] = \delta(v)$. P(1) holds.
 \textbf{Inductive Hypothesis}: Suppose P(k) holds, that is, if after the $i^{th}$ iteration, $dist_{i+1}[v] = \delta(v)$, then for the $(i+k)^{th}$ iteration, $n \geq 1$, $dist_{i+k+1}[v] = dist_{i+1}[v] = \delta(v)$. 
 \\\\
 \textbf{Inductive Step}: We shall show P(k+1) holds. 
-% \\
-% For the node $u_{i+k+1}$ being explored during the $(i+k+1)^{th}$ iteration, there are two cases: (1) $(u_{i+k+1}, v) \in g$; (2) $u_{i+k+1}$ does not have an edge to $v$. We will show that P(k+1) holds under both cases separately. 
-% \\
-% \texttt{Case 1: $(u_{i+k+1}, v) \in g$}
 \\
 Based on the algorithm, for $dist_{i+k+2}[v]$, we have: 
 \\\\
@@ -278,37 +269,9 @@ If $weight(u_{i+k+1}, v) \neq \infty$, $dist_{i+k+1}[u_{i+k+1}] $ is the length 
                   &= min(\delta(v), dist_{i+k+1}[u_{i+k+1}] + weight(u_{i+k+1}, v))\\
                   &= \delta(v) = dist_{i+1}[v]
 \end{align*}
-% P(k+1) holds under \texttt{Case 1}. 
-% \\
-% \texttt{Case 2: $u_{i+k+1}$ does not have an edge to $v$}
-% \\
-% Since $u_{i+k+1}$ does not have an edge to $v$, then $dist_{i+k+2}[v] = dist_{i+k+1}[v]$. Based on the inductive hypothesis, $dist_{i+k+1}[v] = dist_{i+1}[v] = \delta(v)$. then $dist_{i+k+2}[v] = dist_{i+1}[v] = \delta(v)$. P(k+1) holds for \texttt{Case (2)}. 
-% \\
 Thus P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{Lemma 3.3} proved. 
 \end{proof}
-
-% \begin{sublemma}
-% Forall nodes $v \in g, v' \in explored_{n+1}$, $dist_{n+1}[v] \leq dist_n[v'] + weight(v', v)$. 
-% \end{sublemma}
-% \begin{proof}
-% We will prove Lemma 3.4 by inducting on the number $n$. 
-% \\
-% Let P(n) be: for $n \geq 1$, forall nodes $v \in g, v' \in explored_{n+1}$, $dist_{n+1}[v] \leq dist_n[v'] + weight(v', v)$
-% \\
-% \textbf{Base Case}: We shall show P(1) holds. 
-% \\
-% Based on the algorithm, $dist_1[s] = 0$, and for all node $v \in g$ other than $s$, $dist_1[v] = \infty$. Since $explored_2$ only contains $s$, then $dist_2[s] = 0 \leq dist_1[s] + weight(s, s) = 0$. For all node $v \in g$ other than $s$, $dist_2[v] = min(dist_1[v], dist_1[s] + weight(s, v)) = min(\infty, 0 + weight(s, v)) = min(\infty, weight(s, v))$. If $s$ has an edge to $v$, then $weight(s, v) < \infty$, $dist_2[v] = weight(s, v) \leq dist_1[s] + weight(s, v)$. If $s$ does not have an edge to $v$, then $weight(s, v) = \infty$, $dist_2[v] = \infty \leq dist_1[s] + weight(s, v)$. Hence P(1) holds. 
-% \\\\
-% \textbf{Induction Hypothesis}: Suppose P(k) holds for $k > 1$. That is, for $k > 1$, forall nodes $v \in g, v' \in explored_{k+1}$, $dist_{k+1}[v] \leq dist_k[v'] + weight(v', v)$
-% \\\\
-% \textbf{Inductive Step}: we shall show P(k+1) holds. That is,  for $k+1 > 1$, forall nodes $v \in g, v' \in explored_{k+2}$, $dist_{k+2}[v] \leq dist_{k+1}[v'] + weight(v', v)$
-% \\
-% Suppose $w$ is the node being explored during the $(k+1)^{th}$ iteration, then $explored_{k+2} = explored_{k+1} \cup \{w\}$. Forall node $v \in g$, we have: 
-% \\\\
-% \tab $dist_{k+2}[v] = min(dist_{k+1}[v], dist_{k+1}[w] + weight(w, v))$ 
-% \\\\
-% The induction hypothesis indicates that forall $v' \in explored_{k+1}$, $dist_{k+1}[v] \leq dist_k[v'] + weight(v', v)$.
-% \end{proof}
+\tab\\ 
 
 
 
@@ -316,87 +279,103 @@ Thus P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{L
 % Lemma 3.4
 %================================================================================================
 \begin{sublemma}
+For any node $v \in g$, for each $u_i \in explored_{n+1}$, $n \geq 1, 1 \leq i \leq n$, $dist_{n+1}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
+\end{sublemma}
+\begin{proof}
+We will prove Lemma 3.4 by inducting on the number $n$. 
+\\
+Let P(n) be: for any node $v \in g$, for each $u_i \in explored_{n+1}$, $n \geq 1, 1 \leq i \leq n$, $dist_{n+1}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
+\\
+\textbf{Base Case}: We shall show P(1) holds. 
+\\
+Based on the algorithm, $dist_1[s] = 0$, and for all node $v \in g$ other than $s$, $dist_1[v] = \infty$, and $explored_2$ only contains $s$. For node $s$, $dist_2[s] = 0 \leq dist_1[s] + weight(s, s) = 0$. For all node $v \in g$ other than $s$, we have: 
+\begin{align*}
+      dist_2[v] &= min(dist_1[v], dist_1[s] + weight(s, v)) \\
+                &\leq dist_1[s] + weight(s, v)
+\end{align*}
+Since $s$ is the only node in $explored_2$, then the above equation directly shows that P(1) holds. 
+\\\\
+\textbf{Induction Hypothesis}: Suppose P(k) holds for $k > 1$. That is, for any node $v \in g$, for each $u_i \in explored_{k+1}$, $k > 1, 1 \leq i \leq k$, $dist_{k+1}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
+\\\\
+\textbf{Inductive Step}: we shall show P(k+1) holds. That is,  for $k+1 > 1$, forall nodes $v \in g$,  for each $u_i \in explored_{k+2}$, $k > 1, 1 \leq i \leq k+1$, $dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
+\\
+Suppose $u_{k+1}$ is the node being explored during the $(k+1)^{th}$ iteration, then $explored_{k+2} = explored_{k+1} \cup \{u_{k+1}\}$. Forall node $v \in g$, we have: 
+\begin{align*}
+  dist_{k+2}[v] = min(dist_{k+1}[v], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v))
+\end{align*}
+Hence we have: 
+\begin{align*}
+  dist_{k+2}[v] &\leq dist_{k+1}[v] ([E3.4.1])\\
+  dist_{k+2} &\leq dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)([E3.4.2])
+\end{align*}
+The induction hypothesis implies that $dist_{k+1}[v] \leq dist_i[u_i] + weight(u_i, v), \forall u_i \in explored_{k+1}$. Combining with [E3.4.1], we have: 
+\begin{align*}
+dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v), \forall u_i \in explored_{k+1} [E3.4.3]
+\end{align*}
+Since $explored_{k+2} = explored_{k+1} \cup \{u_{k+1}\}$, then equation [E3.4.2] and equation [E3.4.3] implies that $dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v), \forall u_i \in explored_{k+1} \cup \{u_{k+1}\} = explored_{k+2}$. P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{Lemma 3.4} proved. 
+\end{proof}
+\tab\\
+
+
+%================================================================================================
+% Lemma 3.5
+%================================================================================================
+\begin{sublemma}
 Assume $g$ is a connected graph. Forall node $v \in explored_{n+1}$:
 \begin{enumerate}
   \item $dist_{n+1}[v] < \infty$
-  \item $\delta(v) \leq \delta(v')$, $\forall v' \in unexplored_{n+1}$.
+  \item $dist_{n+1}[v]  \leq \delta(v')$, $\forall v' \in unexplored_{n+1}$.
   \item $dist_{n+1}[v] = \delta(v)$
 \end{enumerate}
 \end{sublemma}
 
 \begin{proof}
-We will prove \texttt{Lemma 3.4} by inducting on the number of iterations. 
+We will prove \texttt{Lemma 3.5} by inducting on the number of iterations. 
 \\\\
-Let P(n) be: For a connected graph $g$, for $n \geq 1$, forall node $w \in explored_{n+1}$: (L1) $dist_{n+1}[w] < \infty$; (L2) $\delta(w) \leq \delta(w')$, $\forall w' \in unexplored_{n+1}$; (L3) $dist_{n+1}[w] = \delta(w)$. 
+Let P(n) be: For a connected graph $g$, for $n \geq 1$, forall node $w \in explored_{n+1}$: (L1) $dist_{n+1}[w] < \infty$; (L2) $dist_{n+1}[w] \leq \delta(w')$, $\forall w' \in unexplored_{n+1}$; (L3) $dist_{n+1}[w] = \delta(w)$. 
 \tab\\\\
 \textbf{Base Case}: We shall show P(1) holds \\
-% \texttt{Proof of (i)}\\
-% After the first iteration, if $unexplored_2 \neq \emptyset$, then $unexplored_2$ contains all nodes in $g$ except the source code. Since $g$ is a connected graph, $s$ has a path to every node in $g$, then there must exsits at least one node $u \in unexplored_2$ such that $s$ has an edge to $u$, and hence $dist_2[u]$ is calculated by the algorithm as $dist_2[u] = dist_1[s] + weight(u, s) = 0 + weight(u, s) = weight(u, s)$. Since the algorithm assumes all edge weights are not infinity, then $dist_2[u] = weight(s, u) \neq \infty$. i) holds for P(1). 
-% \\\\
-% \texttt{Proof of (ii)}\\
-Based on the algorithm, during the first iteration, the node with minimum distance value is the source node $s$ with $dist_1[s] = 0$. Hence during the first iteration, only $s$ is removed from $unexplored_1$ and added to $explored_2$. Since $dist_2[s] = 0 < \infty$, then (L1) holds for P(1). Since all edge weights are non-negative, then the shortest distance value from $s$ to $s$ is indeed $0$, hence $dist_2[s] = 0 = \delta(s)$ and $\delta(s) \leq \delta(v')$, $\forall v' \in unexplored_2$. Thus (L2) and (L3) holds for P(1). Hence P(1) holds.
-% \\
-% Since during proceeding iterations, the algorithm only updates the distance value of $s$ when there exists some node $w$ such that $dist_i[w] + weight(w, s) < dist_1[s]$, but $dist_1[s] = 0$ and all edge weights are non-negative, then there there does not exists such $w$ such that $dist_i[w] + weight(w, s) < dist_1[s]$. Hence the value of $dist_i[s]$ fulfills $dist_i[s] = dist_1[s] = \delta(s, s)$ for all $i > 1$. 
+Based on the algorithm, during the first iteration, the node with minimum distance value is the source node $s$ with $dist_1[s] = 0$. Hence during the first iteration, only $s$ is removed from $unexplored_1$ and added to $explored_2$. Since $dist_2[s] = 0 < \infty$, then (L1) holds for P(1). Since all edge weights are non-negative, then the shortest distance value from $s$ to $s$ is indeed $0$, hence $dist_2[s] = 0 = \delta(s)$ and $dist_2[s] \leq \delta(v')$, $\forall v' \in unexplored_2$. Thus (L2) and (L3) holds for P(1). Hence P(1) holds.
 \\\\
-\textbf{Induction Hypothesis}: Suppose P(i) is true for all $1 \leq i \leq k$. That is, forall $1 < i \leq k$, forall node $w \in explored_{i+1}$: (L1) $dist_{i+1}[w] < \infty$; (L2) $\delta(w) \leq \delta(w')$, $\forall w' \in unexplored_{i+1}$; (L3) $dist_{i+1}[w] = \delta(w)$; 
+\textbf{Induction Hypothesis}: Suppose P(i) is true for all $1 \leq i \leq k$. That is, forall $1 < i \leq k$, forall node $w \in explored_{i+1}$: (L1) $dist_{i+1}[w] < \infty$; (L2) $dist_{i+1}[w] \leq \delta(w')$, $\forall w' \in unexplored_{i+1}$; (L3) $dist_{i+1}[w] = \delta(w)$; 
 \\\\
-\textbf{Inductive Step}: We shall show P(k+1) holds. That is, forall node $w \in explored_{k+2}$, (L1) $dist_{k+2}[w] \neq \infty$; (L2) $\delta(w) \leq \delta(w')$, $\forall w' \in unexplored_{k+2}$; (L3) $dist_{k+2}[w] = \delta(w)$;
-% \\
-% \texttt{Proof of (i)}
-% We will show that (i) holds for P(k+1) by prove by contradiction.
-% \\
-% Suppose (i) does not holds, i.e., if $unexplored_{k+2} \neq \emptyset$, then for any $u \in unexplored_{k+2}$, $dist_{k+2}[u] = \infty$. Since the algorithm assumes that all edge weights are not infinity, then any node $u \in unexplored_{k+2}$ cannot have an edge from any node $v \in explored_{k+2}$, otherwise, since the induction hypothesis implies that 
+\textbf{Inductive Step}: We shall show P(k+1) holds. That is, forall node $w \in explored_{k+2}$, (L1) $dist_{k+2}[w] \neq \infty$; (L2) $dist_{k+2}[w]\leq \delta(w')$, $\forall w' \in unexplored_{k+2}$; (L3) $dist_{k+2}[w] = \delta(w)$;
 \\\\
 Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iteration, then $explored_{k+2} = explored_{k+1} \cup \{u_{k+1}\}$. We will show that (L1)(L2) and (L3) holds for all nodes in $explored_{k+1}$ in \texttt{Part (a)}, and \texttt{Part (b)} proves (L1)(L2)(L3) holds for $u_{k+1}$, so that the statements holds forall nodes in $explored_{k+2}$. 
 \begin{itemize}
   %================================================================================================
-  % Lemma 3.4 part (a)
+  % Lemma 3.5 part (a)
   %================================================================================================
   \item Part(a): \texttt{WTP: After the $(k+1)^{th}$ iteration, $\forall w \in explored_{k+1}$, (L1)(L2)(L3) holds.} 
   \\\\
   Consider each node $q \in (explored_{k+1} \cap explored_{k+2}) = explored_{k+1}$, $q$ must be explored before the $(k+1)^{th}$ iteration. Suppose $q$ is explored during the $i^{th}$ iteration for some $i < k+1$, then based on our induction hypothesis, $dist_{i+1}[q] = \delta(q)$, and $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{i+1}$. 
   \\\\
-  \texttt{Proof of (L2)}: Based on the algorithm, for each iteration, the algorithm explores exactly one node and never revisits any explored nodes. For each node $q \in explored_{k+1}$ mentioned above, since $q$ is explored before the $(k+1)^{th}$ iteration, then $unexplored_{k+1} \subseteq unexplored_{i+1}$. Since $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{i+1}$, and $unexplored_{i+1}$ includes all node in $unexplored_{k+1}$, then $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{k+1}$. (L2) holds for $explored_{k+1}$. 
-  \\\\
   \texttt{Proof of (L3)}: Since for each node $q \in explored_{k+1}$, the induction hypothesis implies that $dist_{k+1}[q] = \delta(q)$, then \texttt{Lemma 3.3} imples that $dist_{k+2}[q] = dist_{k+1}[q] = \delta(q)$. (L3) holds for $explored_{k+1}$.
+  \\\\
+  \texttt{Proof of (L2)}: Based on the algorithm, for each iteration, the algorithm explores exactly one node and never revisits any explored nodes. For each node $q \in explored_{k+1}$ mentioned above, since $q$ is explored before the $(k+1)^{th}$ iteration, then $unexplored_{k+1} \subseteq unexplored_{i+1}$. Since $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{i+1}$, and $unexplored_{i+1}$ includes all node in $unexplored_{k+1}$, then $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{k+1}$. Since proof of (L3) above shows that $dist_{k+2}[q] = \delta(q)$, then $dist_{k+2}[q] \leq \delta(q'), \forall q' \in unexplored_{k+1}$. (L2) holds for $explored_{k+1}$. 
   \\\\
   \texttt{Proof of (L1)}: Since the induction hypothesis implies that $\forall q \in explored_{k+1}, dist_{k+1}[q] < \infty$, and the proof of (L3) above shows that $dist_{k+2}[q] = dist_{k+1}[q]$, then $dist_{k+2}[q] < \infty$. (L1) holds for $explored_{k+1}$.
   \\\\
-  % For all proceeding $j^{th}$ iterations, $j > i$, suppose node $q''$ is the node being explored for the $j^{th}$ iteration, then the value of $dist_{j+1}[q]$ is calculated as: 
-  % \\
-  %     \[
-  %       dist_{j+1}[q] = \left.
-  %      \begin{cases} 
-  %         min(dist_j[q], dist_j[q''] + weight(q'', q)), & (q'',q) \in g \\ 
-  %         dist_j[q] & otherwise 
-  %       \end{cases}
-  %       \right\}
-  %     \]
-  % \\
-  % Since $dist_{i+1}[q] = \delta(q) \leq length(p)$ for all path $p$ from $s$ to $q$, then for each proceeding $j^{th}$ iteration after the $i^{th}$ iteration, there does not exists such $q''$ such that $dist_j[q''] + weight(q'', q) < \delta(q) = dist_{i+1}[q]$. Hence $dist_{j+1}[q] = \delta(q) = dist_{i+1}[q], \forall j > i$. Since $k+1 > i$, then for all $q \in S$, $dist_{k+1} = \delta(q) = dist_{i+1}[q]$. (3) holds for $explored_{k+1}$. 
   Hence we have proved that both (1) and (2) holds for all nodes in $explored_{k+1}$.
 
   %================================================================================================
-  % Lemma 3.4 part (b)
+  % Lemma 3.5 part (b)
   %================================================================================================
   \item Part(b): (L1)(L2)(L3) holds for $\{u_{k+1}\}$. 
   \\
-  Specifically, we want to show: (L1) $dist_{k+2}[u_{k+1}] < \infty$; (L2) $\delta(u_{k+1}) \leq \delta(v')$, $\forall v' \in unexplored_{k+2}$, and (L2) $dist_{k+2}[u_{k+1}] = \delta(u_{k+1})$. 
+  Specifically, we want to show: (L1) $dist_{k+2}[u_{k+1}] < \infty$; (L2) $dist_{k+2}[u_{k+1}] \leq \delta(v')$, $\forall v' \in unexplored_{k+2}$, and (L2) $dist_{k+2}[u_{k+1}] = \delta(u_{k+1})$. 
 
 
   \begin{enumerate}
   \item (L1) $dist_{k+2}[u_{k+1}] \neq \infty$
   \\
-  Since $g$ is a connected graph, then $s$ must have a path to $u_{k+1}$. Since $u_{k+1}$ is the node currently being explored, then we know there must exists a $s-u_{k+1}$ path, denote as $p(s, u_{k+1})$, such any node proceeding $u_{k+1}$ in $p(s, u_{k+1})$ are explored before $u_{k+1}$, i.e., in $explored_{k+1}$. Denote the node right before $u_{k+1}$ in $p(s, u_{k+1})$ as $u'$, $u' \in explored_{k+1}$. The induction hypothesis implies that $dist_{k+1}[u'] < \infty$. Since $u'$ is right before $u_{k+1}$ in $p(s, u_{k+1})$, then based on the algorithm, $dist_{k+2}[u_{k+1}] \leq dist_{k+1}[u'] + weight(u', u_{k+1})$. Since $u'$ has an edge to $u_{k+1}$, then $weight(u', u_{k+1}) < \infty$, and $dist_{k+1}[u'] < \infty$, then $dist_{k+2}[u_{k+1}] \leq dist_{k+1}[u'] + weight(u', u_{k+1}) < \infty + weight(u', u_{k+1}) = \infty$, i.e, $dist_{k+1}[u_{k+1}] < \infty$. (L1) holds for $u_{k+1}$. \\
-
-  %We prove (1) by contradiction. Suppose $dist_{k+2}[u_{k+1}] = \infty$. Since $dist_{k+2}[u_{k+1}] = min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, u_{k+1})) = dist_{k+1}[u_{k+1}]$, then $dist_{k+1}[u_{k+1}] = \infty$. As the induction hypothesis implies that for all nodes $q \in explored_{k+1}, dist_{k+1}[q] < \infty$, then $u_{k+1}$ cannot be connected to any node $q \in explored_{k+1}$, otherwise based on the algorithm, we must have $dist_{k+1}[u_{k+1}] \leq (dist_i{q} + weight(q, u_{k+1}) < \infty$ for some $q$ explored before $u_{k+1}$. Since $dist_{k+1}[u_{k+1}] = \infty \leq dist_{k+1}[u']$ for all $u' \in unexplored_{k+1}$, then $dist_{k+1}[u'] = \infty$, and similarly $\forall u' \in explored$
-
-  \item (L2) $\delta(u_{k+1}) \leq \delta(v')$, $\forall v' \in unexplored_{k+2}$
-  \\\\
-  We will prove (L2) by contradiction. Suppose there exists $w \in unexplored_{k+2}$, such that $\delta(u_{k+1}) > \delta(w)$. 
+  Since $g$ is a connected graph, then $s$ must have a path to $u_{k+1}$. Since $u_{k+1}$ is the node currently being explored, then we know there must exists a $s-u_{k+1}$ path, denote as $p(s, u_{k+1})$, such any node proceeding $u_{k+1}$ in $p(s, u_{k+1})$ are explored before $u_{k+1}$, i.e., in $explored_{k+1}$. 
   \\
-  %if there does not exists a path from s to v, then dist_{k+1}[v] = infinity, which still holds
-  Based on proof of (L1) above, we know $dist_{k+2}[u_{k+1}] < \infty$. Thus \texttt{Lemma 3.2} implies that $dist_{k+2}[u_{k+1}]$ is the length of some $s-v$ path. Based on the definition of shortest path, $\delta(u_{k+1}) \leq dist_{k+2}[u_{k+1}]$. Since $\delta(u_{k+1}) > \delta(w)$ and $\delta(u_{k+1}) \leq dist_{k+2}[u_{k+1}]$, then we have $\delta(w) < dist_{k+2}[u_{k+1}]$([NE1]). 
+  Denote the node right before $u_{k+1}$ in $p(s, u_{k+1})$ as $u'$, $u' \in explored_{k+1}$. Suppose $u'$ is explored during the $i^{th}$ iteration, $i < k+1$. The induction hypothesis implies that $dist_{i+1}[u'] < \infty$. Since $dist_{i+1}[u'] = min(dist_i[u'], dist_i[u'] + weight(u', u')) = min(dist_i[u'], dist_i[u'] + 0) = dist_i[u']$, then $ dist_i[u'] < \infty$. \texttt{Lemma 3.4} implies $dist_{k+2}[u_{k+1}] \leq dist_i[u'] + weight(u', u_{k+1}]$, then it follows that $dist_{k+1}[u_{k+1}] < \infty$. (L1) holds for $u_{k+1}$. 
+  \\
+  \item (L2) $dist_{k+2}[u_{k+1}] \leq \delta(v')$, $\forall v' \in unexplored_{k+2}$
+  \\\\
+  We will prove (L2) by contradiction. Suppose there exists $w \in unexplored_{k+2}$, such that $dist_{k+2}[u_{k+1}] > \delta(w)$([E3.5.1]). 
   \\
   Consider the shortest path $\Delta(s, w)$ from $s$ to $w$, $\delta(w) = length(\Delta(s, w))$. Since $w \notin explored_{k+2}$, then there must exists some node in $\Delta(s, w)$ that are not in $explored_{k+2}$. Suppose the first node along $\Delta(s, w)$ that is not in the $explored_{k+2}$ list is $w_2$, and the node right before $w_2$ in the $s$ to $w_2$ subpath is $w_1$, thus $w_1 \in explored_{k+2}$. The image below illustrates this construction: 
   \\
@@ -412,7 +391,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
       \delta(w_2) &= length(\Delta(s, w_2)) \\
                   &= length(p(s, w_2)) \\
                   &= length(p(s, w_1)) + weight(w_1, w_2)\\
-                  &= \delta(w_1) + weight(w_1, w_2) ([E1])
+                  &= \delta(w_1) + weight(w_1, w_2) ([E3.5.2])
   \end{align*}
   For $\Delta(s, w)$ we have: 
   \begin{align*}
@@ -422,23 +401,43 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \end{align*}
   Since all edge weights are non-negative, then: 
   \\\\
-    \tab $\delta(w_2) = \delta(w_1) + weight(w_1, w_2) \leq \delta(w)$ ([E2])
+    \tab $\delta(w_2) = \delta(w_1) + weight(w_1, w_2) \leq \delta(w)$ ([E3.5.3])
   \\\\
   Since $w_1 \in explored_{k+2}$, there are two cases to consider: $w_1 =u_{k+1}$ and $w_1 \neq u_{k+1}$. We will prove P(k+1) under both cases below. 
   \\\\
   \texttt{Case 1: $w_1 = u_{k+1}$}
   \\
-  When $w_1 = u_{k+1}$, then substitude $w_1$ by $u_{k+1}$ in [E2], we have: 
+  Since $\delta(w_2) = \delta(w_1) + weight(w_1, w_2) \leq \delta(w)$ and all edge weights are non-negative, then $\delta(w_1) \leq \delta(w)$. When $w_1 = u_{k+1}$, we have $\delta(u_{k+1}) \leq \delta(w)$. Since $dist_{k+2}[u_{k+1}] > \delta(w)$ and $\delta(u_{k+1}) \leq \delta(w)$, we have $\delta(u_{k+1}) < dist_{k+2}[u_{k+1}]$.
+  \\
+  Suppose the node right before $u_{k+1}$ in $\Delta(s, u_{k+1})$ is $w_3$. We know $length(\Delta(s, u_{k+1})) = length(p(s, w_3)) + weight(w_3, u_{k+1}))$, where $p(s, w_3)$ is the prefix of $\Delta(s, u_{k+1})$. Based on \texttt{Lemma 3.1}, we know $length(p(s, w_3)) = \delta(w_3)$. Hence: 
+  \begin{align*}
+    \delta(u_{k+1}) &= length(p(s, w_3)) + weight(w_3, u_{k+1})) \\
+                    &= \delta(w_3) + weight(w_3, u_{k+1}) \\
+                    &< dist_{k+2}[u_{k+1}]
+  \end{align*}
+  i.e.
+  \begin{align*}
+    dist_{k+2}[u_{k+1}] > \delta(w_3) + weight(w_3, u_{k+1}) ([E3.5.6])
+  \end{align*}
+  Based on the construction, $w_2$ is the first node along $\Delta(s,w)$, $w_1$ is right before $w_2$ in the path, $w_3$ is right before $w_1 = u_{k+1}$ in the path, then $w_3 \in explored_{k+2}$. Assume $w_3$ is explored during the $j^{th}$ iteration. Then based on \texttt{Lemma 3.4}, we have: 
+  \begin{align*}
+    dist_{k+2}[u_{k+1}] \leq dist_j[w_3] + weight(w_3, u_{k+1}) ([E3.5.7])
+  \end{align*}
+  The induction hypothesis implies $dist_{j+1}[w_3] = \delta(w_3)$. For $dist_{j+1}[w_3]$ we have: 
+  \begin{align*}
+    dist_{j+1}[w_3] &= min(dist_j[w_3], dist_j[w_3] + weight(w_3, w_3)) \\
+                   &= min(dist_j[w_3], dist_j[w_3] + 0) \\
+                   &= dist_j[w_3]
+  \end{align*}
+  Hence $dist_j[w_3] = \delta(w_3)$, combine with [E3.5.7], we have: 
+  \begin{align*}
+    dist_{k+2}[u_{k+1}] \leq \delta(w_3) + weight(w_3, u_{k+1}) ([E3.5.8])
+  \end{align*}
+  The equation [E3.5.8] contradicts with equation[E3.5.6]. Hence by the principle of prove by contradiction, (L2) holds when $w_1 = u_{k+1}$. 
   \\\\
-    \tab $\delta(w_1) + weight(w_1, w_2) = \delta(u_{k+1}) + weight(u_{k+1}, w_2) \leq \delta(w)$\\
-    \tab i.e.  $\delta(u_{k+1}) \leq \delta(w)$ 
-  \\\\
-  which contradicts with our assumption that $\delta(u_{k+1}) > \delta(w)$. Hence by the principle of prove by contradiction, $\delta(u_{k+1}) < \delta(w)$. (L2) holds for $u_{k+1}$. 
-  \\\\
+
   \texttt{Case 2}: $w_1 \neq u_{k+1}$
   \\ 
-  %Since $w_1 \in explored_{k+2}$ and $w_1 \neq v$, $w_1$ is explored before the $(k+1)^{th}$ iteration. i.e., $w_1 \in explored_{k+1}$. Then based on the proof of Part(a) above, $dist_{k+1}[w_1] = \delta(w_1)$. \\
-
   Since $w_1 \in explored_{k+2}$ and $w_1 \neq u_{k+1}$, $w_1$ is explored before the $(k+1)^{th}$ iteration. i.e., $w_1 \in explored_{k+1}$. Suppose $w_1$ is being explored during the $i^{th}$ iteration, $i < k+1$, then based on the algorithm, the value of $dist_{i+1}[w_1]$ is calculated as: 
   \begin{align*}
         dist_{i+1}[w_1] &= min(dist_{i}[w_1], dist_{i}[w_1] + weight(w_1,w_1)) \\
@@ -453,100 +452,80 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
      dist_{i+1}[w_2] &= min(dist_i[w_2], dist_i[w_1] + weight(w_1,w_2)) \\
                      &= min(dist_i[w_2], \delta(w_1) + weight(w_1, w_2))
   \end{align*}
-  Based on [E1] we know that $\delta(w_2) =  \delta(w_1) + weight(w_1, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2))$. If $dist_i[w_2] = \infty$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. If $dist_i[w_2] \neq \infty$, then based on \texttt{Lemma 3.2}, $dist_i[w_2]$ is the length of some $s-w_2$ path. Since $\delta(w_2) \leq length(p), \forall p \in path(s, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. Hence in either cases, we conclude that $dist_{i+1}[w_2] = \delta(w_2)$. 
+  Based on [E3.5.2] we know that $\delta(w_2) =  \delta(w_1) + weight(w_1, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2))$. If $dist_i[w_2] = \infty$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. If $dist_i[w_2] \neq \infty$, then based on \texttt{Lemma 3.2}, $dist_i[w_2]$ is the length of some $s-w_2$ path. Since $\delta(w_2) \leq length(p), \forall p \in path(s, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. Hence in either cases, we conclude that $dist_{i+1}[w_2] = \delta(w_2)$. 
   \\
-  Since $dist_{i+1}[w_2] = \delta(w_2)$ and $i < k+1$, then based on \texttt{Lemma 3.3}, we have $dist_{k+1}[w_2] = dist_{i+1} = \delta(w_2)$. Based on [E2], $\delta(w_2) < \delta(w)$, then $dist_{k+1}[w_2] < \delta(w)$ [NE2]. Combining with [NE1], we have: 
-  \\\\
-  \ftab $\delta(w) < dist_{k+1}[u_{k+1}]$ (from [NE1])\\
-  \ftab $dist_{k+1}[w_2] < \delta(w)$ 
-  \\\\
-  Hence $dist_{k+1}[w_2] < dist_{k+1}[u_{k+1}]$ [NE2]. 
+  Since $dist_{i+1}[w_2] = \delta(w_2)$ and $i < k+1$, then based on \texttt{Lemma 3.3}, we have:
+  \begin{align*}
+  dist_{k+1}[w_2] = dist_{i+1} = \delta(w_2) ([E3.5.4])
+  \end{align*}
+  Based on our assumption, at the beginning of the $(k+1)^{th}$ generation, $u_{k+1}, w_2 \notin explored_{k+1}$ and $u_{k+1}$ is selected by the algorithm, then we must have $dist_{k+1}[w_2] \geq dist_{k+1}[u_{k+1}]$. For $dist_{k+2}[u_{k+1}]$ we have: 
+  \begin{align*}
+  dist_{k+2}[u_{k+1}] &= min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, u_{k+1})) \\
+                      &= min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + 0) \\
+                      &= dist_{k+1}[u_{k+1}] 
+  \end{align*}
+  Hence $dist_{k+1}[w_2] \geq dist_{k+2}[u_{k+1}]$. Combine with [E3.5.4], [E3.5.3] we have: 
+  \begin{align*}
+    dist_{k+1}[w_2] &\geq dist_{k+2}[u_{k+1}] (\\
+    dist_{k+1}[w_2] &= dist_{i+1} = \delta(w_2) (from [E3.5.4]) \\
+    \delta(w) &\geq \delta(w_2) = \delta(w_1) + weight(w_1, w_2)(from [E3.5.3])
+  \end{align*}
+  Hence $\delta(w) \geq dist_{k+2}[u_{k+1}]$, which contradicts with [E3.5.1]. Hence by the principle of prove by contradiction, when $w_1 \neq u_{k+1}$, $dist_{k+2}[u_{k+1}] \leq \delta(w), \forall w \in unexplored_{k+2}$. 
   \\
-  Based on our assumption, at the beginning of the $(k+1)^{th}$ generation, $u_{k+1}, w_2 \notin explored_{k+1}$ and $u_{k+1}$ is selected by the algorithm, then we must have $dist_{k+1}[w_2] \geq dist_{k+1}[u_{k+1}]$, which contradicts with [NE2]. Hence by the principle of prove by contradiction, there does not exsist $w \in unexplored_{k+2}$, such that $\delta(u_{k+1}) > \delta(w)$, i.e. $\delta(u_{k+1}) \leq \delta(w), \forall w \in unexplored_{k+2}$. Hence (L2) holds for $u_{k+1}$. 
+  (L2) holds for $u_{k+1}$. 
   \\
-
-
   \item (L3) $dist_{k+2}[u_{k+1}] = \delta(u_{k+1})$
   \\\\
   We will prove this by contradiction. 
   \\
-  Since (L1) proves $dist_{k+2}[u_{k+1}] \neq \infty$, then \texttt{Lemma 3.2} implies that $dist_{k+2}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path, denote as $p$. Suppose there is a $s-u_{k+1}$ path $p'$ that's shorter than $p$, i.e, $dist_{k+2}[u_{k+1}] > \delta(v') + weight(v', v)$[NE3]. Suppose the node right before $u_{k+1}$  in $p$ is $u_i$, and the node right before $u_{k+1}$ in $p'$ is $v'$, then there are two cases: (1) $v' \in explored_{k+2}$. 
+  Since (L1) proves $dist_{k+2}[u_{k+1}] \neq \infty$, then \texttt{Lemma 3.2} implies that $dist_{k+2}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path, denote as $p$. Suppose there is a $s-u_{k+1}$ path $p'$ that's shorter than $p$, i.e, $dist_{k+2}[u_{k+1}] > length(p')$([E3.5.9]). Suppose the node right before $u_{k+1}$ in $p'$ is $v'$. Then we know: 
+  \begin{align*}
+  length(p') &= length(p(s, v')) + weight(v', u_{k+1}) \\
+  length(p') &< dist_{k+2}[u_{k+1}]
+  \end{align*}
+  , where $p(s, v')$ is the prefix of $p'$ from $s$ to $v'$. Hence: 
+  \begin{align*}
+   dist_{k+2}[u_{k+1}] > length(p(s, v')) + weight(v', u_{k+1}) 
+  \end{align*}
+  Based on the definition of shortest path, $length(p(s, v')) \geq \delta(v')$, then we have: 
+  \begin{align*}
+   dist_{k+2}[u_{k+1}] > \delta(v') + weight(v', u_{k+1}) ([E3.5.10])
+  \end{align*}
+  There are two cases to consider: (1) $v' \in explored_{k+2}$; (2) $v' \notin explored_{k+2}$
   \\\\
   \texttt{Case(1): $v' \in explored_{k+2}$}
   \\
-  Suppose $v'$ is explored during the $j^{th}$ iteration, $u_i$ is explored during the $i^{th}$ iteration, $i, j < k+1$. Without loss of generosity, assume $u_i$ is explored before $v'$. Then the induction hypothesis indicates that $dist_{j+1}[v'] = \delta(v'), dist_{i+1}[u_i] = \delta(u_i)$. Since $dist_{j+1}[v'] = min(dist_j[v'], dist_j[v'] + weight(v', v')) = dist_j[v']$, then $dist_j[v'] = \delta(v')$. Similarly, $dist_i[u_i] = \delta(u_i)$. Since $u_i$ is the node right before $u_{k+2}$ in $p$, then $dist_{k+2}[u_{k+1}] = dist_i[u_i] + weight(u_i, u_{k+1})$
-
-
-  Since $\delta(v') + weight(v', v) < dist_{k+2}[u_{k+1}]$, then $dist_j[v'] + weight(v', v) < dist_{k+2}[u_{k+2}]$
-
-
-  Then \texttt{Lemma 3.3} implies that $dist_{k+2}[v'] = \delta(v')$. Since $\delta(v') + weight(v', v) < dist_{k+2}[u_{k+1}]$, then $dist_{k+2}[v'] + weight(v', v) <  dist_{k+2}[u_{k+1}]$, which contradicts with \texttt{Lemma 3.4}. By the principle of prove by contradiction, $ dist_{k+2}[u_{k+1}] = \delta(u_{k+1})$
-  % \\
-  % Since (L1) proves $dist_{k+2}[u_{k+1}] \neq \infty$, then \texttt{Lemma 3.2} implies that $dist_{k+2}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path, denote as $p$. Assume $p$ is longer than any shortest $s-u_{k+1}$ path, i.e., $dist_{k+2}[u_{k+1}] > \delta(u_{k+1})$. Consider any shortest $s-u_{k+1}$ path, denote as $p' = \Delta(u_{k+1})$, we have $dist_{k+2}[u_{k+1}] > length(p') = \delta(u_{k+1})$. 
-  % \\
-  % Suppose the node right before $u_{k+1}$ in $p$ is $u_i$ ($u_i$ is explored during the $i^{th}$ iteration for $i < k+1$), and the node right before $u_{k+1}$ in $p'$ is $v'$. Then we know:
-  % \begin{align*}
-  % dist_{k+2}[u_{k+1}] &= dist_{i}[u_i] + weight(u_i, u_{k+1}) \\
-  %                     &> length(p') = length(p(s, v')) + weight(v', u_{k+1}) \\
-  % i.e. \tsp dist_{k+2}[u_{k+1}] &> length(p(s, v')) + weight(v', u_{k+1})
-  % \end{align*}
-  % ,where $p(s, v')$ is the prefix of path $p'$ up to $v'$, and where $dist_{i}[u_i]$ is the length of the $s-u_i$ subpath in $p$. Since $p'$ is one of the shortest $s-u_{k+1}$ path, then \texttt{Lemma 3.1} implies that $length(p(s, v')) = \delta(v')$. Hence $dist_{k+2}[u_{k+1}] > \delta(v') + weight(v', u_{k+1})$
-  % \\
-  % The induction hypothesis implies that $dist_{i+1}[u_i] = \delta(u_i)$, and we know:
-  % \begin{align*}
-  %   dist_{i+1}[u_i] &= min(dist_i[u_i], dist_i[u_i] + weight(u_i, u_i)) \\
-  %                   &= min(dist_i[u_i], dist_i[u_i] + 0) \\
-  %                   &= dist_i[u_i]
-  % \end{align*}
-  % Then $dist_i[u_i] = dist_{i+1}[u_i] = \delta(u_i)$, hence $dist_{k+2}[u_{k+1}] = \delta(u_i) + weight(u_i, u_{k+1})$, we have: 
-  % \begin{align*}
-  %   dist_{k+2}[u_{k+1}] &= \delta(u_i) + weight(u_i, u_{k+1}) \\
-  %   dist_{k+2}[u_{k+1}] &> \delta(v') + weight(v', u_{k+1}) \\
-  %   i.e. \tsp \delta(u_i) + weight(u_i, u_{k+1}) &> \delta(v') + weight(v', u_{k+1})
-  % \end{align*}
-  % \\
-  % Concerning the node $v'$ right before $u_{k+1}$ in $p'$, there are two cases: (1) $v' \in explored_{k+2}$;(2) $v' \notin explored_{k+2}$, i.e., $v' \in unexplored_{k+2}$. We will prove (L3) holds in both cases below. 
-  % \\
-  % \texttt{Case(1): $v' \in explored_{k+2}$}. 
-  % Assume $v'$ is explored during the $j^{th}$ iteration, $j < k+1$. The induction hypothesis implies that $dist_{j+1}[v'] = \delta(v')$. Then \texttt{Lemma }
-
-
-  % Since $dist_{k+2}[u_{k+1}] = min(dist_{k+1}[u_{k+1}], dist_{k+2}[u_{k+1}] + weight(u_{k+1}, u_{k+1})) = min(dist_{k+1}[u_{k+1}], dist_{k+2}[u_{k+1}] + 0) = dist_{k+2}[u_{k+1}]$
-  % Assume $v'$ is explored during the $j^{th}$ iteration. 
-
-  % Since $dist_{k+2}[u_{k+1}] = min(dist_{k+1}[u_{k+1}$ $dist_{k+2}[u_{k+1}] = dist_i[u_i] + weight($ 
-  % \\
-  % \texttt{Case(2): $v' \notin explored_{k+2}$}. 
-  % \\
-  % Sincw $v' \in unexplored_{k+2}$, then there must exists some node in the $\Delta($
-
-  %Suppose $dist_{k+2}[u_{k+1}]$ is the length of path $p$ from $s$ to $u_{k+1}$. Assume there exists a $s-u_{k+1}$ path different from $p$, denote as $p'$, such that $p'$ is shorter than $p$, i.e., $length(p') < dist_{k+2}[u_{k+1}]$. Suppose the node right before $u_{k+1}$ in $p$ is $u_i$ ($u_i$ is the node explored during the $i^{th}$ iteration), for $i < k+1$, and the node right before $u_{k+1}$ in $p'$ is $v'$. Then we know $dist_{k+2}[u_{k+1}] = dist_{i+1}[u_i] + weight(u_i, u_{k+1}))$, where $dist_{i+1}[u_i]$ is the length of the subpath from $s$ to $u_i$ in $p$. 
-
-  % then $dist_{k+2}[u_{k+1}] = length(p(s, u_i) + weight(u_i, u_{k+1}))$. We know $u_i$ is explored before $u_{k+1}$, i.e $i < k+1$, and $dist_{i+1}[u_{k+1}] = dist_i[u_i] + weight(u_i, u_{k+1})$. 
-  % \\
-  % The induction hypothesis implies that $dist_{i+1}[u_i] = \delta(u_i)$, and we know: 
-  % \begin{align*}
-  %   dist_{i+1}[u_i] &= min(dist_i[u_i], dist_i[u_i] + weight(u_i, u_i)) \\
-  %                   &= min(dist_i[u_i], dist_i[u_i] + 0) \\
-  %                   &= dist_i[u_i]
-  % \end{align*}
-  % Then $dist_i[u_i] = dist_{i+1}[u_i] = \delta(u_i)$. Hence $dist_{i+1}[u_{k+1}] = dist_i[u_i] + weight(u_i, u_{k+1}) = \delta(u_i) + weight(u_i, u_{k+1})$. 
-
-
-  % Assume the shortest path from $s$ to $u_{k+1}$ is some path different from $p$, i.e. $\Delta(s, u_{k+1}) \neq p$, $\delta(u_{k+1}) \leq dist_{k+1}[u_{k+1}]$([b]). Suppose $v'$ is the node just before $u_{k+1}$ in $\Delta(s, u_{k+1})$. 
-  % \\\\
-  % \ftab $\delta(u_{k+1}) = \delta(v') + weight(v', u_{k+1}) < dist_{k+1}[u_{k+1}]$ \\
-  % \tab\tab\tab Since all edge weights are non-negative, then: $\delta(v') \leq \delta(u_{k+1})$
-  % \\\\
-  % Based on (1), after the $(k+1)^{th}$ iteration, for all nodes $q \in unexplored_{k+2}$, $\delta(q) \geq \delta(u_{k+1})$, and $\delta(v') \leq \delta(u_{k+1})$, then $v'$ cannot be in $unexplored_{k+2}$. Since $unexplored_{k+1} = unexplored_{k+2} \cup u_{k+1}$, then $v' \notin unexplored_{k+1}$. Hence at the beginning of the $(k+1)^{th}$ iteration, $v'$ is already explored. Since $v'$ is explored before the $(k+1)^{th}$ iteration and $v'$ has an edge to $u_{k+1}$, then the algorithm must have considered $(\delta(v') + weight(v', u_{k+1}))$ against $dist_{k+1}[u_{k+1}]$ and chose $min((\delta(v') + weight(v', u_{k+1})), dist_{k+1}[u_{k+1}])$, which is $dist_{k+1}[u_{k+1}]$. Thus $dist_{k+1}[u_{k+1}] \leq (\delta(v') + weight(v', u_{k+1}))$, i.e. $dist_{k+1}[u_{k+1}] \leq \delta(u_{k+1})$, which contradicts with our assumption [b]. Hence by the principle of prove by contradiction, $dist_{k+1}[u_{k+1}] = \delta(u_{k+1})$. (2) holds for $u_{k+1}$. 
+  Suppose $v'$ is explored during the $i^{th}$ iteration. Then \texttt{Lemma 3.4} implies: 
+  \begin{align*}
+    dist_{k+2}[u_{k+1}] \leq dist_i[v'] + weight(v', u_{k+1}) ([E3.5.11])
+  \end{align*}
+  The induction hypothesis implies $dist_{i+1}[v'] = \delta(v')$, and for $dist_{i+1}[v']$ we have: 
+  \begin{align*}
+    dist_{i+1}[v'] &= min(dist_i[v'], dist_i[v'] + weight(v', v')) \\
+                   &= min(dist_i[v'], dist_i[v'] + 0) \\
+                   &= dist_i[v']
+  \end{align*}
+  Hence $dist_i[v'] = \delta(v')$. Combining [E3.5.11], we have: 
+  \begin{align*}
+    dist_{k+2}[u_{k+1}] \leq \delta(v') + weight(v', u_{k+1}) ([E3.5.12])
+  \end{align*}
+  Hence equation [E3.5.12] contradicts with equaltion [E3.5.10]. By the principle of prove by contradiction, (L3) holds when $v' \in explored_{k+2}$. 
+  \\\\
+  \texttt{Case(2): $v' \notin explored_{k+2}$}
+  \\
+  Since $length(p') = length(p(s, v')) + weight(v', u_{k+1})$, $p(s, v)$ is the prefix of $p'$ from $s$ to $v'$, then based on the definition of shortest path, $length(p(s, v')) \leq \delta(v')$, and thus $\delta(v') + weight(v', u_{k+1}) \leq length(p(s, v')) + weight(v', u_{k+1}) = length(p')$. Since all edge weights are non-negative, then $\delta(v') \leq length(p')$.
+  \\
+  Since $v' \notin explored_{k+2}$, i.e., $v' \in unexplored_{k+2}$, based on proof of (L2), $dist_{k+2}[u_{k+1}] \leq \delta(v')$. Since $dist_{k+2}[u_{k+1}] \leq \delta(v')$ and $\delta(v') \leq length(p')$, then $dist_{k+2}[u_{k+1}] \leq length(p')$, which contradicts with our assumption ([E3.5.9]). Hence by the principle of prove by contradiction, (L3) holds when $v' \notin explored_{k+2}$. 
+  \\
+  Since we have proved (L3) for both cases, then (L3) holds for P(K+1). 
   \end{enumerate}
 \end{itemize}
-Since we have proved both (1) and (2) forall nodes in $explored_{k+1}$ after the $(k+1)^{th}$ iteration, P(k+1) holds. Then by the principle of prove by induction, \texttt{Lemma 3.4} holds. 
+Since we have proved (L1)(L2)(L3) forall nodes in $explored_{k+1}$ after the $(k+1)^{th}$ iteration, P(k+1) holds. Then by the principle of prove by induction, \texttt{Lemma 3.5} holds. 
 \end{proof}
 
 \begin{proof}\textbf{Prove of Correctness}
 \\\\
-By applying \texttt{Lemma 3.4} to the last iteration of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
+By applying \texttt{Lemma 3.5(L3)} to the last iteration of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
 \end{proof}
 \end{document}
 
