@@ -3,28 +3,36 @@ import Data.Vect
 
 %access public export 
 %default total
-{-
-  over break:
-  0. implementing(pseudocode)/proof dijkstra's in paper (latex): pseudocode based on idris, termination proof on paper
-  1. implementing dijkstra's in idris
-  2. paper proof: keep track of lemmas (assumptions) 
- 
-  1. [(node, [(adj_node, weight_para)])] (maybe use set instead of list: https://github.com/jfdm/idris-containers/blob/master/Data/AVL/Set.idr, set: substraction)
-    - define set as list, sorted, de-duplication (set in other languages (Coq, Agda))
-    - lemma on sets independent of what's stored underneath the set structure 
-  (backup plan. graph as a function from node to set of adjacent nodes)
--}
 
--- restrict the size of NodeSet, Graph according to the number of Nodes
+contradict : p = True -> 
+             p = False -> 
+             Void
+contradict Refl Refl impossible
+
+
+{- Nat triangle inequality-}
+lte_plusZ : lte a (plus a Z) = True
+lte_plusZ {a=Z} = Refl
+lte_plusZ {a=S a'} = lte_plusZ {a=a'}
+
+
+nat_tri : (a : Nat) -> (b : Nat) -> gte (plus a b) a = True
+nat_tri Z Z = Refl
+nat_tri a Z with (gte (plus a Z) a) proof lte_a_z
+  | True = Refl
+  | False = absurd $ contradict (lte_plusZ {a=a}) (sym lte_a_z)
+nat_tri Z b with (gte (plus Z b) Z) proof gte_z_b
+  | True = Refl
+  | False = absurd $ trueNotFalse (sym gte_z_b)
+nat_tri (S a) (S b) 
+  = nat_tri a (S b)
+
  
 {- `distance` and `weight` types -} 
-
-
--- implement WeightOps as Record 
--- wraps all operations for a given weight type
 using (weight : type) 
   record WeightOps weight where 
     constructor MKWeight
+    zero : weight
     gtw : weight -> weight -> Bool
     add : weight -> weight -> weight
     triangle_ineq : (a : weight) -> (b : weight) -> gtw (add a b) a = True
@@ -34,7 +42,6 @@ using (weight : type)
 -- any value added to infinity should be infinity
 -- need to define arithmetics for Distance type
 data Distance : Type -> Type where
-  DZero : Distance weight
   DInf : Distance weight
   DVal : (val : weight) -> Distance weight
 
@@ -44,8 +51,6 @@ dplus : (ops : WeightOps weight) ->
         (Distance weight) -> 
         (Distance weight) -> 
         (Distance weight) 
-dplus _ dval DZero = dval
-dplus _ DZero dval = dval
 dplus _ DInf _ = DInf
 dplus _ _ DInf = DInf 
 dplus ops (DVal v1) (DVal v2) = DVal $ (add ops) v1 v2
@@ -54,8 +59,6 @@ dplus ops (DVal v1) (DVal v2) = DVal $ (add ops) v1 v2
 dgt : (ops : WeightOps weight) -> 
       Distance weight -> 
       Distance weight -> Bool
-dgt _ DZero _ = False
-dgt _ _ DZero = True
 dgt _ _ DInf = False
 dgt _ DInf  _ = True
 dgt ops (DVal v1) (DVal v2) = (gtw ops) v1 v2
@@ -124,18 +127,17 @@ gelem (MKGraph _ _ edge) (MKNode nv) = (lte (finToNat nv) gsize = True)
 -}
 
 
-
 {-give the edges of a certain node 'n' in graph 'g' -}
-adj_nodes : (g : Graph gsize weight) -> 
-            (n : Node gsize) -> 
-            (nodeset gsize weight)
-adj_nodes (MKGraph _ _ edges) (MKNode nv) = index nv edges
+get_neighbors : (g : Graph gsize weight) -> 
+                (n : Node gsize) -> 
+                (nodeset gsize weight)
+get_neighbors (MKGraph _ _ edges) (MKNode nv) = index nv edges
 
 
 {- there is an edge from node 'n' to node 'm' -}
-adj_n_m : {g : Graph gsize weight} -> 
-          (n, m : Node gsize) -> Type
-adj_n_m {g} n m = (inNodeset m (adj_nodes g n) = True)
+adj : {g : Graph gsize weight} -> 
+      (n, m : Node gsize) -> Type
+adj {g} n m = (inNodeset m (get_neighbors g n) = True)
 
 
 
@@ -156,13 +158,116 @@ get_weight ((x, w) :: xs) m inset
 edge_weight : (g : Graph gsize weight) -> 
               (n : Node gsize) -> 
               (m : Node gsize) -> 
-              (adj_n_m {g=g} n m) -> 
+              (adj {g=g} n m) -> 
               weight
-edge_weight g n m adj = get_weight (adj_nodes g n) m adj
+edge_weight g n m adj = get_weight (get_neighbors g n) m adj
+
+
+  {- path with distance -} 
+data Path : Node gsize -> 
+            Node gsize -> 
+            (weight : Type)  -> 
+            Graph gsize weight -> 
+            Distance weight -> Type where
+  Unit : (g : Graph gsize weight) -> 
+         (n : Node gsize) ->
+         (ops : WeightOps weight) ->
+         Path n n weight g (DVal $ zero ops) 
+  Cons : Path s v weight g d -> 
+         (n : Node gsize) -> 
+         (adj : adj {g=g} v n) ->
+         (ops : WeightOps weight) ->  
+         Path s n weight g (dplus ops d (DVal $ edge_weight g v n adj))
+
+
+shortestPath : (sp : Path s v w g d) -> 
+               {lp : Path s v w g ld} -> 
+               {ops : WeightOps w} -> 
+               Type 
+shortestPath {d} {ld} sp {ops} = (dgt ops ld d = True)
 
 
 
 
+{-
+  {- path without distance in Type -}
+
+data Path : Node gsize -> Node gsize -> (weight : Type) -> Type where
+  Unit : Graph gsize weight -> 
+         (n : Node gsize) -> 
+         Path n n weight
+  Cons : Path s v weight -> 
+            (g : Graph gsize weight) -> 
+            (n : Node gsize) -> 
+            (adj : adj {g=g} v n) ->
+            Path s n weight
+
+
+{- length of path -}
+length : Path s v weight -> 
+         WeightOps weight -> 
+         Distance weight
+length (Unit _ _) ops = DVal $ zero ops
+length (Cons (Unit _ s) g v adj) ops = DVal $ edge_weight g s v adj
+length (Cons (Cons p _ s _) g v adj) ops 
+  = dplus ops (DVal $ edge_weight g s v adj) (length p ops)
+-}
+{- shortest path -}
+--shortest_path : (p1 : Path s v weight) -> 
+
+
+
+
+
+-- example with Nat as weight
+n0 : Node 3
+n0 = MKNode FZ
+
+n1 : Node 3
+n1 = MKNode (FS FZ)
+
+n2 : Node 3
+n2 = MKNode (FS (FS FZ))
+
+set0 : nodeset 3 Nat 
+set0 = [(n2, 4)]
+
+set1 : nodeset 3 Nat
+set1 = [(n0, 4), (n2, 6)]
+
+set2 : nodeset 3 Nat
+set2 = Nil
+
+g : Graph 3 Nat
+g = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
+
+natOps : WeightOps Nat
+natOps = MKWeight Z gte plus nat_tri plusCommutative
+
+
+p1 : Path Graph.n1 Graph.n1 Nat Graph.g (DVal Z)
+p1 = Unit g n1 natOps
+
+p12 : Path Graph.n1 Graph.n2 Nat Graph.g (DVal 6)
+p12 = Cons p1 n2 Refl natOps
+
+
+
+
+
+--p3 : Path Graph.n1 Graph.n2 Nat ?d
+--p3 = Cons (Cons p1 g n0 Refl natOps) g n2 Refl natOps
+
+
+
+{-
+*Graph> adj {g=g} n1 n0
+True = True : Type
+*Graph> adj {g=g} n2 n0
+False = True : Type
+*Graph> edge_weight g n1 n0 Refl
+4 : Nat
+-}
 
 
 
