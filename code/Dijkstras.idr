@@ -23,11 +23,10 @@ import Prelude.List
   4. 
 -}
 
-
+{- helper proofs for Dijkstra's -}
 lte_refl : (a : Nat) -> (lte a a = True)
 lte_refl Z = Refl
 lte_refl (S n) = lte_refl n
-
 
 
 lte_succ_refl : (lte (S a) b = True) -> 
@@ -37,31 +36,33 @@ lte_succ_refl {a=Z} {b=S b'} refl = refl
 lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
 lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
 
-
+{- proof of minusRefl -}
 minusRefl : minus a a = Z
 minusRefl {a=Z} = Refl
 minusRefl {a=S a'} = minusRefl {a=a'}
 
+{-proof of plusSuccRight-}
+plusSuccRight : (a : Nat) -> (b : Nat) -> S (plus a b) = plus a (S b)
+plusSuccRight Z Z = Refl
+plusSuccRight Z (S b) = Refl
+plusSuccRight (S a) b = cong $ plusSuccRight a b
 
-plusSucc : (a : Nat) -> (b : Nat) -> S (plus a b) = plus a (S b)
-plusSucc Z Z = Refl
-plusSucc Z (S b) = Refl
-plusSucc (S a) b = cong $ plusSucc a b
-
-
+{- converting nat to Fin without maybe -}
 natTofin : (m : Nat) -> (n : Nat) -> {auto p : LT m n} -> Fin n
 natTofin Z (S n) = FZ
 natTofin (S m) (S n) {p = LTESucc _} = FS $ natTofin m n
 
-minusSucc : (g : Nat) -> 
+{- proof of minusSuccLeft -}
+minusSuccLeft : (g : Nat) -> 
             (c : Nat) -> 
             (p : LTE c g) ->  
             S (minus (S g) (S c)) = minus (S g) c
-minusSucc Z Z p = Refl
-minusSucc (S g) Z p = Refl
-minusSucc (S g) (S c) p = minusSucc g c $ fromLteSucc p
+minusSuccLeft Z Z p = Refl
+minusSuccLeft (S g) Z p = Refl
+minusSuccLeft (S g) (S c) p = minusSuccLeft g c $ fromLteSucc p
 
 
+{- helper for making list of nodes: initial input to dijkstra's -}
 mknodes : (gsize : Nat) -> 
           (cur : Nat) -> 
           (p : LTE cur gsize) -> 
@@ -72,7 +73,27 @@ mknodes Z (S c) p vec = absurd p
 mknodes (S g) Z p vec = vec
 mknodes (S g) (S c) p vec
   = mknodes (S g) c (lteSuccLeft p) 
-            $ rewrite (sym $ minusSucc g c (fromLteSucc p)) in ((MKNode $ natTofin c (S g)) :: vec)
+            $ rewrite (sym $ minusSuccLeft g c (fromLteSucc p)) in ((MKNode $ natTofin c (S g)) :: vec)
+            
+                  
+
+{- helper for making list of initial distance values-}
+mkdist : (gsize : Nat) -> 
+         (cur : Nat) -> 
+         (p : LTE cur gsize) -> 
+         (s : Node gsize) -> 
+         (ops : WeightOps weight) -> 
+         List (Distance weight)
+mkdist Z Z _ _ _ = Nil 
+mkdist Z (S _) p _ _ = absurd p
+mkdist (S g) Z _ _ _ = Nil
+mkdist (S g) (S c) p s@(MKNode f) ops 
+  = case (finToNat f == S c) of 
+         True => (DVal $ zero ops) :: mkdist (S g) c (lteSuccLeft p) s ops
+         False => DInf :: mkdist (S g) c (lteSuccLeft p) s ops
+         
+
+
 {-
 -- need to take in priority queue
 -- helper function recur on the list of adj_nodes
@@ -130,6 +151,8 @@ dijkstras gsize w src ops g@(MKGraph gsize w edges) = ?k
   where 
     nodes : Vect gsize (Node gsize)
     nodes = reverse $ mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
+    dist : List (Distance weight) 
+    dist = ?d
     
     
 {-
