@@ -143,16 +143,16 @@ run_dijkstras w gsize (S qsize') refl g@(MKGraph gsize w edges) q@(MKQueue ops (
 
 dijkstras : (gsize : Nat) -> 
             (weight : Type) -> 
-            (source : Node size) -> 
+            (source : Node gsize) -> 
             (ops : WeightOps weight) -> 
             (graph : Graph gsize weight) -> 
             (Vect gsize (Distance weight))
-dijkstras gsize w src ops g@(MKGraph gsize w edges) = ?k
+dijkstras gsize weight src ops g@(MKGraph gsize weight edges) = ?k
   where 
     nodes : Vect gsize (Node gsize)
     nodes = reverse $ mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
     dist : List (Distance weight) 
-    dist = ?d
+    dist = reverse $ mkdist gsize gsize lteRefl src ops
     
     
 {-
