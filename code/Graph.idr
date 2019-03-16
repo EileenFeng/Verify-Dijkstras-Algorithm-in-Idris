@@ -216,6 +216,8 @@ length (Cons (Cons p _ s _) g v adj) ops
   = dplus ops (DVal $ edge_weight g s v adj) (length p ops)
 
 {- shortest path -}
+-- `sp` stands for shortest path, `lp` stands for any other path
+-- this definition seems inaccurate as `lp` refers to a specific s-v path rather than any s-v path in g
 shortest_path : (sp : Path s v w g) ->
                 (lp : Path s v w g) -> 
                 (ops : WeightOps w) -> 

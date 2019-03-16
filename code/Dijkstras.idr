@@ -28,6 +28,8 @@ lte_refl : (a : Nat) -> (lte a a = True)
 lte_refl Z = Refl
 lte_refl (S n) = lte_refl n
 
+
+
 lte_succ_refl : (lte (S a) b = True) -> 
                 (lte a b = True) 
 lte_succ_refl {a=Z} {b=Z} refl = absurd $ trueNotFalse (sym refl)
@@ -36,7 +38,43 @@ lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
 lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
 
 
--- need ot take in priority queue
+minusRefl : minus a a = Z
+minusRefl {a=Z} = Refl
+minusRefl {a=S a'} = minusRefl {a=a'}
+
+
+plusSucc : (a : Nat) -> (b : Nat) -> S (plus a b) = plus a (S b)
+plusSucc Z Z = Refl
+plusSucc Z (S b) = Refl
+plusSucc (S a) b = cong $ plusSucc a b
+
+
+natTofin : (m : Nat) -> (n : Nat) -> {auto p : LT m n} -> Fin n
+natTofin Z (S n) = FZ
+natTofin (S m) (S n) {p = LTESucc _} = FS $ natTofin m n
+
+minusSucc : (g : Nat) -> 
+            (c : Nat) -> 
+            (p : LTE c g) ->  
+            S (minus (S g) (S c)) = minus (S g) c
+minusSucc Z Z p = Refl
+minusSucc (S g) Z p = Refl
+minusSucc (S g) (S c) p = minusSucc g c $ fromLteSucc p
+
+
+mknodes : (gsize : Nat) -> 
+          (cur : Nat) -> 
+          (p : LTE cur gsize) -> 
+          (Vect (minus gsize cur) (Node gsize)) -> 
+          (Vect gsize (Node gsize))
+mknodes Z Z p vec = Nil
+mknodes Z (S c) p vec = absurd p
+mknodes (S g) Z p vec = vec
+mknodes (S g) (S c) p vec
+  = mknodes (S g) c (lteSuccLeft p) 
+            $ rewrite (sym $ minusSucc g c (fromLteSucc p)) in ((MKNode $ natTofin c (S g)) :: vec)
+{-
+-- need to take in priority queue
 -- helper function recur on the list of adj_nodes
 update_dist : (weight : Type) -> 
               (gsize : Nat) -> 
@@ -78,18 +116,22 @@ run_dijkstras w gsize (S qsize') refl g@(MKGraph gsize w edges) q@(MKQueue ops (
   --= run_dijkstras w ops gsize vsize' (lte_succ_refl refl) g xs $ update_dist w ops gsize 
     -- where 
       --  adj = Data.Vect.index xv edges
+-}
 
 
-dijkstras : (size : Nat) -> 
+
+dijkstras : (gsize : Nat) -> 
             (weight : Type) -> 
             (source : Node size) -> 
             (ops : WeightOps weight) -> 
-            (graph : Graph size weight) -> 
-            (Vect size (Distance weight))
-dijkstras size w src ops g@(MKGraph size w edges) = ?k
-
-
-
+            (graph : Graph gsize weight) -> 
+            (Vect gsize (Distance weight))
+dijkstras gsize w src ops g@(MKGraph gsize w edges) = ?k
+  where 
+    nodes : Vect gsize (Node gsize)
+    nodes = reverse $ mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
+    
+    
 {-
 zero : a
 
