@@ -162,7 +162,7 @@ edge_weight : (g : Graph gsize weight) ->
               weight
 edge_weight g n m adj = get_weight (get_neighbors g n) m adj
 
-
+{-
   {- path with distance -} 
 data Path : Node gsize -> 
             Node gsize -> 
@@ -181,39 +181,47 @@ data Path : Node gsize ->
 
 
 shortestPath : (sp : Path s v w g d) -> 
-               {lp : Path s v w g ld} -> 
+               (lp : Path s v w g ld) -> 
                {ops : WeightOps w} -> 
                Type 
-shortestPath {d} {ld} sp {ops} = (dgt ops ld d = True)
+shortestPath {d} {ld} sp lp {ops} = (dgt ops ld d = True)
 
 
+-}
 
 
-{-
   {- path without distance in Type -}
 
-data Path : Node gsize -> Node gsize -> (weight : Type) -> Type where
-  Unit : Graph gsize weight -> 
+data Path : Node gsize -> 
+            Node gsize -> 
+            (weight : Type) -> 
+            Graph gsize weight -> Type where
+  Unit : (g : Graph gsize weight) -> 
          (n : Node gsize) -> 
-         Path n n weight
-  Cons : Path s v weight -> 
+         Path n n weight g
+  Cons : Path s v weight g-> 
             (g : Graph gsize weight) -> 
             (n : Node gsize) -> 
             (adj : adj {g=g} v n) ->
-            Path s n weight
+            Path s n weight g
 
 
 {- length of path -}
-length : Path s v weight -> 
+length : Path s v weight g -> 
          WeightOps weight -> 
          Distance weight
 length (Unit _ _) ops = DVal $ zero ops
 length (Cons (Unit _ s) g v adj) ops = DVal $ edge_weight g s v adj
 length (Cons (Cons p _ s _) g v adj) ops 
   = dplus ops (DVal $ edge_weight g s v adj) (length p ops)
--}
+
 {- shortest path -}
---shortest_path : (p1 : Path s v weight) -> 
+shortest_path : (sp : Path s v w g) ->
+                (lp : Path s v w g) -> 
+                (ops : WeightOps w) -> 
+                Type 
+
+                
 
 
 
@@ -244,13 +252,13 @@ g = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
 natOps : WeightOps Nat
 natOps = MKWeight Z gte plus nat_tri plusCommutative
 
-
+{-
 p1 : Path Graph.n1 Graph.n1 Nat Graph.g (DVal Z)
 p1 = Unit g n1 natOps
 
 p12 : Path Graph.n1 Graph.n2 Nat Graph.g (DVal 6)
 p12 = Cons p1 n2 Refl natOps
-
+-}
 
 
 
