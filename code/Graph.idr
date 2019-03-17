@@ -33,9 +33,9 @@ using (weight : type)
   record WeightOps weight where 
     constructor MKWeight
     zero : weight
-    gtw : weight -> weight -> Bool
+    gtew : weight -> weight -> Bool
     add : weight -> weight -> weight
-    triangle_ineq : (a : weight) -> (b : weight) -> gtw (add a b) a = True
+    triangle_ineq : (a : weight) -> (b : weight) -> gtew (add a b) a = True
     add_comm : (a : weight) -> (b : weight) -> add a b = add b a
 
 
@@ -55,13 +55,13 @@ dplus _ DInf _ = DInf
 dplus _ _ DInf = DInf 
 dplus ops (DVal v1) (DVal v2) = DVal $ (add ops) v1 v2
 
--- greater than for Distance type
+-- greater than or equal to for Distance type
 dgt : (ops : WeightOps weight) -> 
       Distance weight -> 
       Distance weight -> Bool
 dgt _ _ DInf = False
 dgt _ DInf  _ = True
-dgt ops (DVal v1) (DVal v2) = (gtw ops) v1 v2
+dgt ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
 
 
 data Node : Nat -> Type where
@@ -80,8 +80,9 @@ implementation DecEq (Node n) where
     | No neq   = No $ \h : MKNode n1 = MKNode n2 => neq $ NodeInjective h
   
   
-get_nval : Node gsize -> Fin gsize
-get_nval (MKNode v) = v
+getVal : Node gsize -> Fin gsize
+getVal (MKNode v) = v
+
 
 -- define NodeSet as type synonym(List) : gsize weight
 nodeset : (gsize : Nat) -> (weight : Type) -> Type

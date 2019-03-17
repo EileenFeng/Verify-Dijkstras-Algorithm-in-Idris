@@ -36,10 +36,14 @@ lte_succ_refl {a=Z} {b=S b'} refl = refl
 lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
 lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
 
+
+
 {- proof of minusRefl -}
 minusRefl : minus a a = Z
 minusRefl {a=Z} = Refl
 minusRefl {a=S a'} = minusRefl {a=a'}
+
+
 
 {-proof of plusSuccRight-}
 plusSuccRight : (a : Nat) -> (b : Nat) -> S (plus a b) = plus a (S b)
@@ -47,10 +51,14 @@ plusSuccRight Z Z = Refl
 plusSuccRight Z (S b) = Refl
 plusSuccRight (S a) b = cong $ plusSuccRight a b
 
+
+
 {- converting nat to Fin without maybe -}
 natTofin : (m : Nat) -> (n : Nat) -> {auto p : LT m n} -> Fin n
 natTofin Z (S n) = FZ
 natTofin (S m) (S n) {p = LTESucc _} = FS $ natTofin m n
+
+
 
 {- proof of minusSuccLeft -}
 minusSuccLeft : (g : Nat) -> 
@@ -60,6 +68,7 @@ minusSuccLeft : (g : Nat) ->
 minusSuccLeft Z Z p = Refl
 minusSuccLeft (S g) Z p = Refl
 minusSuccLeft (S g) (S c) p = minusSuccLeft g c $ fromLteSucc p
+
 
 
 {- helper for making list of nodes: initial input to dijkstra's -}
@@ -78,6 +87,8 @@ mknodes (S g) (S c) p vec
                   
 
 {- helper for making list of initial distance values-}
+{- 
+  {-reverse order, generate list, unable to ensure length-}
 mkdist : (gsize : Nat) -> 
          (cur : Nat) -> 
          (p : LTE cur gsize) -> 
@@ -88,10 +99,32 @@ mkdist Z Z _ _ _ = Nil
 mkdist Z (S _) p _ _ = absurd p
 mkdist (S g) Z _ _ _ = Nil
 mkdist (S g) (S c) p s@(MKNode f) ops 
-  = case (finToNat f == S c) of 
+  = case (S (finToNat f) == S c) of 
          True => (DVal $ zero ops) :: mkdist (S g) c (lteSuccLeft p) s ops
          False => DInf :: mkdist (S g) c (lteSuccLeft p) s ops
-         
+-} 
+
+
+mkdists : (gsize : Nat) -> 
+          (cur : Nat) -> 
+          (p : LTE cur gsize) -> 
+          (src : Node gsize) -> 
+          (ops : WeightOps weight) -> 
+          (Vect (minus gsize cur) (Distance weight)) -> 
+          (Vect gsize (Distance weight))
+mkdists Z Z p _ _ _ = Nil
+mkdists Z (S c) p _ _ _ = absurd p
+mkdists (S g) Z p _ _ vec = vec
+mkdists (S g) (S c) p s@(MKNode sv) ops vec
+  = mkdists (S g) c (lteSuccLeft p) s ops $ rewrite (sym $ minusSuccLeft g c (fromLteSucc p)) in ((dv c s ops) :: vec)
+    where 
+      dv : (cur : Nat) -> (src : Node gsize) -> WeightOps weight -> Distance weight
+      dv cur src ops = case (finToNat sv) == cur of 
+                        True  => DVal $ zero ops
+                        False => DInf
+      
+    
+             
 
 
 {-
@@ -141,6 +174,8 @@ run_dijkstras w gsize (S qsize') refl g@(MKGraph gsize w edges) q@(MKQueue ops (
 
 
 
+
+
 dijkstras : (gsize : Nat) -> 
             (weight : Type) -> 
             (source : Node gsize) -> 
@@ -149,10 +184,11 @@ dijkstras : (gsize : Nat) ->
             (Vect gsize (Distance weight))
 dijkstras gsize weight src ops g@(MKGraph gsize weight edges) = ?k
   where 
-    nodes : Vect gsize (Node gsize)
-    nodes = reverse $ mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
-    dist : List (Distance weight) 
-    dist = reverse $ mkdist gsize gsize lteRefl src ops
+    unexplored : Vect gsize (Node gsize)
+    unexplored = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
+    
+    dist : Vect gsize (Distance weight) 
+    dist = mkdists gsize gsize lteRefl src ops (rewrite (minusRefl {a=gsize}) in Nil)
     
     
 {-
