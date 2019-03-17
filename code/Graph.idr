@@ -34,6 +34,8 @@ using (weight : type)
     constructor MKWeight
     zero : weight
     gtew : weight -> weight -> Bool
+    gteRefl : {a : weight} -> (gtew a a = True)
+    eq : weight -> weight -> Bool
     add : weight -> weight -> weight
     triangle_ineq : (a : weight) -> (b : weight) -> gtew (add a b) a = True
     add_comm : (a : weight) -> (b : weight) -> add a b = add b a
@@ -60,9 +62,16 @@ dgt : (ops : WeightOps weight) ->
       Distance weight -> 
       Distance weight -> Bool
 dgt _ _ DInf = False
-dgt _ DInf  _ = True
+dgt _ DInf _ = True
 dgt ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
 
+
+dgtRefl : dgt ops d d = True
+dgtRefl {d = DInf} = ?dinf
+dgtRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
+  | True = Refl
+  | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
+  
 
 data Node : Nat -> Type where
   MKNode : Fin n -> Node n
@@ -79,9 +88,66 @@ implementation DecEq (Node n) where
     | Yes refl = Yes $ cong refl
     | No neq   = No $ \h : MKNode n1 = MKNode n2 => neq $ NodeInjective h
   
-  
+   
 getVal : Node gsize -> Fin gsize
 getVal (MKNode v) = v
+
+
+{- equality for Fin-}
+finEq : (f1, f2 : Fin n) -> 
+        (f1 == f2) = True -> 
+        f1 = f2
+finEq FZ FZ refl = Refl
+finEq (FS f1) FZ Refl impossible
+finEq FZ (FS f2) Refl impossible
+finEq (FS f1) (FS f2) refl = cong $ finEq f1 f2 refl
+
+
+finEqReverse : {f1, f2 : Fin n} -> 
+               f1 = f2 -> 
+               (f1 == f2) = True
+finEqReverse {f1=FZ} {f2=FZ} refl = Refl
+finEqReverse {f1=FS _} {f2=FZ} Refl impossible
+finEqReverse {f1=FZ} {f2=FS _} Refl impossible
+finEqReverse {f1=FS f1'} {f2=FS f2'} refl = finEqReverse {f1=f1'} {f2=f2'} (FSInjective f1' f2' refl)
+
+
+finNeqSucc : {f1, f2 : Fin n} -> 
+             Not (f1 = f2) -> 
+             Not (FS f1 = FS f2)
+finNeqSucc {f1} {f2} refl e = absurd $ refl (FSinjective e)
+
+
+
+finNeq : {f1, f2 : Fin n} -> 
+         (f1 == f2) = False -> 
+         Not (f1 = f2)
+finNeq {f1=FZ} {f2=FZ} refl e = absurd $ trueNotFalse refl
+finNeq {f1=FS f1'} {f2=FZ} refl Refl impossible
+finNeq {f1=FZ} {f2=FS f2'} refl Refl impossible
+finNeq {f1=FS f1'} {f2=FS f2'} refl e = finNeqSucc (finNeq {f1=f1'} {f2=f2'} refl) e
+
+
+
+{- equality for nodes -}
+nodeEq : (a, b : Node gsize) -> 
+         (a == b) = True -> 
+         (a = b)
+nodeEq (MKNode av) (MKNode bv) refl = cong $ finEq av bv refl
+
+{- a = b -> a == b = True -}
+nodeEqReverse : {a, b : Node gsize} ->  
+                (a = b) -> 
+                (a == b) = True
+nodeEqReverse {a=MKNode av} {b=MKNode bv} refl with (av == bv) proof eq 
+  | True = Refl
+  | False = absurd $ contradict (finEqReverse $ NodeInjective {f1=av} {f2=bv} refl) (sym eq)
+  
+  
+nodeNeq : {a, b : Node gsize} -> 
+          (a == b) = False -> 
+          Not (a = b)
+nodeNeq {a=MKNode av} {b=MKNode bv} refl e = finNeq refl (NodeInjective e)--finNeq av bv refl
 
 
 -- define NodeSet as type synonym(List) : gsize weight
@@ -252,8 +318,12 @@ set2 = Nil
 g : Graph 3 Nat
 g = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
 
+gteRefl : gte a a = True
+gteRefl {a=Z} = Refl
+gteRefl {a=S a'} = gteRefl {a=a'}
+
 natOps : WeightOps Nat
-natOps = MKWeight Z gte plus nat_tri plusCommutative
+natOps = MKWeight Z gte gteRefl (==) plus nat_tri plusCommutative
 
 {-
 p1 : Path Graph.n1 Graph.n1 Nat Graph.g (DVal Z)

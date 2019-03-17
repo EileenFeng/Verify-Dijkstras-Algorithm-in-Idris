@@ -173,7 +173,19 @@ run_dijkstras w gsize (S qsize') refl g@(MKGraph gsize w edges) q@(MKQueue ops (
 -}
 
 
+updateDist : (cur : Nnode gsize) -> 
+             (edges : Vect gsize (nodeset gsize weight)) -> 
+             (ops : WeightOps weight) -> 
+             (oldDist : Vect gsize (Distance weight)) -> 
+             (Vect gsize (Distance weight)) 
+             
 
+
+runDijkstras : (g : Graph gsize weight) -> 
+               (nodes : Vect len (Node gsize) ** PriorityQueue gsize nodes weight) -> 
+               (Vect gsize (Distance weight))
+runDijkstras _ (Nil ** MKQueue ops Z Nil dist) = dist
+runDijkstras (MKGraph _ _ edges) ((x :: xs) ** pf) =
 
 
 dijkstras : (gsize : Nat) -> 
