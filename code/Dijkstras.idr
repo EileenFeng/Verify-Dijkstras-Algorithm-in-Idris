@@ -221,6 +221,19 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
     dist = mkdists gsize gsize lteRefl src ops (rewrite (minusRefl {a=gsize}) in Nil)
     
     
+
+
+{- lemmas -}
+
+{- the prefix of a shortest path is also a shortest path-}
+prefixSP : (shortest_path g sp {ops}) -> 
+           (pathPrefix pre sp) -> 
+           (shortest_path g pre)
+
+
+
+
+    
 {-
 zero : a
 

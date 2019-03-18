@@ -66,12 +66,23 @@ dgt _ DInf _ = True
 dgt ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
 
 
+{-
 dgtRefl : dgt ops d d = True
-dgtRefl {d = DInf} = ?dinf
+dgtRefl {d = DInf} {ops} with (dgt ops DInf DInf) proof dInf
+  | True = absurd $ trueNotFalse dInf
+  | False = absurd $ trueNotFalse (rewrite (dgt_Inf_false {ops = ops}) in dInf)
 dgtRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
   | True = Refl
   | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
-  
+-}
+
+
+dgt_reverse : dgt ops d1 d2 = False -> dgt ops d2 d1 = True
+--dgt_reverse {d1=DInf} = Refl
+
+
+
+
 
 data Node : Nat -> Type where
   MKNode : Fin n -> Node n
@@ -273,6 +284,7 @@ data Path : Node gsize ->
          Path s n weight g
 
 
+
 {- length of path -}
 length : Path s v weight g -> 
          WeightOps weight -> 
@@ -282,24 +294,35 @@ length (Cons (Unit _ s) g v adj) ops = DVal $ edge_weight g s v adj
 length (Cons (Cons p _ s _) g v adj) ops 
   = dplus ops (DVal $ edge_weight g s v adj) (length p ops)
 
-
+{-
 path : (s : Node gsize) -> 
        (v : Node gsize) -> 
        (g : Graph gsize weight) -> 
        Path s v weight g
+path s v g = (b : Node gsize) -> (adj {g=g} s b)
+-}
+
+
+
+{- prefix of a path -}
+pathPrefix : (pprefix : Path s w weight g) -> 
+             (p : Path s v weight g) -> 
+             Type 
+pathPrefix _ _ {w} {v} {g} = (p : Path w v weight g) -> Type
 
 
 {- shortest path -}
 -- `sp` stands for shortest path, `lp` stands for any other path
 -- this definition seems inaccurate as `lp` refers to a specific s-v path rather than any s-v path in g
-shortest_path : (g : Graph gsize weight) -> 
+shortest_path : (g : Graph gsize weight) ->  
                 (sp : Path s v weight g) ->
-                {lp : Path s v weight g} -> 
-                (ops : WeightOps weight) -> 
+                {ops : WeightOps weight} -> 
                 Type 
-shortest_path g sp {lp} ops = (dgt ops (length lp ops) (length sp ops)) = True
-                
- 
+shortest_path g sp {ops} {v} 
+  = (lp : Path s v weight g) -> 
+    dgt ops (length lp ops) (length sp ops) = True
+                          
+  
 
 
 
@@ -324,8 +347,8 @@ set1 = [(n0, 4), (n2, 6)]
 set2 : nodeset 3 Nat
 set2 = Nil
 
-g : Graph 3 Nat
-g = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
+eg : Graph 3 Nat
+eg = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
 
 gteRefl : gte a a = True
 gteRefl {a=Z} = Refl
@@ -334,12 +357,12 @@ gteRefl {a=S a'} = gteRefl {a=a'}
 natOps : WeightOps Nat
 natOps = MKWeight Z gte gteRefl (==) plus nat_tri plusCommutative
 
-p102 : Path Graph.n1 Graph.n2 Nat Graph.g
-p102 = Cons (Cons (Unit g n1) g n0 Refl) g n2 Refl
+p102 : Path Graph.n1 Graph.n2 Nat Graph.eg
+p102 = Cons (Cons (Unit eg n1) eg n0 Refl) eg n2 Refl
 
 
-p12 : Path Graph.n1 Graph.n2 Nat Graph.g
-p12 = Cons (Unit g n1) g n2 Refl
+p12 : Path Graph.n1 Graph.n2 Nat Graph.eg
+p12 = Cons (Unit eg n1) eg n2 Refl
 
 
 
