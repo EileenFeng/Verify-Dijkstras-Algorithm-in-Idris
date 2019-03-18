@@ -267,10 +267,10 @@ data Path : Node gsize ->
          (n : Node gsize) -> 
          Path n n weight g
   Cons : Path s v weight g-> 
-            (g : Graph gsize weight) -> 
-            (n : Node gsize) -> 
-            (adj : adj {g=g} v n) ->
-            Path s n weight g
+         (g : Graph gsize weight) -> 
+         (n : Node gsize) -> 
+         (adj : adj {g=g} v n) ->
+         Path s n weight g
 
 
 {- length of path -}
@@ -282,15 +282,24 @@ length (Cons (Unit _ s) g v adj) ops = DVal $ edge_weight g s v adj
 length (Cons (Cons p _ s _) g v adj) ops 
   = dplus ops (DVal $ edge_weight g s v adj) (length p ops)
 
+
+path : (s : Node gsize) -> 
+       (v : Node gsize) -> 
+       (g : Graph gsize weight) -> 
+       Path s v weight g
+
+
 {- shortest path -}
 -- `sp` stands for shortest path, `lp` stands for any other path
 -- this definition seems inaccurate as `lp` refers to a specific s-v path rather than any s-v path in g
-shortest_path : (sp : Path s v w g) ->
-                (lp : Path s v w g) -> 
-                (ops : WeightOps w) -> 
+shortest_path : (g : Graph gsize weight) -> 
+                (sp : Path s v weight g) ->
+                {lp : Path s v weight g} -> 
+                (ops : WeightOps weight) -> 
                 Type 
-
+shortest_path g sp {lp} ops = (dgt ops (length lp ops) (length sp ops)) = True
                 
+ 
 
 
 
@@ -324,6 +333,15 @@ gteRefl {a=S a'} = gteRefl {a=a'}
 
 natOps : WeightOps Nat
 natOps = MKWeight Z gte gteRefl (==) plus nat_tri plusCommutative
+
+p102 : Path Graph.n1 Graph.n2 Nat Graph.g
+p102 = Cons (Cons (Unit g n1) g n0 Refl) g n2 Refl
+
+
+p12 : Path Graph.n1 Graph.n2 Nat Graph.g
+p12 = Cons (Unit g n1) g n2 Refl
+
+
 
 {-
 p1 : Path Graph.n1 Graph.n1 Nat Graph.g (DVal Z)
