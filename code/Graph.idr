@@ -147,7 +147,7 @@ nodeEqReverse {a=MKNode av} {b=MKNode bv} refl with (av == bv) proof eq
 nodeNeq : {a, b : Node gsize} -> 
           (a == b) = False -> 
           Not (a = b)
-nodeNeq {a=MKNode av} {b=MKNode bv} refl e = finNeq refl (NodeInjective e)--finNeq av bv refl
+nodeNeq {a=MKNode av} {b=MKNode bv} refl e = finNeq refl (NodeInjective e)
 
 
 -- define NodeSet as type synonym(List) : gsize weight

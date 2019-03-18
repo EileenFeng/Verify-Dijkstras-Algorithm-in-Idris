@@ -172,20 +172,37 @@ run_dijkstras w gsize (S qsize') refl g@(MKGraph gsize w edges) q@(MKQueue ops (
       --  adj = Data.Vect.index xv edges
 -}
 
+min : (m : Distance weight) -> 
+      (n : Distance weight) -> 
+      (ops : WeightOps weight) -> 
+      Distance weight
+min m n ops = case (dgt ops m n) of 
+                   True  => n
+                   False => m
 
-updateDist : (cur : Nnode gsize) -> 
-             (edges : Vect gsize (nodeset gsize weight)) -> 
-             (ops : WeightOps weight) -> 
-             (oldDist : Vect gsize (Distance weight)) -> 
-             (Vect gsize (Distance weight)) 
-             
-
+updateDist : (cur : Node gsize) -> 
+             (neighbors : List (Node gsize, weight)) -> 
+             (q : PriorityQueue gsize nodes weight) -> 
+             PriorityQueue gsize nodes weight
+updateDist cur Nil q = q
+updateDist cur@(MKNode cv) ((n, w) :: ns) q@(MKQueue ops len nodes dist) {weight}
+  = updateDist cur ns $ updateNodeDist q n (min (getDist q n) newD ops)
+    where 
+      newD : Distance weight 
+      newD = dplus ops (index cv dist) (DVal w)
+  
 
 runDijkstras : (g : Graph gsize weight) -> 
                (nodes : Vect len (Node gsize) ** PriorityQueue gsize nodes weight) -> 
                (Vect gsize (Distance weight))
 runDijkstras _ (Nil ** MKQueue ops Z Nil dist) = dist
-runDijkstras (MKGraph _ _ edges) ((x :: xs) ** pf) =
+runDijkstras g@(MKGraph gsize weight edges) ((x :: xs) ** pq)
+  = runDijkstras g (deleteMin min (x :: xs) (updateDist min neighbors pq) ?pp)
+  where 
+      min : Node gsize 
+      min = getMin pq
+      neighbors : List (Node gsize, weight)
+      neighbors = index (getVal min) edges
 
 
 dijkstras : (gsize : Nat) -> 
@@ -194,7 +211,8 @@ dijkstras : (gsize : Nat) ->
             (ops : WeightOps weight) -> 
             (graph : Graph gsize weight) -> 
             (Vect gsize (Distance weight))
-dijkstras gsize weight src ops g@(MKGraph gsize weight edges) = ?k
+dijkstras gsize weight src ops g@(MKGraph gsize weight edges) 
+  = runDijkstras g (unexplored ** (MKQueue ops gsize unexplored dist))
   where 
     unexplored : Vect gsize (Node gsize)
     unexplored = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)

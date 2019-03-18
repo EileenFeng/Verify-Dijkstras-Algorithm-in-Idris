@@ -40,7 +40,6 @@ elemRes (There e) neq = e
 {- get the distance of a specific node -}
 getDist : (q : PriorityQueue gsize nodes weight) -> 
           (n : Node gsize) -> 
-          {p : Elem n nodes} ->
           Distance weight
 getDist (MKQueue _ _ _ dist) (MKNode nv) = index nv dist
           
@@ -48,7 +47,6 @@ getDist (MKQueue _ _ _ dist) (MKNode nv) = index nv dist
 {- update the distance of a target node -}
 updateNodeDist : (q : PriorityQueue gsize nodes weight) -> 
                  (target : Node gsize) -> 
-                 {p : Elem target nodes} -> 
                  (newd : Distance weight) -> 
                  PriorityQueue gsize nodes weight
 updateNodeDist (MKQueue ops len nodes dist) (MKNode tv) newd 
@@ -78,17 +76,34 @@ getMin {nodes=x :: xs} q@(MKQueue ops (S len) (x :: xs) dist)
   = getMinHelper ((x :: xs) ** q) x
   
 
-deleteMin : (min : Node gsize) -> 
-            (nodes : Vect (S len) (Node gsize)) ->
-            (p : Elem min nodes) -> 
-            Vect len (Node gsize)
-deleteMin min (x :: Nil) p with (min == x) proof nil
+{- min is element of the queue-}
+minQElem : (q : PriorityQueue gsize nodes weight) -> 
+           Elem (getMin q) nodes
+minQElem (MKQueue _ _ nodes dist) = ?k
+
+
+{- remove min from priority queue-}
+deleteMinHelper : (min : Node gsize) -> 
+                  (nodes : Vect (S len) (Node gsize)) ->
+                  (p : Elem min nodes) -> 
+                  Vect len (Node gsize)
+deleteMinHelper min (x :: Nil) p with (min == x) proof nil
   | True = Nil
   | False = absurd $ contradict (nodeEqReverse $ elemEq p) (sym nil)
-deleteMin min (x :: (x' :: xs')) p with (min == x) proof cons
+deleteMinHelper min (x :: (x' :: xs')) p with (min == x) proof cons
   | True  = x' :: xs'
-  | False = x :: deleteMin min (x' :: xs') (elemRes p (nodeNeq (sym cons)))
-          
+  | False = x :: deleteMinHelper min (x' :: xs') (elemRes p (nodeNeq (sym cons)))
+        
+
+deleteMin : (min : Node gsize) -> 
+            (nodes : Vect (S len) (Node gsize)) -> 
+            (q : PriorityQueue gsize nodes weight) -> 
+            (p : Elem min nodes) -> 
+            (newns : Vect len (Node gsize) ** PriorityQueue gsize newns weight)
+deleteMin min nodes (MKQueue ops (S len) nodes dist) p = (newns ** (MKQueue ops len newns dist))
+  where 
+    newns : Vect len (Node gsize) 
+    newns = deleteMinHelper min nodes p
   
 
 {- min must be an element of the pqueue-}
@@ -119,9 +134,14 @@ pq2 = MKQueue natOps 2 ns2 (DInf :: DInf :: DInf :: Nil)
 
 
 n : Node 3
+n = getMin $ updateNodeDist pq n2 (DVal 0)
+{-
+n : Node 3
 n with (isQElem n2 pq) proof neElem
   | Yes e = getMin (updateNodeDist pq n2 (DVal 0) {p=e})
   | No ne = void $ (ne $ There (There Here))
+  
+-}
 {-
  -- this version of priorityqueue always keeps the list of nodes sorted
 data PriorityQueue : (len : Nat) -> (gsize : Nat) -> Type -> Type where
