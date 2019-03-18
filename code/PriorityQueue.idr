@@ -72,14 +72,21 @@ getMinHelper ((x :: xs) ** (MKQueue ops (S len) _ dist)) cur {weight}
 getMin : {nodes : Vect (S len) (Node gsize)} -> 
          (q : PriorityQueue gsize nodes weight) -> 
          Node gsize
-getMin {nodes=x :: xs} q@(MKQueue ops (S len) (x :: xs) dist) 
-  = getMinHelper ((x :: xs) ** q) x
+getMin {nodes=x :: xs} (MKQueue ops (S len) (x :: xs) dist) 
+  = getMinHelper (xs ** (MKQueue ops len xs dist)) x
+  
   
 
 {- min is element of the queue-}
 minQElem : (q : PriorityQueue gsize nodes weight) -> 
            Elem (getMin q) nodes
-minQElem (MKQueue _ _ nodes dist) = ?k
+minQElem (MKQueue ops (S Z) (x :: Nil) dist) = Here 
+minQElem (MKQueue ops (S (S len)) (x :: (x' :: xs)) dist) 
+  with (dgt ops (index (getVal x) dist) (index (getVal x') dist)) proof xdgtx'
+    | True = There $ minQElem (MKQueue ops (S len) (x' :: xs) dist)
+    | False = ?mf
+    
+ 
 
 
 {- remove min from priority queue-}

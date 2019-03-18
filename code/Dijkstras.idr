@@ -197,7 +197,7 @@ runDijkstras : (g : Graph gsize weight) ->
                (Vect gsize (Distance weight))
 runDijkstras _ (Nil ** MKQueue ops Z Nil dist) = dist
 runDijkstras g@(MKGraph gsize weight edges) ((x :: xs) ** pq)
-  = runDijkstras g (deleteMin min (x :: xs) (updateDist min neighbors pq) ?pp)
+  = runDijkstras g (deleteMin min (x :: xs) (updateDist min neighbors pq) (minQElem pq))
   where 
       min : Node gsize 
       min = getMin pq
