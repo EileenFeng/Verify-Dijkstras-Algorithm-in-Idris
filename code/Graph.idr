@@ -35,6 +35,11 @@ using (weight : type)
     zero : weight
     gtew : weight -> weight -> Bool
     gteRefl : {a : weight} -> (gtew a a = True)
+    gteReverse : {a, b : weight} -> (p : gtew a b = False) -> gtew b a = True
+    gteComm : {a, b, c : weight} -> 
+              (p1 : gtew a b = True) -> 
+              (p2 : gtew b c = True) -> 
+              gtew a c = True
     eq : weight -> weight -> Bool
     add : weight -> weight -> weight
     triangle_ineq : (a : weight) -> (b : weight) -> gtew (add a b) a = True
@@ -64,10 +69,27 @@ dplus ops (DVal v1) (DVal v2) = DVal $ (add ops) v1 v2
 dgte : (ops : WeightOps weight) -> 
        Distance weight -> 
        Distance weight -> Bool
---dgte _ DInf DInf = True
-dgte _ _ DInf = False
 dgte _ DInf _ = True
+dgte _ _ DInf = False
 dgte ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
+
+
+dgteReverse : dgte ops d1 d2 = False -> dgte ops d2 d1 = True
+dgteReverse {d1=DInf} Refl impossible
+dgteReverse {d2=DInf} refl = Refl
+dgteReverse {d1=DVal v1} {d2=DVal v2} {ops} refl = gteReverse ops refl
+
+
+dgteComm : {ops : WeightOps weight} -> 
+           {d1, d2, d3 : Distance weight} -> 
+           dgte ops d1 d2 = True -> 
+           dgte ops d2 d3 = True -> 
+           dgte ops d1 d3 = True
+dgteComm {d1=DInf} _ _ = Refl
+dgteComm {d1=DVal _} {d2=DInf} r1 r2 = absurd $ trueNotFalse (sym r1)
+dgteComm {d1=DVal _} {d2=DVal _} {d3=DInf} r1 r2 = absurd $ trueNotFalse (sym r2)
+dgteComm {ops} {d1=DVal v1} {d2=DVal v2} {d3=DVal v3} r1 r2 = gteComm ops r1 r2
+
 
 {-
 dInfRefl : dgte ops DInf DInf = True
@@ -82,17 +104,12 @@ dgte_false_notEq {d1= DVal v1} {d2=DVal v2} refl e = ?df3
 
 
 
-{-
+
 dgteRefl : dgte ops d d = True
 dgteRefl {d = DInf} = Refl
 dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
   | True = Refl
   | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
--}
-
-
-dgte_reverse : dgte ops d1 d2 = False -> dgte ops d2 d1 = True
---dgte_reverse {d1=DInf} = Refl
 
 
 
@@ -191,32 +208,12 @@ inNodeset n ((x, w) :: xs)
          False => inNodeset n xs
 
 
-{- Properties of inNodeset -}
-   
-
-{- unsafe get_weight
-{- get weight value for node 'n' in the given nodeset -}
-get_weight : (edges : nodeset gsize weight) -> 
-             (n : Node gsize) -> 
-             weight
-get_weight Nil n = ?g
-get_weight ((x, w) :: xs) n
-  = case (x == n) of 
-         True => w
-         False => get_weight xs n
--}       
-
+{- Properties of inNodeset -}      
 data Graph : Nat -> Type -> Type where
   MKGraph : (gsize : Nat) -> 
             (weight : Type) -> 
             (edges : Vect gsize (nodeset gsize weight)) -> 
             Graph gsize weight
-
-
-{- if a node value is smaller than graph size, then it is in the graph
-gelem : (g : Graph gsize weight) -> (n : Node gsize) -> Type 
-gelem (MKGraph _ _ edge) (MKNode nv) = (lte (finToNat nv) gsize = True)
--}
 
 
 {-give the edges of a certain node 'n' in graph 'g' -}
@@ -227,9 +224,9 @@ get_neighbors (MKGraph _ _ edges) (MKNode nv) = index nv edges
 
 
 {- there is an edge from node 'n' to node 'm' -}
-adj : {g : Graph gsize weight} -> 
+adj : (g : Graph gsize weight) -> 
       (n, m : Node gsize) -> Type
-adj {g} n m = (inNodeset m (get_neighbors g n) = True)
+adj g n m = (inNodeset m (get_neighbors g n) = True)
 
 
 
@@ -247,12 +244,12 @@ get_weight ((x, w) :: xs) m inset
 
 
 {- weight of edge from node 'n' to 'm' in graph 'g' -}
-edge_weight : (g : Graph gsize weight) -> 
-              (n : Node gsize) -> 
-              (m : Node gsize) -> 
-              (adj {g=g} n m) -> 
+edge_weight : {g : Graph gsize weight} -> 
+              {n : Node gsize} -> 
+              {m : Node gsize} -> 
+              (adj g n m) -> 
               weight
-edge_weight g n m adj = get_weight (get_neighbors g n) m adj
+edge_weight {g} {n} {m} adj = get_weight (get_neighbors g n) m adj
 
 {-
   {- path with distance -} 
@@ -285,55 +282,52 @@ shortestPath {d} {ld} sp lp {ops} = (dgte ops ld d = True)
   {- path without distance in Type -}
 
 data Path : Node gsize -> 
-            Node gsize -> 
-            (weight : Type) -> 
+            Node gsize ->  
             Graph gsize weight -> Type where
   Unit : (g : Graph gsize weight) -> 
          (n : Node gsize) -> 
-         Path n n weight g
-  Cons : Path s v weight g-> 
-         (g : Graph gsize weight) -> 
+         Path n n g
+  Cons : Path s v g-> 
          (n : Node gsize) -> 
-         (adj : adj {g=g} v n) ->
-         Path s n weight g
+         (adj : adj g v n) ->
+         Path s n g
 
 
 
 {- length of path -}
-length : Path s v weight g -> 
+length : {g : Graph gsize weight} ->
+         Path s v g -> 
          WeightOps weight -> 
          Distance weight
 length (Unit _ _) ops = DVal $ zero ops
-length (Cons (Unit _ s) g v adj) ops = DVal $ edge_weight g s v adj
-length (Cons (Cons p _ s _) g v adj) ops 
-  = dplus ops (DVal $ edge_weight g s v adj) (length p ops)
-
-{-
-path : (s : Node gsize) -> 
-       (v : Node gsize) -> 
-       (g : Graph gsize weight) -> 
-       Path s v weight g
-path s v g = (b : Node gsize) -> (adj {g=g} s b)
--}
+length (Cons p v adj) ops 
+  = dplus ops (DVal $ edge_weight adj) (length p ops)
 
 
+
+
+append : Path s v g -> 
+         Path v w g -> 
+         Path s w g
+append p (Unit _ w) = p
+append p (Cons p1 w adj) = Cons (append p p1) w adj
 
 {- prefix of a path -}
-pathPrefix : (pprefix : Path s w weight g) -> 
-             (p : Path s v weight g) -> 
+pathPrefix : (pprefix : Path s w g) -> 
+             (p : Path s v g) -> 
              Type 
-pathPrefix _ _ {w} {v} {g} = (p : Path w v weight g) -> Type
+pathPrefix pprefix p {w} {v} {g} = (p' : Path w v g ** append pprefix p' = p)
 
 
 {- shortest path -}
 -- `sp` stands for shortest path, `lp` stands for any other path
 -- this definition seems inaccurate as `lp` refers to a specific s-v path rather than any s-v path in g
 shortest_path : (g : Graph gsize weight) ->  
-                (sp : Path s v weight g) ->
+                (sp : Path s v g) ->
                 {ops : WeightOps weight} -> 
                 Type 
 shortest_path g sp {ops} {v} 
-  = (lp : Path s v weight g) -> 
+  = (lp : Path s v g) -> 
     dgte ops (length lp ops) (length sp ops) = True
                           
   
@@ -364,20 +358,41 @@ set2 = Nil
 eg : Graph 3 Nat
 eg = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
 
-gteRefl : gte a a = True
-gteRefl {a=Z} = Refl
-gteRefl {a=S a'} = gteRefl {a=a'}
+nat_gteRefl : gte a a = True
+nat_gteRefl {a=Z} = Refl
+nat_gteRefl {a=S a'} = nat_gteRefl {a=a'}
+
+
+nat_gte_reverse : {a, b : Nat} -> gte a b = False -> gte b a = True
+nat_gte_reverse {a=Z} {b=Z} refl = Refl
+nat_gte_reverse {a=Z} {b=S _} refl = Refl
+nat_gte_reverse {a=S _} {b=Z} Refl impossible
+nat_gte_reverse {a=S a'} {b=S b'} refl = nat_gte_reverse {a=a'} {b=b'} refl
+
+
+nat_gte_comm : {a, b, c : Nat} -> 
+               gte a b = True -> 
+               gte b c = True -> 
+               gte a c = True
+--nat_gte_comm {a=Z} {b=Z} {c=Z}
+nat_gte_comm {a=Z} {b=Z} {c=Z} _ _ = Refl
+nat_gte_comm {b=Z} {c=S _} r1 r2 = absurd $ trueNotFalse (sym r2)
+nat_gte_comm {a=Z} {b=S _} r1 r2 = absurd $ trueNotFalse (sym r1)
+nat_gte_comm {a=S _} {b=S _} {c=Z} _ _ = Refl 
+nat_gte_comm {a=S _} {b=Z} {c=Z} _ _ = Refl 
+nat_gte_comm {a=S a'} {b=S b'} {c=S c'} r1 r2 = nat_gte_comm {a=a'} {b=b'} r1 r2
 
 natOps : WeightOps Nat
-natOps = MKWeight Z gte gteRefl (==) plus nat_tri plusCommutative
+natOps = MKWeight Z gte nat_gteRefl nat_gte_reverse nat_gte_comm (==) plus nat_tri plusCommutative
 
+{-
 p102 : Path Graph.n1 Graph.n2 Nat Graph.eg
 p102 = Cons (Cons (Unit eg n1) eg n0 Refl) eg n2 Refl
 
 
 p12 : Path Graph.n1 Graph.n2 Nat Graph.eg
 p12 = Cons (Unit eg n1) eg n2 Refl
-
+-}
 
 
 {-
