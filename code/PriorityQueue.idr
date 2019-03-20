@@ -64,28 +64,21 @@ updateNodeDist (MKQueue ops len nodes dist) (MKNode tv) newd
   = MKQueue ops len nodes $ updateAt tv (\x => newd) dist
 
 
-{- get the node with min distance value within the priorityqueue -}
-getMinHelper : (nodes : Vect len (Node gsize) ** PriorityQueue gsize nodes weight)  -> 
-               (cur : Node gsize) ->  
-               Node gsize
-getMinHelper (Nil ** (MKQueue _ Z Nil _)) cur = cur
-getMinHelper ((x :: xs) ** (MKQueue ops (S len) _ dist)) cur {weight}
-  = case (dgt ops curd xd) of
-         True => getMinHelper (xs ** (MKQueue ops len _ dist)) x
-         False => getMinHelper (xs ** (MKQueue ops len _ dist)) cur
-  where
-    xd : Distance weight
-    xd = index (getVal x) dist
-    curd : Distance weight
-    curd = index (getVal cur) dist     
-  
-{- get min node from queue -}
+
+{- get min node version2-}
 getMin : {nodes : Vect (S len) (Node gsize)} -> 
          (q : PriorityQueue gsize nodes weight) -> 
          Node gsize
-getMin {nodes=x :: xs} (MKQueue ops (S len) (x :: xs) dist) 
-  = getMinHelper (xs ** (MKQueue ops len xs dist)) x
+getMin {nodes = x :: Nil} _ = x
+getMin {nodes = x :: (y :: xs)} (MKQueue ops (S (S len)) (x :: (y :: xs)) dist)
+  = case (dgte ops (index (getVal min) dist) (index (getVal x) dist)) of 
+         True => x
+         False => min
+  where 
+    min : Node gsize
+    min = getMin {nodes = y :: xs} (MKQueue ops (S len) (y :: xs) dist)
   
+
 
 {- remove min from priority queue-}
 deleteMinHelper : (min : Node gsize) -> 
@@ -115,23 +108,78 @@ deleteMin min nodes (MKQueue ops (S len) nodes dist) p = (newns ** (MKQueue ops 
 {- min is element of the queue-}
 minQElem : (q : PriorityQueue gsize nodes weight) -> 
            Elem (getMin q) nodes
+minQElem (MKQueue _ (S Z) (x :: Nil) dist) = Here
+minQElem (MKQueue ops (S (S len)) (x :: (y :: xs)) dist)
+  with (dgte ops (index (getVal (getMin $ MKQueue ops (S len) (y :: xs) dist)) dist)
+                 (index (getVal x) dist)) proof minGTx
+    | True = Here
+    | False = There $ minQElem (MKQueue ops (S len) (y :: xs) dist)
+      
+
+{- 
+{- version 1 for getMin v1 with helper -}
+{-
+{- getMin version1 with helper -}
+{- get the node with min distance value within the priorityqueue -}
+getMinHelper : (nodes : Vect len (Node gsize) ** PriorityQueue gsize nodes weight)  -> 
+               (cur : Node gsize) ->  
+               Node gsize
+getMinHelper (Nil ** (MKQueue _ Z Nil _)) cur = cur
+getMinHelper ((x :: xs) ** (MKQueue ops (S len) _ dist)) cur {weight}
+  = case (dgte ops curd xd) of
+         True => getMinHelper (xs ** (MKQueue ops len _ dist)) x
+         False => getMinHelper (xs ** (MKQueue ops len _ dist)) cur
+  where
+    xd : Distance weight
+    xd = index (getVal x) dist
+    curd : Distance weight
+    curd = index (getVal cur) dist     
+  
+{- get min node from queue -}
+getMin : {nodes : Vect (S len) (Node gsize)} -> 
+         (q : PriorityQueue gsize nodes weight) -> 
+         Node gsize
+getMin {nodes=x :: xs} (MKQueue ops (S len) (x :: xs) dist) 
+  = getMinHelper (xs ** (MKQueue ops len xs dist)) x
+-}  
+
+
+
+minQElem : (q : PriorityQueue gsize nodes weight) -> 
+           Elem (getMin q) nodes
 minQElem (MKQueue ops (S Z) (x :: Nil) dist) = Here 
 minQElem (MKQueue ops (S (S len)) (x :: (x' :: xs)) dist) 
-  with (dgt ops (index (getVal x) dist) (index (getVal x') dist)) proof xdgtx'
+  with (dgte ops (index (getVal x) dist) (index (getVal x') dist)) proof xdgtex'
     | True = There $ minQElem (MKQueue ops (S len) (x' :: xs) dist)
     | False = elem_insert_mid $ minQElem (MKQueue ops (S len) (x :: xs) dist)
-    
+  -}  
 
 {- proof of (getMin q) is the min element-}
-{- need to specify at least one of them is not DInf-}
+
+{- not same distane value, not the same node-}
+{-
+nodeDisRefl : (d : Node gsize) -> 
+              (q : PriorityQueue gsize nodes weight) -> 
+              dgte ops (getDist q d) (getDist q d) = True
+nodeDisRefl d q {ops} with (dgte ops (getDist q d) (getDist q d)) proof eq
+  | True = Refl
+  | False = ?fff
+
+-}
+
+{- need to specify at least one of them is not DInf? -}
+{-
 getMinIsMin : (q : PriorityQueue gsize nodes weight) -> 
               (p : Elem x nodes) -> 
-              dgt ops (getDist q x) (getDist q (getMin q)) = True
-getMinIsMin (MKQueue ops (S Z) (x :: Nil) dist) p = ?gm1 --rewrite (elemEq p) in Refl
-getMinIsMin q {nodes = x::xs} {ops} p 
-  with (dgt ops (getDist q $ getMin q) (getDist q x)) proof min_x
-    | True = ?gt
-    | False = ?gf
+              dgte ops (getDist q x) (getDist q (getMin q)) = True
+--getMinIsMin q@(MKQueue ops (S Z) (x :: Nil) dist) p = rewrite (elemEq p) in dgteRefl 
+getMinIsMin (MKQueue ops (S len) (x :: xs) dist) p
+  with (dgte ops (getDist (MKQueue ops (S len) (x :: xs) dist) x) 
+                 (getDist (MKQueue ops (S len) (x :: xs) dist) $ getMin (MKQueue ops (S len) (x :: xs) dist))) proof x_min
+    | True = ?gmt --rewrite (getMinIsMin (MKQueue ops len xs dist) ?pp) in ?refl
+    | False = ?gmf --rewrite (getMinIsMin (MKQueue ops len xs dist) ?pp) in Refl
+  -}   
+
 
 
 
@@ -150,9 +198,10 @@ ns2 = (n1 :: n2 :: Nil)
 pq2 : PriorityQueue 3 PriorityQueue.ns2 Nat
 pq2 = MKQueue natOps 2 ns2 (DInf :: DInf :: DInf :: Nil)
 
-
+{-
 n : Node 3
 n = getMin $ updateNodeDist pq n2 (DVal 0)
+-}
 {-
 n : Node 3
 n with (isQElem n2 pq) proof neElem
@@ -191,7 +240,7 @@ insert_elem : (PriorityQueue len nval weight) ->
               (PriorityQueue (S len) nval weight)
 insert_elem (MKQueue ops Z Nil dist) e = MKQueue ops (S Z) (e :: Nil) dist
 insert_elem (MKQueue ops (S len) q@(x@(MKNode xv) :: xs) dist) e@(MKNode ev)
-  = case (dgt ops (index ev dist) (index xv dist)) of 
+  = case (dgte ops (index ev dist) (index xv dist)) of 
          True => cons_elem (insert_elem (MKQueue ops len xs dist) e) x
          False => MKQueue ops (S (S len)) (e :: q) dist
 

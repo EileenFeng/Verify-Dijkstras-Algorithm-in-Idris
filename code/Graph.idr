@@ -48,6 +48,8 @@ data Distance : Type -> Type where
   DVal : (val : weight) -> Distance weight
 
 
+
+
 -- plus for Distance type
 dplus : (ops : WeightOps weight) -> 
         (Distance weight) -> 
@@ -58,27 +60,39 @@ dplus _ _ DInf = DInf
 dplus ops (DVal v1) (DVal v2) = DVal $ (add ops) v1 v2
 
 -- greater than or equal to for Distance type
-dgt : (ops : WeightOps weight) -> 
-      Distance weight -> 
-      Distance weight -> Bool
-dgt _ _ DInf = False
-dgt _ DInf _ = True
-dgt ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
+-- can we treat infinity as equal to infinity? 
+dgte : (ops : WeightOps weight) -> 
+       Distance weight -> 
+       Distance weight -> Bool
+--dgte _ DInf DInf = True
+dgte _ _ DInf = False
+dgte _ DInf _ = True
+dgte ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
+
+{-
+dInfRefl : dgte ops DInf DInf = True
+dInfRefl = Refl
+
+dgte_false_notEq : dgte ops d1 d2 = False -> Not (d1 = d2)
+dgte_false_notEq {d1=DInf} {d2=DInf} refl e = ?df2 --absurd $ trueNotFalse refl
+dgte_false_notEq {d1=DInf} {d2} {ops} refl e = ?df1 --rewrite (rewrite (sym e) in refl) in dInfRefl
+dgte_false_notEq {d2=DInf} refl e = ?df2
+dgte_false_notEq {d1= DVal v1} {d2=DVal v2} refl e = ?df3
+-}
+
 
 
 {-
-dgtRefl : dgt ops d d = True
-dgtRefl {d = DInf} {ops} with (dgt ops DInf DInf) proof dInf
-  | True = absurd $ trueNotFalse dInf
-  | False = absurd $ trueNotFalse (rewrite (dgt_Inf_false {ops = ops}) in dInf)
-dgtRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
+dgteRefl : dgte ops d d = True
+dgteRefl {d = DInf} = Refl
+dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
   | True = Refl
   | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
 -}
 
 
-dgt_reverse : dgt ops d1 d2 = False -> dgt ops d2 d1 = True
---dgt_reverse {d1=DInf} = Refl
+dgte_reverse : dgte ops d1 d2 = False -> dgte ops d2 d1 = True
+--dgte_reverse {d1=DInf} = Refl
 
 
 
@@ -141,10 +155,10 @@ finNeq {f1=FS f1'} {f2=FS f2'} refl e = finNeqSucc (finNeq {f1=f1'} {f2=f2'} ref
 
 
 {- equality for nodes -}
-nodeEq : (a, b : Node gsize) -> 
+nodeEq : {a, b : Node gsize} -> 
          (a == b) = True -> 
          (a = b)
-nodeEq (MKNode av) (MKNode bv) refl = cong $ finEq av bv refl
+nodeEq {a=MKNode av} {b=MKNode bv} refl = cong $ finEq av bv refl
 
 {- a = b -> a == b = True -}
 nodeEqReverse : {a, b : Node gsize} ->  
@@ -262,7 +276,7 @@ shortestPath : (sp : Path s v w g d) ->
                (lp : Path s v w g ld) -> 
                {ops : WeightOps w} -> 
                Type 
-shortestPath {d} {ld} sp lp {ops} = (dgt ops ld d = True)
+shortestPath {d} {ld} sp lp {ops} = (dgte ops ld d = True)
 
 
 -}
@@ -320,7 +334,7 @@ shortest_path : (g : Graph gsize weight) ->
                 Type 
 shortest_path g sp {ops} {v} 
   = (lp : Path s v weight g) -> 
-    dgt ops (length lp ops) (length sp ops) = True
+    dgte ops (length lp ops) (length sp ops) = True
                           
   
 

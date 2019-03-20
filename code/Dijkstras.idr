@@ -176,7 +176,7 @@ min : (m : Distance weight) ->
       (n : Distance weight) -> 
       (ops : WeightOps weight) -> 
       Distance weight
-min m n ops = case (dgt ops m n) of 
+min m n ops = case (dgte ops m n) of 
                    True  => n
                    False => m
 
@@ -224,7 +224,6 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
 
 
 {- lemmas -}
-
 {- the prefix of a shortest path is also a shortest path-}
 prefixSP : (shortest_path g sp {ops}) -> 
            (pathPrefix pre sp) -> 
