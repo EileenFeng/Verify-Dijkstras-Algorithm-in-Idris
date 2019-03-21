@@ -181,7 +181,7 @@ Hence we have reached a contradiction. Thus by the principle of prove by contrad
 % Lemma 3.2
 %================================================================================================
 \begin{sublemma}
-After the $n^{th}$ iteration for $n \geq 1$, forall node $v \in explored_{n+1}$, if $dist_{n+1}[v] \neq infinity$, then $dist_{n+1}[v]$ is the length of some $s-v$ path, i.e, $path(s, v) \neq \emptyset$.  
+After the $n^{th}$ iteration for $n \geq 1$, forall node $v \in g$, if $dist_{n+1}[v] \neq infinity$, then $dist_{n+1}[v]$ is the length of some $s-v$ path, i.e, $path(s, v) \neq \emptyset$.  
 \end{sublemma}
 \begin{proof}
 We will prove \texttt{Lemma 3.2} by inducting on the number of iterations. 
@@ -208,7 +208,7 @@ If $dist_{k+2}[u_{k+1}] \neq infinity$, then $dist_{k+1}[u_{k+1}] = dist_{k+2}[u
 \\\\
 % \texttt{Case (1): $(u_{k+1}, v) \in g$}
 % \\
-Based on the algorithm, we have $dist_{k+2}[v] = min(dist_{k+1}[v], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v))$. There are two cases:
+For any other node $v \in g$ other than $u_{k+1}$, based on the algorithm, we have $dist_{k+2}[v] = min(dist_{k+1}[v], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v))$. There are two cases:
 \begin{itemize}
   \item \texttt{Case 1: $dist_{k+1}[v] < dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)$}. \\
   In this case, $dist_{k+2}[v] = dist_{k+1}[v]$. Then if $dist_{k+2}[v] \neq infinity$, we have $dist_{k+1}[v] \neq infinity$, and that $dist_{k+2}[v]$ and $dist_{k+1}[v]$ are the length of the same $s-v$ path if there exists one. Since $dist_{k+1}[v] \neq infinity$, the inductive hypothesis implies that $dist_{k+1}[v]$ is the length of some $s-v$ path, hence $dist_{k+2}[v]$ is the length of some $s-v$ path. P(k+1) holds. 
