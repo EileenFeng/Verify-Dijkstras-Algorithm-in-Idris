@@ -316,7 +316,7 @@ append p (Cons p1 w adj) = Cons (append p p1) w adj
 pathPrefix : (pprefix : Path s w g) -> 
              (p : Path s v g) -> 
              Type 
-pathPrefix pprefix p {w} {v} {g} = (p' : Path w v g ** append pprefix p' = p)
+pathPrefix pprefix p {w} {v} {g} = (ppost : Path w v g ** append pprefix ppost = p)
 
 
 {- shortest path -}
@@ -324,9 +324,9 @@ pathPrefix pprefix p {w} {v} {g} = (p' : Path w v g ** append pprefix p' = p)
 -- this definition seems inaccurate as `lp` refers to a specific s-v path rather than any s-v path in g
 shortest_path : (g : Graph gsize weight) ->  
                 (sp : Path s v g) ->
-                {ops : WeightOps weight} -> 
+                (ops : WeightOps weight) -> 
                 Type 
-shortest_path g sp {ops} {v} 
+shortest_path g sp ops {v} 
   = (lp : Path s v g) -> 
     dgte ops (length lp ops) (length sp ops) = True
                           

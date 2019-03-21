@@ -178,10 +178,24 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
 
 {- lemmas -}
 {- the prefix of a shortest path is also a shortest path-}
-prefixSP : (shortest_path g sp {ops}) -> 
-           (pathPrefix p sp) -> 
-           (shortest_path g p {ops = ops})
-prefixSP spath prepath  = ?subsp 
+shorter_trans : (p1 : Path s w g) -> 
+                (p2 : Path s w g) -> 
+                (p3 : Path w v g) -> 
+                (ops : WeightOps weight) -> 
+                (p : dgte ops (length p1 ops) (length p2 ops) = False) -> 
+                dgte ops (length (append p1 p3) ops) (length (append p2 p3) ops) = False
+
+
+
+prefixSP : (shortest_path g sp ops) -> 
+           (pathPrefix sp_pre sp) -> 
+           (shortest_path g sp_pre ops)
+prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
+  with (dgte ops (length lp_pre ops) (length sp_pre ops)) proof lpsp
+    | True = Refl
+    | False = absurd $ contradict (spath (append lp_pre post)) 
+                                         (rewrite (sym appendRefl) 
+                                                  in (shorter_trans lp_pre sp_pre post ops (sym lpsp)))
 
 
 
