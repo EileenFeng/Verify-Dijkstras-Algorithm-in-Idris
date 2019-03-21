@@ -34,16 +34,20 @@ using (weight : type)
     constructor MKWeight
     zero : weight
     gtew : weight -> weight -> Bool
+    eq : weight -> weight -> Bool
+    add : weight -> weight -> weight
     gteRefl : {a : weight} -> (gtew a a = True)
     gteReverse : {a, b : weight} -> (p : gtew a b = False) -> gtew b a = True
     gteComm : {a, b, c : weight} -> 
               (p1 : gtew a b = True) -> 
               (p2 : gtew b c = True) -> 
               gtew a c = True
-    eq : weight -> weight -> Bool
-    add : weight -> weight -> weight
+    gteBothPlus : {a, b : weight} -> 
+                  (c : weight) -> 
+                  (p1 : gtew a b = False) -> 
+                  gtew (add a c) (add b c) = False
     triangle_ineq : (a : weight) -> (b : weight) -> gtew (add a b) a = True
-    add_comm : (a : weight) -> (b : weight) -> add a b = add b a
+    addComm : (a : weight) -> (b : weight) -> add a b = add b a
 
 
 -- any value added to infinity should be infinity
@@ -51,7 +55,6 @@ using (weight : type)
 data Distance : Type -> Type where
   DInf : Distance weight
   DVal : (val : weight) -> Distance weight
-
 
 
 
@@ -74,6 +77,13 @@ dgte _ _ DInf = False
 dgte ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
 
 
+dgteRefl : dgte ops d d = True
+dgteRefl {d = DInf} = Refl
+dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
+  | True = Refl
+  | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
+
+
 dgteReverse : dgte ops d1 d2 = False -> dgte ops d2 d1 = True
 dgteReverse {d1=DInf} Refl impossible
 dgteReverse {d2=DInf} refl = Refl
@@ -91,6 +101,17 @@ dgteComm {d1=DVal _} {d2=DVal _} {d3=DInf} r1 r2 = absurd $ trueNotFalse (sym r2
 dgteComm {ops} {d1=DVal v1} {d2=DVal v2} {d3=DVal v3} r1 r2 = gteComm ops r1 r2
 
 
+dgteBothPlus : {d1, d2: Distance weight} -> 
+               {ops : WeightOps weight} -> 
+               (w : weight) -> 
+               dgte ops d1 d2 = False -> 
+               dgte ops (dplus ops (DVal w) d1) (dplus ops (DVal w) d2) = False
+dgteBothPlus {d1=DInf} {d2} _ Refl impossible
+dgteBothPlus {d1=DVal v1} {d2=DInf} w refl = Refl
+dgteBothPlus {d1=DVal v1} {d2=DVal v2} w refl {ops} 
+  = rewrite (addComm ops w v1) in (rewrite (addComm ops w v2) in (gteBothPlus ops w refl))
+
+
 {-
 dInfRefl : dgte ops DInf DInf = True
 dInfRefl = Refl
@@ -101,17 +122,6 @@ dgte_false_notEq {d1=DInf} {d2} {ops} refl e = ?df1 --rewrite (rewrite (sym e) i
 dgte_false_notEq {d2=DInf} refl e = ?df2
 dgte_false_notEq {d1= DVal v1} {d2=DVal v2} refl e = ?df3
 -}
-
-
-
-
-dgteRefl : dgte ops d d = True
-dgteRefl {d = DInf} = Refl
-dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
-  | True = Refl
-  | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
-
-
 
 
 
@@ -381,10 +391,10 @@ nat_gte_comm {a=Z} {b=S _} r1 r2 = absurd $ trueNotFalse (sym r1)
 nat_gte_comm {a=S _} {b=S _} {c=Z} _ _ = Refl 
 nat_gte_comm {a=S _} {b=Z} {c=Z} _ _ = Refl 
 nat_gte_comm {a=S a'} {b=S b'} {c=S c'} r1 r2 = nat_gte_comm {a=a'} {b=b'} r1 r2
-
+{-
 natOps : WeightOps Nat
 natOps = MKWeight Z gte nat_gteRefl nat_gte_reverse nat_gte_comm (==) plus nat_tri plusCommutative
-
+-}
 {-
 p102 : Path Graph.n1 Graph.n2 Nat Graph.eg
 p102 = Cons (Cons (Unit eg n1) eg n0 Refl) eg n2 Refl

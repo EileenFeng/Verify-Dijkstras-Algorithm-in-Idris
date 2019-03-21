@@ -177,13 +177,16 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
 
 
 {- lemmas -}
-{- the prefix of a shortest path is also a shortest path-}
+{- Lemma 3.1: the prefix of a shortest path is also a shortest path-}
 shorter_trans : (p1 : Path s w g) -> 
                 (p2 : Path s w g) -> 
                 (p3 : Path w v g) -> 
                 (ops : WeightOps weight) -> 
                 (p : dgte ops (length p1 ops) (length p2 ops) = False) -> 
                 dgte ops (length (append p1 p3) ops) (length (append p2 p3) ops) = False
+shorter_trans p1 p2 (Unit _ _) ops prf = prf
+shorter_trans p1 p2 (Cons p3' v adj) ops prf 
+  = dgteBothPlus (edge_weight adj) $ shorter_trans p1 p2 p3' ops prf
 
 
 
