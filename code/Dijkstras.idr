@@ -180,27 +180,28 @@ min m n ops = case (dgte ops m n) of
                    True  => n
                    False => m
 
+
 updateDist : (cur : Node gsize) -> 
              (neighbors : List (Node gsize, weight)) -> 
-             (q : PriorityQueue gsize nodes weight) -> 
-             PriorityQueue gsize nodes weight
+             (q : PriorityQueue gsize len weight) -> 
+             PriorityQueue gsize len weight
 updateDist cur Nil q = q
 updateDist cur@(MKNode cv) ((n, w) :: ns) q@(MKQueue ops len nodes dist) {weight}
-  = updateDist cur ns $ updateNodeDist q n (min (getDist q n) newD ops)
+  = updateDist cur ns $ updateNodeDist q n (min (getNodeDist q n) newD ops)
     where 
       newD : Distance weight 
       newD = dplus ops (index cv dist) (DVal w)
   
 
 runDijkstras : (g : Graph gsize weight) -> 
-               (nodes : Vect len (Node gsize) ** PriorityQueue gsize nodes weight) -> 
+               (q : PriorityQueue gsize len weight) -> 
                (Vect gsize (Distance weight))
-runDijkstras _ (Nil ** MKQueue ops Z Nil dist) = dist
-runDijkstras g@(MKGraph gsize weight edges) ((x :: xs) ** pq)
-  = runDijkstras g (deleteMin min (x :: xs) (updateDist min neighbors pq) (minQElem pq))
+runDijkstras {len=Z} _ (MKQueue ops Z Nil dist) = dist
+runDijkstras g@(MKGraph gsize weight edges) q@(MKQueue ops (S len) (x :: xs) dist)
+  = runDijkstras g (updateDist min neighbors $ deleteMin q)
   where 
       min : Node gsize 
-      min = getMin pq
+      min = getMin q
       neighbors : List (Node gsize, weight)
       neighbors = index (getVal min) edges
 
@@ -212,7 +213,7 @@ dijkstras : (gsize : Nat) ->
             (graph : Graph gsize weight) -> 
             (Vect gsize (Distance weight))
 dijkstras gsize weight src ops g@(MKGraph gsize weight edges) 
-  = runDijkstras g (unexplored ** (MKQueue ops gsize unexplored dist))
+  = runDijkstras g (MKQueue ops gsize unexplored dist)
   where 
     unexplored : Vect gsize (Node gsize)
     unexplored = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
