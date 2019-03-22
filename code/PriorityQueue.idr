@@ -64,11 +64,11 @@ qdist (MKQueue _ _ _ dist) = dist
         
 
 
-{- get the distance of a specific node -}
-getNodeDist : (q : PriorityQueue gsize len weight) -> 
-              (n : Node gsize) -> 
+{- get the distance of a specific node from priorityqueue-}
+getNodeDist : (n : Node gsize) -> 
+              (q : PriorityQueue gsize len weight) -> 
               Distance weight
-getNodeDist (MKQueue _ _ _ dist) n = index (getVal n) dist
+getNodeDist n (MKQueue _ _ _ dist) = index (getVal n) dist
           
 
 {- update the distance of a target node -}

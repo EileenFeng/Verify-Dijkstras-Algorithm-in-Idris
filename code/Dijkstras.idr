@@ -140,7 +140,7 @@ updateDist : (cur : Node gsize) ->
              PriorityQueue gsize len weight
 updateDist cur Nil q = q
 updateDist cur@(MKNode cv) ((n, w) :: ns) q@(MKQueue ops len nodes dist) {weight}
-  = updateDist cur ns $ updateNodeDist q n (min (getNodeDist q n) newD ops)
+  = updateDist cur ns $ updateNodeDist q n (min (getNodeDist n q) newD ops)
     where 
       newD : Distance weight 
       newD = dplus ops (index cv dist) (DVal w)
@@ -156,7 +156,7 @@ runDijkstras g@(MKGraph gsize weight edges) q@(MKQueue ops (S len) (x :: xs) dis
       min : Node gsize 
       min = getMin q
       neighbors : List (Node gsize, weight)
-      neighbors = index (getVal min) edges
+      neighbors = getNeighbors g min
 
 
 dijkstras : (gsize : Nat) -> 
@@ -176,29 +176,47 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
     
 
 
-{- lemmas -}
-{- Lemma 3.1: the prefix of a shortest path is also a shortest path-}
+{- ============================= LEMMAS ============================== -}
+
+{- 
+  [Lemma 3.1]: the prefix of a shortest path is also a shortest path
+-}
+{- lemma 3.1 helper: (length p1) < length(p2) -> length(p1+p3) < length(p1+p3)-}
 shorter_trans : (p1 : Path s w g) -> 
                 (p2 : Path s w g) -> 
                 (p3 : Path w v g) -> 
                 (ops : WeightOps weight) -> 
-                (p : dgte ops (length p1 ops) (length p2 ops) = False) -> 
-                dgte ops (length (append p1 p3) ops) (length (append p2 p3) ops) = False
+                (p : dgte ops (length ops p1) (length ops p2) = False) -> 
+                dgte ops (length ops (append p1 p3)) (length ops (append p2 p3)) = False
 shorter_trans p1 p2 (Unit _ _) ops prf = prf
 shorter_trans p1 p2 (Cons p3' v adj) ops prf 
   = dgteBothPlus (edge_weight adj) $ shorter_trans p1 p2 p3' ops prf
 
-
-
+{- lemma 3.1 prove-}
 prefixSP : (shortest_path g sp ops) -> 
            (pathPrefix sp_pre sp) -> 
            (shortest_path g sp_pre ops)
 prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
-  with (dgte ops (length lp_pre ops) (length sp_pre ops)) proof lpsp
+  with (dgte ops (length ops lp_pre) (length ops sp_pre)) proof lpsp
     | True = Refl
     | False = absurd $ contradict (spath (append lp_pre post)) 
                                          (rewrite (sym appendRefl) 
                                                   in (shorter_trans lp_pre sp_pre post ops (sym lpsp)))
+
+
+
+
+{- Lemma2: if dist[v]_{n+1} != infinity, then there is a s-v path -}
+existPath : (v : Node gsize) -> 
+            (s : Node gsize) -> 
+            (g : Graph gsize weight) -> 
+            {q : PriorityQueue gsize len weight} -> 
+            (ne : dEq (qops q) DInf (getNodeDist v $ updateDist cur (getNeighbors g cur) q) = False) -> 
+            (p : Path s v g ** (dEq (qops q) 
+                                      (length (qops q) p) 
+                                      (getNodeDist v $ updateDist cur (getNeighbors g cur) q)) = True)
+             
+
 
 
 

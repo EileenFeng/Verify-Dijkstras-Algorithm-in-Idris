@@ -57,6 +57,14 @@ data Distance : Type -> Type where
   DVal : (val : weight) -> Distance weight
 
 
+dEq : (ops : WeightOps weight) -> 
+      (Distance weight) -> 
+      (Distance weight) -> 
+      Bool
+dEq _ DInf DInf = True
+dEq _ DInf _ = False
+dEq _ _ DInf = False
+dEq ops (DVal v1) (DVal v2) = eq ops v1 v2
 
 -- plus for Distance type
 dplus : (ops : WeightOps weight) -> 
@@ -127,6 +135,11 @@ dgte_false_notEq {d1= DVal v1} {d2=DVal v2} refl e = ?df3
 
 data Node : Nat -> Type where
   MKNode : Fin n -> Node n
+
+
+implementation Uninhabited  (Node Z) where
+  uninhabited (MKNode f) impossible
+
 
 NodeInjective : {f1 : Fin n} -> {f2 : Fin n} -> (MKNode f1 = MKNode f2) -> (f1 = f2)
 NodeInjective Refl = Refl
@@ -227,16 +240,17 @@ data Graph : Nat -> Type -> Type where
 
 
 {-give the edges of a certain node 'n' in graph 'g' -}
-get_neighbors : (g : Graph gsize weight) -> 
-                (n : Node gsize) -> 
-                (nodeset gsize weight)
-get_neighbors (MKGraph _ _ edges) (MKNode nv) = index nv edges
+getNeighbors : (g : Graph gsize weight) -> 
+               (n : Node gsize) -> 
+               (nodeset gsize weight)
+getNeighbors (MKGraph _ _ edges) (MKNode nv) = index nv edges
+
 
 
 {- there is an edge from node 'n' to node 'm' -}
 adj : (g : Graph gsize weight) -> 
       (n, m : Node gsize) -> Type
-adj g n m = (inNodeset m (get_neighbors g n) = True)
+adj g n m = (inNodeset m (getNeighbors g n) = True)
 
 
 
@@ -259,7 +273,7 @@ edge_weight : {g : Graph gsize weight} ->
               {m : Node gsize} -> 
               (adj g n m) -> 
               weight
-edge_weight {g} {n} {m} adj = get_weight (get_neighbors g n) m adj
+edge_weight {g} {n} {m} adj = get_weight (getNeighbors g n) m adj
 
 {-
   {- path with distance -} 
@@ -306,12 +320,12 @@ data Path : Node gsize ->
 
 {- length of path -}
 length : {g : Graph gsize weight} ->
-         Path s v g -> 
          WeightOps weight -> 
+         Path s v g -> 
          Distance weight
-length (Unit _ _) ops = DVal $ zero ops
-length (Cons p v adj) ops 
-  = dplus ops (DVal $ edge_weight adj) (length p ops)
+length ops (Unit _ _) = DVal $ zero ops
+length ops (Cons p v adj)
+  = dplus ops (DVal $ edge_weight adj) (length ops p)
 
 
 
@@ -338,7 +352,7 @@ shortest_path : (g : Graph gsize weight) ->
                 Type 
 shortest_path g sp ops {v} 
   = (lp : Path s v g) -> 
-    dgte ops (length lp ops) (length sp ops) = True
+    dgte ops (length ops lp) (length ops sp) = True
                           
   
 
