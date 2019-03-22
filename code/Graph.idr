@@ -141,6 +141,11 @@ implementation Uninhabited  (Node Z) where
   uninhabited (MKNode f) impossible
 
 
+{- type `Node Z` is impossible -}
+NodeZAbsurd : Node Z -> Void
+NodeZAbsurd (MKNode f) impossible
+
+
 NodeInjective : {f1 : Fin n} -> {f2 : Fin n} -> (MKNode f1 = MKNode f2) -> (f1 = f2)
 NodeInjective Refl = Refl
 

@@ -173,8 +173,6 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
     
     dist : Vect gsize (Distance weight) 
     dist = mkdists gsize gsize lteRefl src ops (rewrite (minusRefl {a=gsize}) in Nil)
-    
-
 
 {- ============================= LEMMAS ============================== -}
 
@@ -192,7 +190,7 @@ shorter_trans p1 p2 (Unit _ _) ops prf = prf
 shorter_trans p1 p2 (Cons p3' v adj) ops prf 
   = dgteBothPlus (edge_weight adj) $ shorter_trans p1 p2 p3' ops prf
 
-{- lemma 3.1 prove-}
+{- lemma 3.1 proof -}
 prefixSP : (shortest_path g sp ops) -> 
            (pathPrefix sp_pre sp) -> 
            (shortest_path g sp_pre ops)
@@ -207,6 +205,21 @@ prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
 
 
 {- Lemma2: if dist[v]_{n+1} != infinity, then there is a s-v path -}
+existPath : (g : Graph gsize weight) -> 
+            (s : Node gsize) -> 
+            (q : PriorityQueue gsize (S len) weight) -> 
+            (prop : (dEq (qops q) DInf (getNodeDist w q) = False) -> 
+                 (psw : Path s w g ** (dEq (qops q) (length (qops q) psw) (getNodeDist w q)) = True)) -> 
+            (ne : dEq (qops q) DInf (index (getVal v) (runDijkstras g q)) = False) -> 
+            (psv : Path s v g ** (dEq (qops q) (length (qops q) psv) (index (getVal v) (runDijkstras g q))) = True)
+            
+
+
+
+
+
+
+{-
 existPath : (v : Node gsize) -> 
             (s : Node gsize) -> 
             (g : Graph gsize weight) -> 
@@ -215,18 +228,28 @@ existPath : (v : Node gsize) ->
             (p : Path s v g ** (dEq (qops q) 
                                       (length (qops q) p) 
                                       (getNodeDist v $ updateDist cur (getNeighbors g cur) q)) = True)
-             
-
-
-
-
-
-
+-}
+{-
+existPath : {gsize : Nat} -> 
+            {s : Node gsize} ->
+            {ops : WeightOps weight} -> 
+            (v : Node gsize) -> 
+            (ne : dEq ops DInf (index (getVal v) (dijkstras gsize weight s ops g)) = False) -> 
+            (p : Path s v g ** (dEq ops (length ops p) 
+                                        (index (getVal v) (dijkstras gsize weight s ops g))) = True) 
+existPath {gsize = Z} v ne = absurd $ NodeZAbsurd v
+existPath {gsize = S Z} {weight} {ops} {s} {g} v ne = ?base
+{-
+  with (runDijkstras g (MKQueue ops (S Z) 
+                     (mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil))-}
+                     
+existPath {gsize = S len} v ne = ?is  
+-}
 
 
 {- version before priorityqueue -}
 {-
--- need to take in priority queue
+ -- need to take in priority queue
 -- helper function recur on the list of adj_nodes
 update_dist : (weight : Type) -> 
               (gsize : Nat) -> 
