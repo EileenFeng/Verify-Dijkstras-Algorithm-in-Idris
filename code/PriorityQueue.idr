@@ -64,6 +64,11 @@ qdist (MKQueue _ _ _ dist) = dist
         
 
 
+updateQDist : (q : PriorityQueue gsize len weight) -> 
+              (Vect gsize (Distance weight)) -> 
+              PriorityQueue gsize len weight
+updateQDist (MKQueue ops len nodes dist) ndist = MKQueue ops len nodes ndist
+
 {- get the distance of a specific node from priorityqueue-}
 getNodeDist : (n : Node gsize) -> 
               (q : PriorityQueue gsize len weight) -> 

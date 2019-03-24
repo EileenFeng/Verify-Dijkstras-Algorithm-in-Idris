@@ -1,7 +1,7 @@
 module Graph
 import Data.Vect
 
-%access public export 
+%access public export
 %default total
 
 contradict : p = True -> 
@@ -351,16 +351,21 @@ pathPrefix pprefix p {w} {v} {g} = (ppost : Path w v g ** append pprefix ppost =
 {- shortest path -}
 -- `sp` stands for shortest path, `lp` stands for any other path
 -- this definition seems inaccurate as `lp` refers to a specific s-v path rather than any s-v path in g
-shortest_path : (g : Graph gsize weight) ->  
-                (sp : Path s v g) ->
-                (ops : WeightOps weight) -> 
+shortestPath : (g : Graph gsize weight) ->  
+               (sp : Path s v g) ->
+               (ops : WeightOps weight) -> 
                 Type 
-shortest_path g sp ops {v} 
+shortestPath g sp ops {v} 
   = (lp : Path s v g) -> 
     dgte ops (length ops lp) (length ops sp) = True
                           
   
-
+delta : {g : Graph gsize weight} -> 
+        {ops : WeightOps weight} -> 
+        {s, v : Node gsize} -> 
+        (sp : Path s v g ** shortestPath g sp ops) -> 
+        Distance weight
+delta (p ** sp_prf) {ops} = length ops p
 
 
 
