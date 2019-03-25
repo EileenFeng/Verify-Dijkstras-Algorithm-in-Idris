@@ -298,11 +298,11 @@ getMinIsMin (MKQueue ops (S len) (x :: xs) dist) p
 
 
 {- examples -}
-
+{- example of PQ with nodes in type
 ns : Vect 3 (Node 3)
 ns = (n0 :: n1 :: n2 :: Nil)         
 
-{- example of PQ with nodes in type
+
 pq : PriorityQueue 3 PriorityQueue.ns Nat
 pq = MKQueue natOps 3 ns (DInf :: DInf :: DInf :: Nil)
 

@@ -85,6 +85,14 @@ dgte _ _ DInf = False
 dgte ops (DVal v1) (DVal v2) = (gtew ops) v1 v2
 
 
+-- smaller than 
+dlt : (ops : WeightOps weight) -> 
+      Distance weight -> 
+      Distance weight -> 
+      Bool
+dlt ops d1 d2 = not $ dgte ops d1 d2
+
+
 dgteRefl : dgte ops d d = True
 dgteRefl {d = DInf} = Refl
 dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
@@ -316,7 +324,7 @@ data Path : Node gsize ->
   Unit : (g : Graph gsize weight) -> 
          (n : Node gsize) -> 
          Path n n g
-  Cons : Path s v g-> 
+  Cons : Path s v g -> 
          (n : Node gsize) -> 
          (adj : adj g v n) ->
          Path s n g
@@ -371,26 +379,35 @@ delta (p ** sp_prf) {ops} = length ops p
 
 
 -- example with Nat as weight
-n0 : Node 3
+n0 : Node 4
 n0 = MKNode FZ
 
-n1 : Node 3
+n1 : Node 4
 n1 = MKNode (FS FZ)
 
-n2 : Node 3
+n2 : Node 4
 n2 = MKNode (FS (FS FZ))
 
-set0 : nodeset 3 Nat 
-set0 = [(n2, 4)]
+n3 : Node 4
+n3 = MKNode (FS (FS (FS FZ)))
 
-set1 : nodeset 3 Nat
-set1 = [(n0, 4), (n2, 6)]
 
-set2 : nodeset 3 Nat
-set2 = Nil
 
-eg : Graph 3 Nat
-eg = MKGraph 3 Nat (set0 :: set1 :: set2 :: Nil)
+set0 : nodeset 4 Nat 
+set0 = [(n2, 5), (n1, 1), (n3, 6)]
+
+set1 : nodeset 4 Nat
+set1 = [(n0, 2), (n2, 2), (n3, 7)]
+
+set2 : nodeset 4 Nat
+set2 = [(n3, 1)]
+
+set3 : nodeset 4 Nat
+set3 = Nil
+
+
+eg : Graph 4 Nat
+eg = MKGraph 4 Nat (set0 :: set1 :: set2 :: set3 :: Nil)
 
 nat_gteRefl : gte a a = True
 nat_gteRefl {a=Z} = Refl
@@ -415,10 +432,20 @@ nat_gte_comm {a=Z} {b=S _} r1 r2 = absurd $ trueNotFalse (sym r1)
 nat_gte_comm {a=S _} {b=S _} {c=Z} _ _ = Refl 
 nat_gte_comm {a=S _} {b=Z} {c=Z} _ _ = Refl 
 nat_gte_comm {a=S a'} {b=S b'} {c=S c'} r1 r2 = nat_gte_comm {a=a'} {b=b'} r1 r2
-{-
+
+
+nat_gteBothPlus : {a, b : Nat} -> 
+                  (c : Nat) -> 
+                  (p : gte a b = False) -> 
+                  gte (plus a c) (plus b c) = False
+nat_gteBothPlus Z p {a} {b}= rewrite (plusZeroRightNeutral a) in (rewrite (plusZeroRightNeutral b) in p)
+nat_gteBothPlus (S c) p {a} {b} 
+  = rewrite (sym $ plusSuccRightSucc b c) in 
+            (rewrite (sym $ plusSuccRightSucc a c) in (nat_gteBothPlus c p))
+
 natOps : WeightOps Nat
-natOps = MKWeight Z gte nat_gteRefl nat_gte_reverse nat_gte_comm (==) plus nat_tri plusCommutative
--}
+natOps = MKWeight Z gte (==) plus nat_gteRefl nat_gte_reverse nat_gte_comm nat_gteBothPlus nat_tri plusCommutative
+
 {-
 p102 : Path Graph.n1 Graph.n2 Nat Graph.eg
 p102 = Cons (Cons (Unit eg n1) eg n0 Refl) eg n2 Refl
