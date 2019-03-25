@@ -383,7 +383,7 @@ dijkstras_correctness : (gsize : Nat) ->
                         (g : Graph gsize weight) -> 
                         (s,v : Node gsize) -> 
                         (dp : (psv : Path s v g ** shortestPath g psv ops)) -> 
-                        dEq ops (length ops psv) (index (getVal v) (runDijkstras g ops s ops gsize)) = True
+                        dEq ops (length ops psv) (index (getVal v) (head $ runDijkstras g ops s gsize {p=lte_refl gsize})) = True
 dijkstras_correctness Z _ _ s _ _ = absurd $ NodeZAbsurd s
 dijkstras_correctness (S len) ops g s v dp = ?prf
 
