@@ -38,6 +38,13 @@ CElem : {g : Graph gsize weight ops} ->
         Type
 CElem v (MKColumn _ _ _ unexp _)= Elem v unexp
 
+-- get the dist from COlumn
+cdist : {g : Graph gsize weight ops} ->
+        (Column len g src) ->
+        Vect gsize (Distance weight)
+cdist (MKColumn _ _ _ _ dist) = dist
+
+
 
 unexplored : {g : Graph gsize weight ops} ->
              (v : Node gsize) ->

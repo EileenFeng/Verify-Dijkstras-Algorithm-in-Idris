@@ -1,13 +1,14 @@
 module Dijkstras
 
 import Graph
-import PriorityQueue
+import Column
 import Data.Vect
 import Prelude.Basics
 import Prelude.List
 
 
 %default total
+%access public export
 
 {-
   should the size of `all_nodes` relates to the size of `explored` and `unexplored`? if do, then sort_nodes might have problems as the size of  `targets` is not tightly relates to the size of `all_nodes`
@@ -90,27 +91,24 @@ mknodes (S g) (S c) p vec
   = mknodes (S g) c (lteSuccLeft p)
             $ rewrite (sym $ minusSuccLeft g c (fromLteSucc p)) in ((MKNode $ natTofin c (S g)) :: vec)
 
-
-
 {- helper for making list of initial distance values-}
+
+allDInf : (gsize : Nat) ->
+          (weight : Type) ->
+          Vect gsize (Distance weight)
+allDInf Z _ = Nil
+allDInf (S n') w = DInf :: (allDInf n' w)
+
+
+mkdists : (gsize : Nat) ->
+          (src : Node gsize) ->
+          (ops : WeightOps weight) ->
+          Vect gsize (Distance weight)
+mkdists Z _ _ = Nil
+mkdists gsize (MKNode sv) ops {weight}
+  = replaceAt sv (DVal $ zero ops) (allDInf gsize weight)
+
 {-
-  {-reverse order, generate list, unable to ensure length-}
-mkdist : (gsize : Nat) ->
-         (cur : Nat) ->
-         (p : LTE cur gsize) ->
-         (s : Node gsize) ->
-         (ops : WeightOps weight) ->
-         List (Distance weight)
-mkdist Z Z _ _ _ = Nil
-mkdist Z (S _) p _ _ = absurd p
-mkdist (S g) Z _ _ _ = Nil
-mkdist (S g) (S c) p s@(MKNode f) ops
-  = case (S (finToNat f) == S c) of
-         True => (DVal $ zero ops) :: mkdist (S g) c (lteSuccLeft p) s ops
-         False => DInf :: mkdist (S g) c (lteSuccLeft p) s ops
--}
-
-
 mkdists : (gsize : Nat) ->
           (cur : Nat) ->
           (p : LTE cur gsize) ->
@@ -128,6 +126,8 @@ mkdists (S g) (S c) p s@(MKNode sv) ops vec
       dv cur src ops = case (finToNat sv) == cur of
                         True  => DVal $ zero ops
                         False => DInf
+-}
+
 
 
 {- get the min from two numbers -}
@@ -140,84 +140,61 @@ min m n ops = case (dgte ops m n) of
                    False => m
 
 
-{- v is explored -> explored q v -}
-explored : (q : PriorityQueue gsize len weight) ->
-           (v : Node gsize) ->
-           Type
-explored q v = Not (QElem v q)
-
-
-
-{- implementation of Dijkstra's -}
 updateDist : (cur : Node gsize) ->
-             (neighbors : List (Node gsize, weight)) ->
-             (ops : WeightOps weight) ->
-             (olddist : Vect gsize (Distance weight)) ->
-             (newdist : Vect gsize (Distance weight)) ->
-             Vect gsize (Distance weight)
+            (neighbors : List (Node gsize, weight)) ->
+            (ops : WeightOps weight) ->
+            (olddist : Vect gsize (Distance weight)) ->
+            (newdist : Vect gsize (Distance weight)) ->
+            Vect gsize (Distance weight)
 updateDist _ Nil _ _ newdist = newdist
 updateDist cur ((n, w) :: xs) ops olddist newdist {weight} {gsize}
-  = updateDist cur xs ops olddist (replaceAt (getVal n) newD newdist)
+ = updateDist cur xs ops olddist (replaceAt (getVal n) newD newdist)
+ where
+   d' : Distance weight
+   d' = dplus ops (index (getVal cur) olddist) (DVal w)
+   newD : Distance weight
+   newD = min d' (index (getVal n) olddist) ops
+
+
+
+runHelper : {g : Graph gsize weight ops} ->
+            (cl : Column (S len) g src) ->
+            Column len g src
+runHelper cl@(MKColumn g src (S len) unexp dist) {gsize} {weight} {ops}
+  = MKColumn g src len (deleteMinNode min unexp (minCElem cl)) newds
   where
-    d' : Distance weight
-    d' = dplus ops (index (getVal cur) olddist) (DVal w)
-    newD : Distance weight
-    newD = min d' (index (getVal n) olddist) ops
+    min : Node gsize
+    min = getMin cl
+    newds : Vect gsize (Distance weight)
+    newds = updateDist min (getNeighbors g min) ops dist dist
 
 
+runDijkstras : {g : Graph gsize weight ops} ->
+               (cl : Column (S len) g src) ->
+               Column Z g src
+runDijkstras (MKColumn g src (S Z) (x :: Nil) dist) {ops}
+  = MKColumn g src Z Nil (updateDist x (getNeighbors g x) ops dist dist)
+runDijkstras cl@(MKColumn g src (S (S len)) _ _ ) = runDijkstras $ runHelper cl
 
-
-runHelper : (g : Graph gsize weight) ->
-            (q : PriorityQueue gsize len weight) ->
-            (Vect (S m) (Vect gsize (Distance weight)))->
-            (n : Nat) ->
-            {auto p : lte n len = True} ->
-            (PriorityQueue gsize (minus len n) weight, Vect (S (n + m)) (Vect gsize (Distance weight)))
-runHelper _ q vec Z {len} = (rewrite (minusZ {a=len}) in q, vec)
-runHelper g (MKQueue ops Z [] dist) vec (S n) {p} = absurd $ trueNotFalse (sym p)
-runHelper g@(MKGraph gsize weight edges) q@(MKQueue ops (S len) (x :: xs) dist) vec (S n') {m}
-  = rewrite (plusSuccRightSucc n' m) in (runHelper g (updateQDist (deleteMin q) newdist) (newdist :: vec) n')
-  where
-      min : Node gsize
-      min = getMin q
-      neighbors : List (Node gsize, weight)
-      neighbors = getNeighbors g min
-      newdist : Vect gsize (Distance weight)
-      newdist = updateDist min neighbors ops (head vec) (head vec)
-
---runDijkstraHelper g q n = runDijkstras g q (qdist q) n , then write lemmas based on this function (might work)
-runDijkstras : (g : Graph gsize weight) -> 
-               (ops : WeightOps weight) -> 
-               (s : Node gsize) -> 
-               (n : Nat) -> 
-               {auto p : lte n gsize = True} -> 
-               Vect (S n) (Vect gsize (Distance weight))
-runDijkstras g@(MKGraph gsize weight edges) ops s n 
-  = rewrite (sym $ plusZeroRightNeutral n) in 
-            (snd $ runHelper g (MKQueue ops gsize unexplored dist) (dist :: Nil) n)
-  where
-    unexplored : Vect gsize (Node gsize)
-    unexplored = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
-    dist : Vect gsize (Distance weight)
-    dist = mkdists gsize gsize lteRefl s ops (rewrite (minusRefl {a=gsize}) in Nil)
 
 
 dijkstras : (gsize : Nat) ->
-            (weight : Type) ->
-            (source : Node gsize) ->
-            (ops : WeightOps weight) ->
-            (graph : Graph gsize weight) ->
+            (g : Graph gsize weight ops) ->
+            (src : Node gsize) ->
             (Vect gsize (Distance weight))
-dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
-  = head $ runDijkstras g ops src gsize {p=lte_refl gsize}
-{-
-  = head $ runDijkstras g (MKQueue ops gsize unexplored dist) gsize {p=lte_refl gsize}
+dijkstras Z g s = absurd $ NodeZAbsurd s
+dijkstras gsize@(S len) g@(MKGraph (S len) weight ops edges) src
+  = cdist $ runDijkstras (MKColumn g src gsize nodes dist)
   where
-    unexplored : Vect gsize (Node gsize)
-    unexplored = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
-    dist : Vect gsize (Distance weight)
-    dist = mkdists gsize gsize lteRefl src ops (rewrite (minusRefl {a=gsize}) in Nil)
--}
+    nodes : Vect (S len) (Node (S len))
+    nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
+    dist : Vect (S len) (Distance weight)
+    dist = mkdists (S len) src ops
+
+
+
+
+
 
 {- ============================= LEMMAS ============================== -}
 
@@ -226,189 +203,36 @@ dijkstras gsize weight src ops g@(MKGraph gsize weight edges)
 ------------------------------------------------------------------------}
 
 {- lemma 3.1 helper: (length p1) < length(p2) -> length(p1+p3) < length(p1+p3)-}
-shorter_trans : (p1 : Path s w g) ->
+shorter_trans : {g : Graph gsize weight ops} ->
+                (p1 : Path s w g) ->
                 (p2 : Path s w g) ->
                 (p3 : Path w v g) ->
-                (ops : WeightOps weight) ->
-                (p : dgte ops (length ops p1) (length ops p2) = False) ->
-                dgte ops (length ops (append p1 p3)) (length ops (append p2 p3)) = False
-shorter_trans p1 p2 (Unit _ _) ops prf = prf
-shorter_trans p1 p2 (Cons p3' v adj) ops prf
-  = dgteBothPlus (edge_weight adj) $ shorter_trans p1 p2 p3' ops prf
+                (p : dgte ops (length p1) (length p2) = False) ->
+                dgte ops (length $ append p1 p3) (length $ append p2 p3) = False
+shorter_trans p1 p2 (Unit _ _) prf = prf
+shorter_trans p1 p2 (Cons p3' v adj) prf
+  = dgteBothPlus (edge_weight adj) $ shorter_trans p1 p2 p3' prf
 
 {- lemma 3.1 proof -}
-l1_prefixSP : (shortestPath g sp ops) ->
+l1_prefixSP : {g: Graph gsize weight ops} ->
+              (shortestPath g sp) ->
               (pathPrefix sp_pre sp) ->
-              (shortestPath g sp_pre ops)
+              (shortestPath g sp_pre)
 l1_prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
-  with (dgte ops (length ops lp_pre) (length ops sp_pre)) proof lpsp
+  with (dgte ops (length lp_pre) (length sp_pre)) proof lpsp
     | True = Refl
     | False = absurd $ contradict (spath (append lp_pre post))
                                          (rewrite (sym appendRefl)
-                                                  in (shorter_trans lp_pre sp_pre post ops (sym lpsp)))
+                                                  in (shorter_trans lp_pre sp_pre post (sym lpsp)))
 
 
 
 
-{--------------------------------------------------------------------------------
-  Lemma2: if dist[v]_{n+1} != infinity, then there is a s-v path
----------------------------------------------------------------------------------}
-wIsS : {gsize : Nat} -> 
-       {ops : WeightOps weight} -> 
-       {s, w : Node gsize} -> 
-       (ne : dEq ops DInf (index (getVal w) (mkdists gsize gsize lteRefl s ops (rewrite (minusRefl {a=gsize}) in Nil))) = False) -> 
-       w = s
-
-
-getValEq : {v, w : Node gsize} -> 
-           (v = w) -> (getVal w) = (getVal w)
-
-sDisZ : dgte ops (index (getVal s) (mkdists gsize gsize lteRefl s ops (rewrite (minusRefl {a=gsize}) in Nil))) 
-                 (DVal (zero ops)) = True
-
-
-l2_existPath : (g : Graph gsize weight) -> 
-               (ops : WeightOps weight) -> 
-               (s, w : Node gsize) -> 
-               (n : Nat) -> 
-               {auto p : lte n gsize = True} -> 
-               (ne1 : dEq ops DInf (index (getVal w) (head $ runDijkstras g ops s n)) = False) -> 
-               (pw : Path s w g ** (dEq ops (length ops pw) (index (getVal w) (head $ runDijkstras g ops s n)) = True))
-l2_existPath g@(MKGraph gsize weight edges) ops s w Z ne = ?base
-l2_existPath (MKGraph gsize weight edges) ops s w (S n') ne 
-  with (mkdists gsize gsize lteRefl s ops (rewrite (minusRefl {a=gsize}) in Nil)) 
-  | dist = ?ih
-
-{-
-l2_existPath : (g : Graph gsize weight) ->
-               (s, w: Node gsize) ->
-               (q : PriorityQueue gsize (S len) weight) ->
-               (n : Nat) -> 
-               {auto p : lte n (S len) = True} -> 
-               (ne1 : (dEq (qops q) DInf (index (getVal w) (qdist q)) = False)) -> 
-               (psw : Path s w g ** (dEq (qops q) (length (qops q) psw) (index (getVal w) (qdist q))) = True) -> 
---               {newq : q' = fst $ runHelper g q ((qdist q) :: Nil) n} -> 
-  --             {newds : dists = snd $ runHelper g q ((qdist q) :: Nil) n} -> 
-               (ne : dEq (qops (fst $ runHelper g q ((qdist q) :: Nil) n)) DInf 
-                     (index (getVal w) (head (snd $ runHelper g q ((qdist q) :: Nil) n))) = True) -> 
-               (psw' : Path s w g ** 
-                     (dEq (qops (fst $ runHelper g q ((qdist q) :: Nil) n)) 
-                          (length (qops (fst $ runHelper g q ((qdist q) :: Nil) n)) psw') 
-                          (index (getVal w) (head (snd $ runHelper g q ((qdist q) :: Nil) n))) = True))
-l2_existPath g s w q Z ne1 dpsw ne = dpsw
-l2_existPath g s w q (S len) ne1 dpsw ne = ?l2
--}
-
-{------------------------------------------------------------
-  Lemma 5 : Forall node v ∈ exploredn+1:
-    1. distn+1[v] < ∞
-    2. distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
-    3. distn+1[v] = δ(v)
---------------------------------------------------------------}
--- statement 1: distn+1[v] < ∞
-lessInf : (g : Graph gsize weight) -> 
-          (q : PriorityQueue gsize len weight) -> 
-          (dist : Vect gsize (Distance weight)) -> 
-          (expV : explored q v) ->
-          Type
-lessInf g q dist expV {v} = dlt (qops q) (index (getVal v) dist) DInf = True
-
--- statement 2: distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
-unexpDelta : (g : Graph gsize weight) -> 
-             (q : PriorityQueue gsize len weight) -> 
-             (dist : Vect gsize (Distance weight)) -> 
-             (s : Node gsize) -> 
-             (expV : explored q v) -> 
-             (unexpW : QElem w q) -> 
-             (psw : Path s w g ** (shortestPath g psw (qops q))) -> 
-             Type
-unexpDelta g q dist s expV unexpW dp_psw {v}
-  = dgte (qops q) (delta dp_psw) (index (getVal v) dist) = True
 
 
 
--- statement 3 :  distn+1[v] = δ(v)
-distIsDelta : (g : Graph gsize weight) -> 
-              (q : PriorityQueue gsize len weight) -> 
-              (dist : Vect gsize (Distance weight)) -> 
-              (s : Node gsize) -> 
-              (expV : explored q v) -> 
-              (psv : Path s v g ** (shortestPath g psv (qops q))) -> 
-              Type 
-distIsDelta g q dist s expV dp_psv {v}
-  = dEq (qops q) (index (getVal v) dist) (delta dp_psv) = True
-  
-             
-             
-l5_stms : (g : Graph gsize weight) -> 
-          (q : PriorityQueue gsize len weight) ->
-          (dist : Vect gsize (Distance weight)) -> 
-          (s : Node gsize) -> 
-          (expV : explored q v) -> 
-          (unexpW : QElem w q) -> 
-          (psv : Path s v g ** (shortestPath g psv (qops q))) -> 
-          (psw : Path s w g ** (shortestPath g psw (qops q))) -> 
-          Type
-l5_stms g q dist s expV unexpW dp_psv dp_psw {v} {w} 
-  = (lessInf g q dist expV, 
-    unexpDelta g q dist s expV unexpW dp_psw, 
-    distIsDelta g q dist s expV dp_psv)
-          
+{-===========================================================
 
-l5_shortestPath : (g : Graph gsize weight) -> 
-                  (ops  : WeightOps weight) -> 
-                  (s, v, w : Node gsize) -> 
-                  Type
-{-
-l5_shortestpath : (g : Graph gsize weight) -> 
-                  (q : PriorityQueue gsize len weight) -> 
-                  (n : Nat) -> 
-                  {auto p : lte n len = True} -> 
-                  (s : Node gsize) -> 
-                  (expV : explored q v) -> 
-                  (unexpW : QElem w q) -> 
-                  (dp_psv : (psv : Path s v g ** (shortestPath g psv (qops q)))) -> 
-                  (dp_psw : (psw : Path s w g ** (shortestPath g psw (qops q)))) -> 
-                  (p : l5_stms g q (qdist q) s expV unexpW dp_psv dp_psw) -> 
-                  {newq : (q', dists) = runHelper g q ((qdist q) :: Nil) n} -> 
-                  (expV' : explored q' v') -> 
-                  (unexpW' : QElem w' q') -> 
-                  (dp_psv' : (psv' : Path s v' g ** (shortestPath g psv' (qops q')))) -> 
-                  (dp_psw' : (psw' : Path s w' g ** (shortestPath g psw' (qops q')))) -> 
-                  l5_stms g q' (head $ dists) s expV' unexpW' dp_psv' dp_psw'
--}                  
-                
-dijkstras_correctness : (gsize : Nat) -> 
-                        (ops : WeightOps weight) -> 
-                        (g : Graph gsize weight) -> 
-                        (s,v : Node gsize) -> 
-                        (dp : (psv : Path s v g ** shortestPath g psv ops)) -> 
-                        dEq ops (length ops psv) (index (getVal v) (head $ runDijkstras g ops s gsize {p=lte_refl gsize})) = True
-dijkstras_correctness Z _ _ s _ _ = absurd $ NodeZAbsurd s
-dijkstras_correctness (S len) ops g s v dp = ?prf
-
-
-
-{-
-dijkstras_correctness : (gsize : Nat) -> 
-                        (g : Graph gsize weight) -> 
-                        (ops : WeightOps weight) -> 
-                        (s : Node gsize) -> 
-                        (v : Node gsize) -> 
-                        (dp : (psv : Path s v g ** shortestPath g psv ops)) -> 
-                        dEq ops (length ops psv) (index (getVal v) (dijkstras gsize weight s ops g)) = True
-dijkstras_correctness Z _ _ s _ _ = absurd $ NodeZAbsurd s
-dijkstras_correctness (S len) g@(MKGraph (S len) weight edges) ops s v dp 
-  = case (runHelper g (MKQueue ops (S len) unexplored dist) (dist :: Nil) len {p=lteSuccRight} ) of 
-         ((MKQueue ops (S Z) (ln :: Nil) dist'), dists) => ?ll
-   where
-    unexplored : Vect (S len) (Node (S len))
-    unexplored = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
-    dist : Vect (S len) (Distance weight)
-    dist = mkdists (S len) (S len) lteRefl s ops (rewrite (minusRefl {a=S len}) in Nil)
--}
-
-{-
 -- dijkstra's version one
 
 updateDist0 : (cur : Node gsize) ->
