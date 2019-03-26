@@ -36,7 +36,7 @@ CElem : {g : Graph gsize weight ops} ->
         (v : Node gsize) ->
         (cl : Column len g src) ->
         Type
-CElem v (MKColumn _ _ _ unexp _)= Elem v unexp
+CElem v (MKColumn _ _ _ unexp _) = Elem v unexp
 
 -- get the dist from Column
 cdist : {g : Graph gsize weight ops} ->
@@ -114,18 +114,27 @@ deleteMinNode : (min : Node gsize) ->
                 (nodes : Vect (S len) (Node gsize)) ->
                 (p : Elem min nodes) ->
                 Vect len (Node gsize)
+deleteMinNode x (x :: Nil) Here = Nil
+deleteMinNode min (x :: Nil) (There e) = absurd $ noEmptyElem e
+deleteMinNode x (x :: (x' :: xs)) Here = (x' :: xs)
+deleteMinNode min (x :: (x' :: xs)) (There e) = x :: (deleteMinNode min (x' :: xs) e)
+                {-}
 deleteMinNode min (x :: Nil) p with (min == x) proof nil
   | True = Nil
   | False = absurd $ contradict (nodeEqReverse $ elemEq p) (sym nil)
 deleteMinNode min (x :: (x' :: xs')) p with (min == x) proof cons
   | True  = x' :: xs'
   | False = x :: deleteMinNode min (x' :: xs') (elemRes p (nodeNeq (sym cons)))
+-}
 
 deleteMin : {g : Graph gsize weight ops} ->
             (cl : Column (S len) g src) ->
             Column len g src
 deleteMin cl@(MKColumn g src (S len) unexp dist)
   = MKColumn g src len (deleteMinNode (getMin cl) unexp (minCElem cl)) dist
+
+
+
 
 
 

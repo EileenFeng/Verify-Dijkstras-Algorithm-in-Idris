@@ -66,6 +66,29 @@ dEq _ DInf _ = False
 dEq _ _ DInf = False
 dEq ops (DVal v1) (DVal v2) = eq ops v1 v2
 
+
+dEqRefl : {ops : WeightOps weight} ->
+          {d1 : Distance weight} ->
+          dEq ops d1 d1 = True
+
+dEqTransTrue : {ops : WeightOps weight} ->
+               {d1, d2, d3 : Distance weight} ->
+               (dEq ops d1 d2 = True) ->
+               (dEq ops d2 d3 = True) ->
+               dEq ops d1 d3 = True
+
+dEqTransTF : {ops : WeightOps weight} ->
+             {d1, d2, d3 : Distance weight} ->
+             (dEq ops d1 d2 = False) ->
+             (dEq ops d2 d3 = True) ->
+             dEq ops d1 d3 = False
+
+
+dEqComm : {ops : WeightOps weight} ->
+          {d1, d2 : Distance weight} ->
+          (dEq ops d1 d2 = True) ->
+          dEq ops d2 d1 = True
+
 -- plus for Distance type
 dplus : (ops : WeightOps weight) ->
         (Distance weight) ->
@@ -269,6 +292,7 @@ adj g n m = (inNodeset m (getNeighbors g n) = True)
 
 
 {- get the weight of certain edge adjacent to m, helper of edge_weight-}
+
 get_weight : (ns : nodeset gsize weight) ->
              (m : Node gsize) ->
              (inNodeset m ns = True) ->
@@ -289,6 +313,28 @@ edge_weight : {g : Graph gsize weight ops} ->
               weight
 edge_weight {g} {n} {m} adj = get_weight (getNeighbors g n) m adj
 
+
+
+edgeW : (g : Graph gsize weight ops) ->
+        (n : Node gsize) ->
+        (m : Node gsize) ->
+        Distance weight
+edgeW g n m with (inNodeset m (getNeighbors g n)) proof isAdj
+  | True = DVal $ edge_weight (sym isAdj)
+  | False = DInf
+
+
+edgeW_na : {g : Graph gsize weight ops} ->
+           {n, m : Node gsize} ->
+           (ne : dEq ops DInf (edgeW g n m) = True) ->
+            inNodeset m (getNeighbors g n) = False
+
+edgeW_adj : {g : Graph gsize weight ops} ->
+            {n, m : Node gsize} ->
+            {w : weight} ->
+            (ne : dEq ops (DVal w) (edgeW g n m) = True) ->
+            inNodeset m (getNeighbors g n) = True
+edgeW_adj ne = ?ll
 {-
   {- path with distance -}
 data Path : Node gsize ->
