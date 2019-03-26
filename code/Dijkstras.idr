@@ -278,6 +278,8 @@ dijkstras gsize g@(MKGraph gsize weight ops edges) src
 
 
 -- helper proofs of Dijkstras
+{- `updateEq` and `udEq` are helper proofs for `naDistEq`,
+as `runHelper` is defined with `updateDist` and `calcDist`.  -}
 
 udEq : (g : Graph gsize weight ops) ->
        (m, c : Node gsize) ->
@@ -303,12 +305,13 @@ updateEq g mn Nil _ e _ = absurd $ noEmptyElem e
 updateEq g mn (v :: Nil) old Here na = ?d
 
 
+
 naDistEq : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
            (v : Node gsize) ->
            (ne: Not (adj g (getMin cl) v)) ->
            dEq ops (index (getVal v) (cdist cl)) (index (getVal v) (cdist $ runHelper cl)) = True
-naDistEq {g} cl@(MKColumn g src (S len) nodes dist) v ne
+naDistEq {g} cl@(MKColumn g src (S len) nodes dist) v ne -- with (inNodeset v (getNeighbors g (getMin cl))) proof isAdj
   = ?ne
 
 
