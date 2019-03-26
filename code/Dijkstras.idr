@@ -38,7 +38,6 @@ lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
 lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
 
 
-lteSuccRight : lte len (S len) = True
 
 {- proof of minus zero-}
 minusZ : minus a Z = a
@@ -66,6 +65,10 @@ natTofin Z (S n) = FZ
 natTofin (S m) (S n) {p = LTESucc _} = FS $ natTofin m n
 
 
+
+{- get the third element from tuple-}
+third : (a, a, a) -> a
+third (a1, a2, a3) = a3
 
 {- proof of minusSuccLeft -}
 minusSuccLeft : (g : Nat) ->
@@ -170,11 +173,10 @@ runHelper cl@(MKColumn g src (S len) unexp dist) {gsize} {weight} {ops}
 
 
 runDijkstras : {g : Graph gsize weight ops} ->
-               (cl : Column (S len) g src) ->
+               (cl : Column len g src) ->
                Column Z g src
-runDijkstras (MKColumn g src (S Z) (x :: Nil) dist) {ops}
-  = MKColumn g src Z Nil (updateDist x (getNeighbors g x) ops dist dist)
-runDijkstras cl@(MKColumn g src (S (S len)) _ _ ) = runDijkstras $ runHelper cl
+runDijkstras {len = Z} {src} cl = cl
+runDijkstras {len = S l'} cl@(MKColumn g src (S l') _ _ ) = runDijkstras $ runHelper cl
 
 
 
@@ -183,13 +185,13 @@ dijkstras : (gsize : Nat) ->
             (src : Node gsize) ->
             (Vect gsize (Distance weight))
 dijkstras Z g s = absurd $ NodeZAbsurd s
-dijkstras gsize@(S len) g@(MKGraph (S len) weight ops edges) src
+dijkstras gsize g@(MKGraph gsize weight ops edges) src
   = cdist $ runDijkstras (MKColumn g src gsize nodes dist)
   where
-    nodes : Vect (S len) (Node (S len))
-    nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
-    dist : Vect (S len) (Distance weight)
-    dist = mkdists (S len) src ops
+    nodes : Vect gsize (Node gsize)
+    nodes = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
+    dist : Vect gsize (Distance weight)
+    dist = mkdists gsize src ops
 
 
 
@@ -226,9 +228,150 @@ l1_prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
                                                   in (shorter_trans lp_pre sp_pre post (sym lpsp)))
 
 
+{--------------------------------------------------------------------------------
+  Lemma2: if dist[v]_{n+1} != infinity, then there is a s-v path
+---------------------------------------------------------------------------------}
+neDInfPath : {g : Graph gsize weight ops} ->
+             (cl : Column len g src) ->
+             Type
+neDInfPath cl {src} {ops} {gsize} {g}
+  = (v : Node gsize) ->
+    (ne : dEq ops DInf (nodeDist v cl) = False) ->
+    (psw : Path src v g ** dEq ops (length psw) (nodeDist v cl) = True)
+
+
+l2_existPath : {g : Graph gsize weight ops} ->
+               (cl : Column (S len) g src) ->
+               (ih : neDInfPath cl) ->
+               neDInfPath (runHelper cl)
 
 
 
+
+{-----------------------------------------------------------------------------------------------------
+ Lemma 3 : forall v \in g, dist_{i+1}[v] = \delta(v) ->
+           \forall j > i, dist_{j+1}[v] = \delta(v)
+------------------------------------------------------------------------------------------------------}
+-- stm : dist[v] = \delta(v)
+distIsDelta : {g : Graph gsize weight ops} ->
+              (cl : Column len g src) ->
+              Type
+distIsDelta cl {g} {gsize} {ops} {src}
+  = (v : Node gsize) ->
+    (psv : Path src v g) ->
+    (sp : shortestPath g psv) ->
+    dEq ops (nodeDist v cl) (length psv) = True
+
+l3_preserveDelta : {g : Graph gsize weight ops} ->
+                   (cl : Column (S len) g src) ->
+                   (ih : distIsDelta cl) ->
+                   distIsDelta (runHelper cl)
+
+
+
+
+
+{---------------------------------------------------------------------------------------------
+  Lemma 4 : For any node v ∈ g, for each ui ∈ exploredn+1, n ≥ 1, 1 ≤ i ≤ n,
+            distn+1[v] ≤ disti[ui] + weight(ui, v).
+
+            but dist_i[u_i] = \delta(u_i)
+----------------------------------------------------------------------------------------------}
+
+
+
+
+
+
+
+
+
+{------------------------------------------------------------
+  Lemma 5 : Forall node v ∈ exploredn+1:
+    1. distn+1[v] < ∞
+    2. distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
+    3. distn+1[v] = δ(v)
+--------------------------------------------------------------}
+-- statement 1: distn+1[v] < ∞
+lessInf : {g : Graph gsize weight ops} ->
+          (cl : Column len g src) ->
+          Type
+lessInf cl {gsize} {ops}
+  = (v : Node gsize) ->
+    (explored v cl) ->
+    dEq ops (nodeDist v cl) DInf = False
+
+-- statement 2: distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
+unexpDelta : {g : Graph gsize weight ops} ->
+             (cl : Column len g src) ->
+             Type
+unexpDelta cl {g} {gsize} {ops} {src}
+  = (v, v' : Node gsize) ->
+    (explored v cl) ->
+    (unexplored v' cl) ->
+    (psv' : Path src v' g) ->
+    (sp : shortestPath g psv') ->
+    dgte ops (length psv') (nodeDist v cl) = True
+
+-- statement 3 :  distn+1[v] = δ(v) similar to stm of lemma 3
+
+-- all three statements for lemma 5
+l5_stms : {g : Graph gsize weight ops} ->
+          (cl : Column len g src) ->
+          Type
+l5_stms cl = (lessInf cl, unexpDelta cl, distIsDelta cl)
+
+
+l5_sp : (l5_stms cl) -> distIsDelta cl
+l5_sp (s1, s2, s3) = s3
+
+l5_spath : {g : Graph gsize weight ops} ->
+           (cl : Column (S len) g src) ->
+           (ih : l5_stms cl) ->
+           l5_stms (runHelper cl)
+
+
+{- proof of correctness -}
+correctness : {g : Graph gsize weight ops} ->
+              (cl : Column len g src) ->
+              (stms : l5_stms cl) ->
+              l5_stms (runDijkstras cl)
+correctness {len = Z} cl stms = stms
+correctness {len=S n} cl@(MKColumn g src (S n) _ _) stms
+  = correctness (runHelper {len=n} cl) (l5_spath cl stms)
+
+
+dijkstras_correctness : (gsize : Nat) ->
+                        (g : Graph gsize weight ops) ->
+                        (src : Node gsize) ->
+                        (v : Node gsize) ->
+                        (psv : Path s v g) ->
+                        (spsv : shortestPath g psv) ->
+                        dEq ops (length psv) (index (getVal v) (dijkstras gsize g src)) = True
+dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
+dijkstras_correctness gsize g src v psv spsv {weight} {ops}
+  = ?dk --(l5_sp $ correctness cl ?stms) v psv spsv
+  where
+    nodes : Vect gsize (Node gsize)
+    nodes = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
+    dist : Vect gsize (Distance weight)
+    dist = mkdists gsize src ops
+
+
+{-
+correctness : {g : Graph gsize weight ops} ->
+              (cl : Column gsize g src) ->
+              (v : Node gsize) ->
+              (psv : Path s v g) ->
+              (spsv : shortestPath g psv) ->
+              dEq ops (length psv) (nodeDist v (runDijkstras cl)) = True
+correctness {gsize=Z} _ v _ _ = absurd $ NodeZAbsurd v
+-- base case here
+correctness {gsize =(S (S gs))} cl v psv spsv
+  -}
+
+{-correctness {gsize = S len} cl v psv spsv
+  = apply lemma 5 to (correctness {gsize = len} cl' v psv spsv)-}
 
 
 {-===========================================================
