@@ -46,11 +46,18 @@ cdist (MKColumn _ _ _ _ dist) = dist
 
 
 -- getDist from a node
+looseIndex : Fin n -> Vect m a -> a -> a
+looseIndex _ Nil deflt = deflt
+looseIndex FZ (x :: _) _ = x
+looseIndex (FS n') (_ :: xs) deflt = looseIndex n' xs deflt
+
+
 nodeDist : {g : Graph gsize weight ops} ->
            (v : Node gsize) ->
            (cl : Column len g src) ->
            Distance weight
 nodeDist v cl = index (getVal v) (cdist cl)
+--nodeDist v cl = index (getVal v) (cdist cl)
 
 {- unexplored and explored nodes-}
 unexplored : {g : Graph gsize weight ops} ->
