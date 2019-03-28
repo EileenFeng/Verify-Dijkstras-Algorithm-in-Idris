@@ -52,6 +52,20 @@ looseIndex FZ (x :: _) _ = x
 looseIndex (FS n') (_ :: xs) deflt = looseIndex n' xs deflt
 
 
+looseIndexN : Nat -> Vect m a -> a -> a
+looseIndexN Z (x :: xs) deflt = x
+looseIndexN _ Nil deflt = deflt
+looseIndexN (S n) (x :: xs) deflt = looseIndexN n xs deflt
+
+
+nodeDistL : {g : Graph gsize weight ops} -> 
+            (v : Node gsize) -> 
+            (cl : Column len g src) -> 
+            Distance weight
+nodeDistL (MKNode nv) cl = looseIndexN (finToNat nv) (cdist cl) DInf
+
+
+
 nodeDist : {g : Graph gsize weight ops} ->
            (v : Node gsize) ->
            (cl : Column len g src) ->

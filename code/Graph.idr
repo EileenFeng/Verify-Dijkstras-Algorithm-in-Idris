@@ -451,6 +451,19 @@ set3 : nodeset 4 Nat
 set3 = Nil
 
 
+set0' : nodeset 4 Nat
+set0' = [(n2, 5), (n1, 1), (n3, 6)]
+
+set1' : nodeset 4 Nat
+set1' = [(n0, 2), (n2, 2), (n3, 7)]
+
+set2' : nodeset 4 Nat
+set2' = [(n3, 1)]
+
+set3' : nodeset 4 Nat
+set3' = [(n2, 6), (n1, 1)]
+
+
 
 
 nat_gteRefl : gte a a = True
@@ -494,6 +507,9 @@ natOps = MKWeight Z gte (==) plus nat_gteRefl nat_gte_reverse nat_gte_comm nat_g
 
 eg : Graph 4 Nat Graph.natOps
 eg = MKGraph 4 Nat natOps (set0 :: set1 :: set2 :: set3 :: Nil)
+
+eg' : Graph 4 Nat Graph.natOps
+eg' = MKGraph 4 Nat natOps (set0' :: set1' :: set2' :: set3' :: Nil)
 
 {-
 p102 : Path Graph.n1 Graph.n2 Nat Graph.eg
