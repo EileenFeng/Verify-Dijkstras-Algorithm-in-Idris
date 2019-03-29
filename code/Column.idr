@@ -58,6 +58,23 @@ looseIndexN _ Nil deflt = deflt
 looseIndexN (S n) (x :: xs) deflt = looseIndexN n xs deflt
 
 
+indexN : (n : Nat) -> 
+         Vect m a -> 
+         {auto p : LT n m} -> 
+         a
+indexN (S _) Nil {p} = absurd $ succNotLTEzero p
+indexN Z (x :: xs) = x
+indexN (S n) (x :: xs) {p=LTESucc p'} = indexN n xs {p=p'}
+
+
+nodeDistN : {g : Graph gsize weight ops} -> 
+            (v : Node gsize) -> 
+            (cl : Column len g src) -> 
+            Distance weight
+nodeDistN v cl = indexN (finToNat (getVal v)) (cdist cl) {p=nvLTE (getVal v)}
+
+
+
 nodeDistL : {g : Graph gsize weight ops} -> 
             (v : Node gsize) -> 
             (cl : Column len g src) -> 
@@ -70,7 +87,7 @@ nodeDist : {g : Graph gsize weight ops} ->
            (v : Node gsize) ->
            (cl : Column len g src) ->
            Distance weight
-nodeDist v cl = index (getVal v) (cdist cl)
+nodeDist (MKNode nv) cl = indexN (finToNat $ nv) (cdist cl) {p=nvLTE nv}
 --nodeDist v cl = index (getVal v) (cdist cl)
 
 {- unexplored and explored nodes-}

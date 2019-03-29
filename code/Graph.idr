@@ -68,8 +68,8 @@ dEq ops (DVal v1) (DVal v2) = eq ops v1 v2
 
 
 dEqRefl : {ops : WeightOps weight} ->
-          {d1 : Distance weight} ->
-          dEq ops d1 d1 = True
+          {d : Distance weight} ->
+          dEq ops d d = True
 
 dEqTransTrue : {ops : WeightOps weight} ->
                {d1, d2, d3 : Distance weight} ->
@@ -151,6 +151,61 @@ dgteBothPlus {d1=DVal v1} {d2=DVal v2} w refl {ops}
   = rewrite (addComm ops w v1) in (rewrite (addComm ops w v2) in (gteBothPlus ops w refl))
 
 
+
+
+dgteZeroInf : {ops : WeightOps weight} -> 
+              dgte ops (DVal (zero ops)) DInf = False
+dgteZeroInf = Refl
+
+
+
+
+dgteDInfTrans : (d1, d2 : Distance weight) -> 
+                {ops : WeightOps weight} -> 
+                (p1 : dgte ops d1 DInf = False) -> 
+                (p2 : dgte ops d1 d2 = True) -> 
+                dgte ops d2 DInf = False
+dgteDInfTrans DInf DInf p1 p2 = absurd $ trueNotFalse p1
+dgteDInfTrans DInf (DVal w) p1 p2 = absurd $ trueNotFalse p1
+dgteDInfTrans (DVal w1) (DInf) p1 p2 = absurd $ trueNotFalse (sym p2)
+dgteDInfTrans (DVal w1) (DVal w2)  _ p2 = Refl
+
+
+
+
+dgteEqTrans : {d1, d2, d3 : Distance weight} -> 
+              {ops : WeightOps weight} -> 
+              (eq : dEq ops d1 d2 = True) -> 
+              (b : Bool) -> 
+              (dgeq : dgte ops d2 d3 = b) -> 
+              dgte ops d1 d3 = b
+dgteEqTrans {d1=DInf} {d2=DInf} {d3=DInf} eq True refl = Refl
+dgteEqTrans {d1=DInf} {d2=DInf} {d3=DInf} eq False refl = absurd $ trueNotFalse refl
+dgteEqTrans {d1=DInf} {d2=DInf} {d3=DVal w} eq True refl = Refl
+dgteEqTrans {d1=DInf} {d2=DInf} {d3=DVal w} eq False refl = absurd $ trueNotFalse refl
+dgteEqTrans {d1=DInf} {d2=DVal val} {d3} eq _ _ = absurd $ trueNotFalse (sym eq)
+dgteEqTrans {d1=DVal w} {d2=DInf} {d3} eq _ _ = absurd $ trueNotFalse (sym eq)
+dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3} eq b refl = ?dgtss
+
+
+dgteEq : {ops : WeightOps weight} -> 
+         {d1, d2 : Distance weight} -> 
+         (e1 : dgte ops d1 d2 = True) -> 
+         (e2 : dgte ops d2 d1 = True) -> 
+         dEq ops d1 d2 = True
+         
+
+
+
+dvalNotInf : {ops : WeightOps weight} -> 
+             {d1 : Distance weight} -> 
+             {w : weight} -> 
+             (dgte ops d1 DInf = False) -> 
+             dgte ops (dplus ops (DVal w) d1) DInf = False 
+dvalNotInf {d1=DInf} refl = absurd $ trueNotFalse refl
+dvalNotInf {d1=DVal v1} {w} refl = Refl
+
+
 {-
 dInfRefl : dgte ops DInf DInf = True
 dInfRefl = Refl
@@ -181,6 +236,7 @@ NodeInjective : {f1 : Fin n} -> {f2 : Fin n} -> (MKNode f1 = MKNode f2) -> (f1 =
 NodeInjective Refl = Refl
 
 
+
 implementation Eq (Node n) where
   (==) (MKNode f1) (MKNode f2) = f1 == f2
 
@@ -192,6 +248,15 @@ implementation DecEq (Node n) where
 
 getVal : Node gsize -> Fin gsize
 getVal (MKNode v) = v
+
+
+
+nvLTE : {gsize : Nat} ->
+        (nv : Fin gsize) ->
+        LTE (S (finToNat nv)) gsize
+nvLTE {gsize=Z} nv = absurd $ FinZAbsurd nv
+nvLTE {gsize=S g} FZ = LTESucc LTEZero
+nvLTE {gsize=S g} (FS f) = LTESucc $ nvLTE {gsize=g} f
 
 
 {- equality for Fin-}

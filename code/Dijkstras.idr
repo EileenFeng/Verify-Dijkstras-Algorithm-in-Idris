@@ -99,13 +99,6 @@ minusSuccLeft (S g) (S c) p = minusSuccLeft g c $ fromLteSucc p
 
 
 
-nvLTE : {gsize : Nat} ->
-        (nv : Fin gsize) ->
-        LTE (S (finToNat nv)) gsize
-nvLTE {gsize=Z} nv = absurd $ FinZAbsurd nv
-nvLTE {gsize=S g} FZ = LTESucc LTEZero
-nvLTE {gsize=S g} (FS f) = LTESucc $ nvLTE {gsize=g} f
-
 {- helper for making list of nodes: initial input to dijkstra's -}
 mknodes : (gsize : Nat) ->
           (cur : Nat) ->
@@ -226,13 +219,16 @@ dijkstras : (gsize : Nat) ->
             (src : Node gsize) ->
             (Vect gsize (Distance weight))
 dijkstras Z g s = absurd $ NodeZAbsurd s
-dijkstras gsize g@(MKGraph gsize weight ops edges) src
-  = cdist $ runDijkstras (MKColumn g src gsize nodes dist)
+dijkstras gsize g src {weight} {ops} = cdist $ runDijkstras cl
   where
     nodes : Vect gsize (Node gsize)
     nodes = mkNodes gsize
     dist : Vect gsize (Distance weight)
     dist = mkdists gsize src ops
+    cl : Column gsize g src
+    cl = (MKColumn g src gsize nodes dist)
+
+
 
 
 -- helper proofs of Dijkstras
@@ -257,7 +253,7 @@ distDecre : (g : Graph gsize weight ops) ->
             (dist : Vect m (Distance weight)) ->
             (nv : Nat) ->
             {auto p : LT nv m} ->
-            dgte ops (looseIndexN nv dist DInf) (looseIndexN nv (updateDist6 g mn min_dist nodes dist) DInf) = True
+            dgte ops (indexN nv dist) (indexN nv (updateDist6 g mn min_dist nodes dist)) = True
 distDecre g mn _ Nil Nil nv {p} = absurd $ succNotLTEzero p
 distDecre g mn min_dist (n :: ns) (d :: ds) Z = calcDistV4Eq g mn n min_dist d
 distDecre g mn min_dist (n :: ns) (d :: ds) (S nv) {p=LTESucc p'} = distDecre g mn min_dist ns ds nv {p= p'}
@@ -267,7 +263,7 @@ distDecre g mn min_dist (n :: ns) (d :: ds) (S nv) {p=LTESucc p'} = distDecre g 
 runDecre : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
            (v : Node gsize) ->
-           dgte ops (nodeDistL v cl) (nodeDistL v (runHelper cl)) = True
+           dgte ops (nodeDistN v cl) (nodeDistN v (runHelper cl)) = True
 runDecre (MKColumn g src (S len) unexp dist) (MKNode nv) {gsize} {ops}
   = distDecre g min_node min_dist (mkNodes gsize) dist (finToNat nv) {p=nvLTE nv}
   where
@@ -278,6 +274,26 @@ runDecre (MKColumn g src (S len) unexp dist) (MKNode nv) {gsize} {ops}
 
 
 
+{- if `d` is equal to the length of some path, then d < DInf-}
+pathlenNotDInf : {g : Graph gsize weight ops} -> 
+                 {s, v : Node gsize} -> 
+                 (d : Distance weight) -> 
+                 (psv : Path s v g) -> 
+                 (eq : dEq ops d (length psv) = True) -> 
+                 dgte ops d DInf = False
+pathlenNotDInf d (Unit g _) eq {ops} = dgteEqTrans eq False (dgteZeroInf {ops=ops})
+pathlenNotDInf d (Cons p' n adj) eq {g} {ops} 
+  = dgteEqTrans eq False $ 
+                dvalNotInf {ops=ops} {d1=length p'} {w=edge_weight adj} (pathlenNotDInf (length p') p' (dEqRefl {ops=ops} {d=length p'}))
+
+
+
+{- if `dist_v` is smaller than DInf, then `dist_v` is equal to the length of some path-}
+distNotInfIsPathLen : {g : Graph gsize weight ops} -> 
+                   (cl : Column len g src) -> 
+                   (v : Node gsize) -> 
+                   (ne : dgte ops (nodeDistN v cl) DInf = False) -> 
+                   (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
 
 
 {- ============================= LEMMAS ============================== -}
@@ -317,11 +333,10 @@ l1_prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
 neDInfPath : {g : Graph gsize weight ops} ->
              (cl : Column len g src) ->
              Type
-neDInfPath cl {src} {ops} {gsize} {g}
+neDInfPath cl {g} {src} {ops} {gsize} 
   = (v : Node gsize) ->
-    --(ne : dEq ops DInf (nodeDist v cl) = False) ->
-    (ne : dgte ops (nodeDist v cl) DInf = False) ->
-    (psw : Path src v g ** dEq ops (length psw) (nodeDist v cl) = True)
+    (ne : dgte ops (nodeDistN v cl) DInf = False) ->
+    (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
 
 
 
@@ -330,23 +345,7 @@ l2_existPath : {g : Graph gsize weight ops} ->
                (ih : neDInfPath cl) ->
                neDInfPath (runHelper cl)
 l2_existPath {g} cl ih = ?l2
-{-
-neDInfTrans : {g : Graph gsize weight ops} ->
-(cl : Column (S len) g src) ->
-(v : Node gsize) ->
-(ne : dEq ops DInf (index (getVal v) (cdist cl)) = False) ->
-dEq ops DInf (index (getVal v) (cdist $ runHelper cl)) = False
-neDInfTrans cl v ne = ?kk
 
-l2_trans : {g : Graph gsize weight ops} ->
-(cl : Column (S len) g src) ->
-(v : Node gsize) ->
-(ne : dEq ops DInf (index (getVal v) (cdist cl)) = False) ->
-(psv : Path src v g ** dEq ops (length psv) (index (getVal v) (cdist cl)) = True) ->
-(dEq ops DInf (index (getVal v) (cdist (runHelper cl))) = False) ->
-(psv' : Path src v g ** dEq ops (length psv') (index (getVal v) (cdist (runHelper cl))) = True)
-l2_trans cl v prop {ne} = ?l2t
--}
 
 
 {-----------------------------------------------------------------------------------------------------
@@ -361,21 +360,29 @@ distIsDelta cl {g} {gsize} {ops} {src}
   = (v : Node gsize) ->
     (psv : Path src v g) ->
     (sp : shortestPath g psv) ->
-    dEq ops (nodeDist v cl) (length psv) = True
+    dEq ops (nodeDistN v cl) (length psv) = True
 
 
+
+-- distNotInfIsPathLen is the function for `neDInfPath` in Lemma 2
+-- (ihD v psv psv_sp) gives `dEq ops (nodeDistN v cl) (length psv) = True` ([E1])
+-- (pathlenNotDInf (nodeDIstN v cl) psv (ihD v psv psv_sp)) gives `dgte ops (nodeDistN v cl) DInf = False`
+-- (runDecre cl v) gives `dgte ops (nodeDistN v cl) (nodeDistN (runHelper cl)) = True` ([R])
+-- dgteDInfTrans (nodeDistN v cl) (nodeDistN v (runHelper vl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v))
+                 -- gives `dgte ops (nodeDistN v (runHelper cl) DInf = False`, which can be applied Lemma 2 to obtain 
+                 -- dependent pair `(path_sv ** dEq ops (nodeDistN v (runHelper cl)) (length path_sv) = True)` ([E2])
+-- but `psv` is the shortestPath, `spsv path_sv` gives `dgte (length path_sv) (length psv) = True` ([E3]), which is equivalent to
+  -- `dgte (nodeDistN v (runHelper cl)) (nodeDistN v cl) = True` ([E4]), combine this with [R], we know ` dEq (nodeDistN v (runHelper cl)) (nodeDistN v cl) = True`
+    -- which gives us `dEq (nodeDistN v (runHelper cl)) (length psv) = True`, whic is `distIsDelta (runHelper cl) v psv`
+-- l2_existPath cl 
 l3_preserveDelta : {g : Graph gsize weight ops} ->
                    (cl : Column (S len) g src) ->
-                   (ih : distIsDelta cl) ->
+                   (ihD : distIsDelta cl) ->
                    distIsDelta (runHelper cl)
-l3_preserveDelta cl ih = ?l3
-{-
-l3_preserveDelta {g} cl ih v psv sp with (inNodeset v (getNeighbors g (getMin cl))) proof adj
-  | True = ?l3t
-  | False = dEqComm $ dEqTransTrue (dEqComm $ ih v psv sp) (naDistEq cl v (bnot $ sym adj))
--}
-
-
+l3_preserveDelta cl ihD v psv psv_sp {g} {ops} {src} {gsize} 
+  with (l2_existPath cl (distNotInfIsPathLen cl) v (dgteDInfTrans {ops=ops} (nodeDistN v cl) (nodeDistN v (runHelper cl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v)))
+    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (spsv lpath)) (dgteEqTrans (dEqComm $ ihD v psv psv_sp) (runDecre cl v))
+ 
 
 
 {---------------------------------------------------------------------------------------------
@@ -406,7 +413,7 @@ lessInf : {g : Graph gsize weight ops} ->
 lessInf cl {gsize} {ops}
   = (v : Node gsize) ->
     (explored v cl) ->
-    dEq ops (nodeDist v cl) DInf = False
+    dgte ops (nodeDistN v cl) DInf = False
 
 -- statement 2: distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
 unexpDelta : {g : Graph gsize weight ops} ->
@@ -418,7 +425,7 @@ unexpDelta cl {g} {gsize} {ops} {src}
     (unexplored v' cl) ->
     (psv' : Path src v' g) ->
     (sp : shortestPath g psv') ->
-    dgte ops (length psv') (nodeDist v cl) = True
+    dgte ops (length psv') (nodeDistN v cl) = True
 
 -- statement 3 :  distn+1[v] = δ(v) similar to stm of lemma 3
 
@@ -436,8 +443,7 @@ l5_spath : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
            (ih : l5_stms cl) ->
            l5_stms (runHelper cl)
-{- l5_spath {len=Z} (MKColumn g src (S Z) (x :: Nil) dist) (ih1, ih2, ih3)
-  = (?l6, ?l7, ?l8) -}
+
 
 {- proof of correctness -}
 correctness : {g : Graph gsize weight ops} ->
@@ -445,7 +451,7 @@ correctness : {g : Graph gsize weight ops} ->
               (stms : l5_stms cl) ->
               l5_stms (runDijkstras cl)
 correctness {len = Z} cl stms = stms
-correctness {len=S n} cl@(MKColumn g src (S n) _ _) stms
+correctness {len=S n} cl@(MKColumn g src (S n) unexp dist) stms
   = correctness (runHelper {len=n} cl) (l5_spath cl stms)
 
 
@@ -457,8 +463,8 @@ dijkstras_correctness : (gsize : Nat) ->
                         (spsv : shortestPath g psv) ->
                         dEq ops (length psv) (index (getVal v) (dijkstras gsize g src)) = True
 dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
-dijkstras_correctness gsize g src v psv spsv {weight} {ops}
-  = ?dk --(l5_sp $ correctness cl ?stms) v psv spsv
+dijkstras_correctness gsize g src v psv spsv {weight} {ops} 
+  = ?djikstras --(l5_sp $ correctness (MKColumn g src gsize nodes dist) ?stms) v psv spsv
   where
     nodes : Vect gsize (Node gsize)
     nodes = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
@@ -480,6 +486,21 @@ correctness {gsize =(S (S gs))} cl v psv spsv
 
 {-correctness {gsize = S len} cl v psv spsv
   = apply lemma 5 to (correctness {gsize = len} cl' v psv spsv)-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 {-==================older versions of calcDist and updateDist ==============-}
