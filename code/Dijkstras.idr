@@ -379,9 +379,9 @@ l3_preserveDelta : {g : Graph gsize weight ops} ->
                    (cl : Column (S len) g src) ->
                    (ihD : distIsDelta cl) ->
                    distIsDelta (runHelper cl)
-l3_preserveDelta cl ihD v psv psv_sp {g} {ops} {src} {gsize} 
+l3_preserveDelta cl ihD v psv psv_sp {g} {ops} {src}
   with (l2_existPath cl (distNotInfIsPathLen cl) v (dgteDInfTrans {ops=ops} (nodeDistN v cl) (nodeDistN v (runHelper cl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v)))
-    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (spsv lpath)) (dgteEqTrans (dEqComm $ ihD v psv psv_sp) (runDecre cl v))
+    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm $ ihD v psv psv_sp) True (runDecre cl v))
  
 
 
@@ -428,16 +428,29 @@ unexpDelta cl {g} {gsize} {ops} {src}
     dgte ops (length psv') (nodeDistN v cl) = True
 
 -- statement 3 :  distn+1[v] = δ(v) similar to stm of lemma 3
+expDistIsDelta : {g : Graph gsize weight ops} -> 
+                 (cl : Column len g src) -> 
+                 Type 
+expDistIsDelta cl {g} {gsize} {ops} {src} 
+  = (v : Node gsize) -> 
+    (exp : explored v cl) -> 
+    (psv : Path src v g) -> 
+    (sp : shortestPath g psv) -> 
+    dEq ops (nodeDistN v cl) (length psv) = True
+
+
 
 -- all three statements for lemma 5
 l5_stms : {g : Graph gsize weight ops} ->
           (cl : Column len g src) ->
           Type
-l5_stms cl = (lessInf cl, unexpDelta cl, distIsDelta cl)
+l5_stms cl = (lessInf cl, unexpDelta cl, expDistIsDelta cl)
 
 
-l5_sp : (l5_stms cl) -> distIsDelta cl
+l5_sp : (l5_stms cl) -> expDistIsDelta cl
 l5_sp (s1, s2, s3) = s3
+
+
 
 l5_spath : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
@@ -453,6 +466,7 @@ correctness : {g : Graph gsize weight ops} ->
 correctness {len = Z} cl stms = stms
 correctness {len=S n} cl@(MKColumn g src (S n) unexp dist) stms
   = correctness (runHelper {len=n} cl) (l5_spath cl stms)
+
 
 
 dijkstras_correctness : (gsize : Nat) ->
