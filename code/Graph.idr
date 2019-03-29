@@ -315,6 +315,13 @@ nodeEq : {a, b : Node gsize} ->
          (a = b)
 nodeEq {a=MKNode av} {b=MKNode bv} refl = cong $ finEq av bv refl
 
+
+nodeNotEq : {a, b : Node gsize} -> 
+            (a == b) = False -> 
+            Not (a = b)
+nodeNotEq {a=MKNode av} {b=MKNode bv} refl ne 
+  = absurd $ contradict (finEqReverse $ NodeInjective ne) refl
+
 {- a = b -> a == b = True -}
 nodeEqReverse : {a, b : Node gsize} ->
                 (a = b) ->

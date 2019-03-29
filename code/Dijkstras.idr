@@ -218,7 +218,7 @@ dijkstras : (gsize : Nat) ->
             (g : Graph gsize weight ops) ->
             (src : Node gsize) ->
             (Vect gsize (Distance weight))
-dijkstras Z g s = absurd $ NodeZAbsurd s
+--dijkstras Z g s = absurd $ NodeZAbsurd s
 dijkstras gsize g src {weight} {ops} = cdist $ runDijkstras cl
   where
     nodes : Vect gsize (Node gsize)
@@ -294,7 +294,21 @@ distNotInfIsPathLen : {g : Graph gsize weight ops} ->
                       (v : Node gsize) ->
                       (ne : dgte ops (nodeDistN v cl) DInf = False) ->
                       (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
-distNotInfIsPathLen cl v ne = ?dplen
+distNotInfIsPathLen cl v ne = ?dpath
+
+
+
+{- if a node `v` is explored in current Column `cl`, then it is also explored in `runHelper cl` -}
+expV_preserve : {g : Graph gsize weight ops} -> 
+                (cl : Column (S len) g src) -> 
+                (v : Node gsize) -> 
+                (exp : explored v cl) -> 
+                explored v (runHelper cl)
+expV_preserve cl@(MKColumn g src (S len) unexp dist) v exp ne
+  = ?expV --deleteElem (getMin cl) v unexp (minCElem cl) exp ne
+
+
+
 
 {- ============================= LEMMAS ============================== -}
 
@@ -447,7 +461,9 @@ l5_stms : {g : Graph gsize weight ops} ->
 l5_stms cl = (lessInf cl, unexpDelta cl, expDistIsDelta cl)
 
 
-l5_sp : (l5_stms cl) -> expDistIsDelta cl
+l5_sp : {cl : Column len g src} -> 
+        (stms : l5_stms cl) -> 
+        expDistIsDelta cl
 l5_sp (s1, s2, s3) = s3
 
 
@@ -456,9 +472,15 @@ l5_spath : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
            (ih : l5_stms cl) ->
            l5_stms (runHelper cl)
-l5_spath cl (ih1, ih2, ih3) = (?l51, ?l52, ?l53)
-
-
+l5_spath cl (ih1, ih2, ih3) = ?l5 
+{-(pf1, pf2, pf3)
+  where
+    pf1 p = ?pf1
+    
+    pf2 p = ?pf2
+    
+    pf3 p = ?pf3 ... (pf1 p) ... (pf2 p) ...
+-}
 
 
 {- proof of correctness -}
@@ -476,17 +498,20 @@ dijkstras_correctness : (gsize : Nat) ->
                         (g : Graph gsize weight ops) ->
                         (src : Node gsize) ->
                         (v : Node gsize) ->
-                        (psv : Path s v g) ->
+                        (psv : Path src v g) ->
                         (spsv : shortestPath g psv) ->
-                        dEq ops (length psv) (index (getVal v) (dijkstras gsize g src)) = True
+                        dEq ops (indexN (finToNat (getVal v)) (dijkstras gsize g src) {p=nvLTE {gsize=gsize} (getVal v)}) 
+                                (length psv) = True
 dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
-dijkstras_correctness gsize g src v psv spsv {weight} {ops}
-  = ?djikstras --(l5_sp $ correctness (MKColumn g src gsize nodes dist) ?stms) v psv spsv
+dijkstras_correctness (S len) g src v psv spsv {weight} {ops}
+  = (l5_sp {cl=runDijkstras col} (correctness col ?stms)) v ?exp psv spsv
   where
-    nodes : Vect gsize (Node gsize)
-    nodes = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
-    dist : Vect gsize (Distance weight)
-    dist = mkdists gsize src ops
+    nodes : Vect (S len) (Node (S len))
+    nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
+    dist : Vect (S len) (Distance weight)
+    dist = mkdists (S len) src ops
+    col : Column (S len) g src
+    col = (MKColumn g src (S len) nodes dist) 
 
 
 {-
