@@ -391,11 +391,12 @@ distIsDelta cl {g} {gsize} {ops} {src}
 -- l2_existPath cl
 l3_preserveDelta : {g : Graph gsize weight ops} ->
                    (cl : Column (S len) g src) ->
-                   (ihD : distIsDelta cl) ->
+                   (ih2 : neDInfPath cl) -> 
+                   (ih3 : distIsDelta cl) ->
                    distIsDelta (runHelper cl)
-l3_preserveDelta cl ihD v psv psv_sp {g} {ops} {src}
-  with (l2_existPath cl (distNotInfIsPathLen cl) v (dgteDInfTrans {ops=ops} (nodeDistN v cl) (nodeDistN v (runHelper cl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v)))
-    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm $ ihD v psv psv_sp) True (runDecre cl v))
+l3_preserveDelta cl ih2 ih3 v psv psv_sp {g} {ops} {src}
+  with (l2_existPath cl ih2 v (dgteDInfTrans {ops=ops} (nodeDistN v cl) (nodeDistN v (runHelper cl)) (pathlenNotDInf (nodeDistN v cl) psv (ih3 v psv psv_sp)) (runDecre cl v)))
+    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm $ ih3 v psv psv_sp) True (runDecre cl v))
 
 
 
@@ -500,11 +501,11 @@ dijkstras_correctness : (gsize : Nat) ->
                         (v : Node gsize) ->
                         (psv : Path src v g) ->
                         (spsv : shortestPath g psv) ->
-                        dEq ops (indexN (finToNat (getVal v)) (dijkstras gsize g src) {p=nvLTE {gsize=gsize} (getVal v)}) 
+                        dEq ops (indexN (finToNat (getVal v)) (dijkstras gsize g src) {p=nvLTE {gsize=gsize} (getVal v)})
                                 (length psv) = True
 dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
 dijkstras_correctness (S len) g src v psv spsv {weight} {ops}
-  = (l5_sp {cl=runDijkstras col} (correctness col ?stms)) v ?exp psv spsv
+  = (l5_sp {cl=runDijkstras col} (correctness col ?base_stm)) v ?exp psv spsv
   where
     nodes : Vect (S len) (Node (S len))
     nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
