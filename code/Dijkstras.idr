@@ -275,26 +275,26 @@ runDecre (MKColumn g src (S len) unexp dist) (MKNode nv) {gsize} {ops}
 
 
 {- if `d` is equal to the length of some path, then d < DInf-}
-pathlenNotDInf : {g : Graph gsize weight ops} -> 
-                 {s, v : Node gsize} -> 
-                 (d : Distance weight) -> 
-                 (psv : Path s v g) -> 
-                 (eq : dEq ops d (length psv) = True) -> 
+pathlenNotDInf : {g : Graph gsize weight ops} ->
+                 {s, v : Node gsize} ->
+                 (d : Distance weight) ->
+                 (psv : Path s v g) ->
+                 (eq : dEq ops d (length psv) = True) ->
                  dgte ops d DInf = False
 pathlenNotDInf d (Unit g _) eq {ops} = dgteEqTrans eq False (dgteZeroInf {ops=ops})
-pathlenNotDInf d (Cons p' n adj) eq {g} {ops} 
-  = dgteEqTrans eq False $ 
+pathlenNotDInf d (Cons p' n adj) eq {g} {ops}
+  = dgteEqTrans eq False $
                 dvalNotInf {ops=ops} {d1=length p'} {w=edge_weight adj} (pathlenNotDInf (length p') p' (dEqRefl {ops=ops} {d=length p'}))
 
 
 
 {- if `dist_v` is smaller than DInf, then `dist_v` is equal to the length of some path-}
-distNotInfIsPathLen : {g : Graph gsize weight ops} -> 
-                   (cl : Column len g src) -> 
-                   (v : Node gsize) -> 
-                   (ne : dgte ops (nodeDistN v cl) DInf = False) -> 
-                   (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
-
+distNotInfIsPathLen : {g : Graph gsize weight ops} ->
+                      (cl : Column len g src) ->
+                      (v : Node gsize) ->
+                      (ne : dgte ops (nodeDistN v cl) DInf = False) ->
+                      (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
+distNotInfIsPathLen cl v ne = ?dplen
 
 {- ============================= LEMMAS ============================== -}
 
@@ -333,7 +333,7 @@ l1_prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
 neDInfPath : {g : Graph gsize weight ops} ->
              (cl : Column len g src) ->
              Type
-neDInfPath cl {g} {src} {ops} {gsize} 
+neDInfPath cl {g} {src} {ops} {gsize}
   = (v : Node gsize) ->
     (ne : dgte ops (nodeDistN v cl) DInf = False) ->
     (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
@@ -369,12 +369,12 @@ distIsDelta cl {g} {gsize} {ops} {src}
 -- (pathlenNotDInf (nodeDIstN v cl) psv (ihD v psv psv_sp)) gives `dgte ops (nodeDistN v cl) DInf = False`
 -- (runDecre cl v) gives `dgte ops (nodeDistN v cl) (nodeDistN (runHelper cl)) = True` ([R])
 -- dgteDInfTrans (nodeDistN v cl) (nodeDistN v (runHelper vl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v))
-                 -- gives `dgte ops (nodeDistN v (runHelper cl) DInf = False`, which can be applied Lemma 2 to obtain 
+                 -- gives `dgte ops (nodeDistN v (runHelper cl) DInf = False`, which can be applied Lemma 2 to obtain
                  -- dependent pair `(path_sv ** dEq ops (nodeDistN v (runHelper cl)) (length path_sv) = True)` ([E2])
 -- but `psv` is the shortestPath, `spsv path_sv` gives `dgte (length path_sv) (length psv) = True` ([E3]), which is equivalent to
   -- `dgte (nodeDistN v (runHelper cl)) (nodeDistN v cl) = True` ([E4]), combine this with [R], we know ` dEq (nodeDistN v (runHelper cl)) (nodeDistN v cl) = True`
     -- which gives us `dEq (nodeDistN v (runHelper cl)) (length psv) = True`, whic is `distIsDelta (runHelper cl) v psv`
--- l2_existPath cl 
+-- l2_existPath cl
 l3_preserveDelta : {g : Graph gsize weight ops} ->
                    (cl : Column (S len) g src) ->
                    (ihD : distIsDelta cl) ->
@@ -382,7 +382,7 @@ l3_preserveDelta : {g : Graph gsize weight ops} ->
 l3_preserveDelta cl ihD v psv psv_sp {g} {ops} {src}
   with (l2_existPath cl (distNotInfIsPathLen cl) v (dgteDInfTrans {ops=ops} (nodeDistN v cl) (nodeDistN v (runHelper cl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v)))
     | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm $ ihD v psv psv_sp) True (runDecre cl v))
- 
+
 
 
 {---------------------------------------------------------------------------------------------
@@ -428,14 +428,14 @@ unexpDelta cl {g} {gsize} {ops} {src}
     dgte ops (length psv') (nodeDistN v cl) = True
 
 -- statement 3 :  distn+1[v] = δ(v) similar to stm of lemma 3
-expDistIsDelta : {g : Graph gsize weight ops} -> 
-                 (cl : Column len g src) -> 
-                 Type 
-expDistIsDelta cl {g} {gsize} {ops} {src} 
-  = (v : Node gsize) -> 
-    (exp : explored v cl) -> 
-    (psv : Path src v g) -> 
-    (sp : shortestPath g psv) -> 
+expDistIsDelta : {g : Graph gsize weight ops} ->
+                 (cl : Column len g src) ->
+                 Type
+expDistIsDelta cl {g} {gsize} {ops} {src}
+  = (v : Node gsize) ->
+    (exp : explored v cl) ->
+    (psv : Path src v g) ->
+    (sp : shortestPath g psv) ->
     dEq ops (nodeDistN v cl) (length psv) = True
 
 
@@ -456,6 +456,9 @@ l5_spath : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
            (ih : l5_stms cl) ->
            l5_stms (runHelper cl)
+l5_spath cl (ih1, ih2, ih3) = (?l51, ?l52, ?l53)
+
+
 
 
 {- proof of correctness -}
@@ -477,7 +480,7 @@ dijkstras_correctness : (gsize : Nat) ->
                         (spsv : shortestPath g psv) ->
                         dEq ops (length psv) (index (getVal v) (dijkstras gsize g src)) = True
 dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
-dijkstras_correctness gsize g src v psv spsv {weight} {ops} 
+dijkstras_correctness gsize g src v psv spsv {weight} {ops}
   = ?djikstras --(l5_sp $ correctness (MKColumn g src gsize nodes dist) ?stms) v psv spsv
   where
     nodes : Vect gsize (Node gsize)
@@ -518,6 +521,7 @@ correctness {gsize =(S (S gs))} cl v psv spsv
 
 
 {-==================older versions of calcDist and updateDist ==============-}
+{-
 
 calcDist : (g : Graph gsize weight ops) ->
            (minN : Node gsize) ->
@@ -651,7 +655,7 @@ naDistEq : {g : Graph gsize weight ops} ->
 naDistEq {g} {gsize} cl@(MKColumn g src (S len) unexp dist) v ne
   = ?ll--updateEq g (getMin cl) (mkNodes gsize) (cdist cl) ne
 
-
+-}
 
 
 
