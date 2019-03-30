@@ -376,6 +376,11 @@ adj : (g : Graph gsize weight ops) ->
 adj g n m = (inNodeset m (getNeighbors g n) = True)
 
 
+adj_getPrev : {g : Graph gsize weight ops} -> 
+              {n, m : Node gsize} -> 
+              (adj_nm : adj g n m) -> 
+              Node gsize
+adj_getPrev adj {n} = n
 
 {- get the weight of certain edge adjacent to m, helper of edge_weight-}
 
