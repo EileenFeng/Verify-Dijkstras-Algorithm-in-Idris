@@ -32,11 +32,16 @@ data Column : Nat -> (Graph gsize weight ops) -> (Node gsize) -> Type where
              (dist : Vect gsize (Distance weight)) ->
              Column len g src
 
+
+
+
 CElem : {g : Graph gsize weight ops} ->
         (v : Node gsize) ->
         (cl : Column len g src) ->
         Type
 CElem v (MKColumn _ _ _ unexp _) = Elem v unexp
+               
+
 
 -- get the dist from Column
 cdist : {g : Graph gsize weight ops} ->
@@ -166,19 +171,30 @@ deleteMin cl@(MKColumn g src (S len) unexp dist)
 
 
 
+deleteMinElem : (min : Node gsize) -> 
+                (v : Node gsize) -> 
+                (nodes : Vect (S len) (Node gsize)) -> 
+                (p : Elem min nodes) -> 
+                (e : Elem v (deleteMinNode min nodes p)) -> 
+                Elem v nodes
+deleteMinElem min v (_ :: xs) Here e = There e
+deleteMinElem min v (_ :: (x :: xs)) (There later) Here = Here
+deleteMinElem min v (_ :: (x' :: xs)) (There pe) (There e) = There $ deleteMinElem min v (x' :: xs) pe e
 
 
 
-deleteElem : (min : Node gsize) ->
+
+
+deleteNElem : (min : Node gsize) ->
              (v : Node gsize) -> 
              (nodes : Vect (S len) (Node gsize)) ->
              (p : Elem min nodes) ->
              (ne : Not (Elem v nodes)) -> 
              Not (Elem v (deleteMinNode min nodes p)) 
-deleteElem min v (_ :: xs) Here nev ev with (v == min) proof minIsV
+deleteNElem min v (_ :: xs) Here nev ev with (v == min) proof minIsV
   | True = absurd $ nev (rewrite (nodeEq {a=v} {b=min} $ sym minIsV) in Here)
   | False = nev (There ev)
-deleteElem min v (x :: (x' :: xs)) (There pe) nev ev with (v == min) proof minIsV
+deleteNElem min v (x :: (x' :: xs)) (There pe) nev ev with (v == min) proof minIsV
   | True = absurd $ nev (There (rewrite (nodeEq {a=v} {b=min} $ sym minIsV) in pe))
   | False with (v == x) proof vIsx
     | True = absurd $ nev (rewrite (nodeEq {a=v} {b=x} $ sym vIsx) in Here)
@@ -187,17 +203,18 @@ deleteElem min v (x :: (x' :: xs)) (There pe) nev ev with (v == min) proof minIs
                    --               (deleteElem min v (x' :: xs) p ?nen)) 
   
   
-deleteElemRev : (min : Node gsize) ->
+deleteNElemRev : (min : Node gsize) ->
                 (v : Node gsize) -> 
                 (nodes : Vect (S len) (Node gsize)) ->
                 (p : Elem min nodes) ->
                 (ne : Not (Elem v (deleteMinNode min nodes p))) -> 
                 (notMin : Not (min = v)) -> 
                 Not (Elem v nodes)
-deleteElemRev min v (_ :: xs) Here ne notMin (There e) = absurd $ ne e
-deleteElemRev _ _ (_ :: xs) Here _ notMin Here = absurd $ notMin Refl
-deleteElemRev min v (v :: xs) (There em) ne notMin Here = ?dhere
-deleteElemRev min v (_ :: xs) (There em) ne notMin (There ve) = ?derth
+deleteNElemRev min v (_ :: xs) Here ne notMin (There e) = absurd $ ne e
+deleteNElemRev _ _ (_ :: xs) Here _ notMin Here = absurd $ notMin Refl
+deleteNElemRev min v (v :: xs) (There em) ne notMin Here = ?dhere
+deleteNElemRev min v (_ :: (x' :: xs)) (There em) ne notMin (There ve) 
+  = ?derth
 
 
 

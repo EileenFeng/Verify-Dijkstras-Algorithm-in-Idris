@@ -300,7 +300,7 @@ expV_preserve : {g : Graph gsize weight ops} ->
                 (exp : explored v cl) -> 
                 explored v (runHelper cl)
 expV_preserve cl@(MKColumn g src (S len) unexp dist) v exp ne
-  = deleteElem (getMin cl) v unexp (minCElem cl) exp ne
+  = deleteNElem (getMin cl) v unexp (minCElem cl) exp ne
 
 
 
@@ -312,7 +312,25 @@ expV_VNotMin :  {g : Graph gsize weight ops} ->
                 (notMin : Not ((getMin cl) = v)) -> 
                 explored v cl
 expV_VNotMin cl@(MKColumn g src (S len) unexp dist) v expVR notMin expv
-  = deleteElemRev (getMin cl) v unexp (minCElem cl) expVR notMin expv
+  = deleteNElemRev (getMin cl) v unexp (minCElem cl) expVR notMin expv
+  
+  
+  
+{- there always exists a node with not infinity distance in unexplored (if not Nil)-}
+unexpV_not_DInf : {g : Graph gsize weight ops} -> 
+                  (cl : Column (S len) g src) -> 
+                  (src_ninf : dgte ops (nodeDistN src cl) DInf = False) -> 
+                  dgte ops (nodeDistN (getMin cl) cl) DInf = False
+
+
+unexpReverse : {g : Graph gsize weight ops} -> 
+               (cl : Column (S len) g src) -> 
+               (v : Node gsize) -> 
+               (ve : unexplored v (runHelper cl)) -> 
+               unexplored v cl
+unexpReverse cl@(MKColumn g src (S len) unexp dist) v ve 
+  = deleteMinElem (getMin cl) v unexp (minCElem cl) ve 
+
 
 {- ============================= LEMMAS ============================== -}
 
@@ -402,15 +420,28 @@ l3_preserveDelta cl ih2 ih3 v psv psv_sp {g} {ops} {src}
     | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm $ ih3 v psv psv_sp) True (runDecre cl v))
 
 
-
+{-
 {---------------------------------------------------------------------------------------------
   Lemma 4 : For any node v ∈ g, for each ui ∈ exploredn+1, n ≥ 1, 1 ≤ i ≤ n,
             distn+1[v] ≤ disti[ui] + weight(ui, v).
 
 ----------------------------------------------------------------------------------------------}
+distv_min : {g : Graph gsize weight ops} -> 
+            (cl : Column len g src) -> 
+            Type
+distv_min cl = (v, ui : Node gsize) -> 
+               (exp_ui : explored ui cl) -> 
+               dgte ops (nodeDistN v cl) (dplus ops (nodeDistN ui cl) (edgeW g ui v)) = False
 
-
-
+l4_distVIsMin : {g : Graph gsize weight ops} -> 
+                (cl : Column (S len) g src) -> 
+                (distv_min cl) -> 
+                distv_min (runHelper cl)
+l4_distVIsMin cl l4_ih v u_i exp_ui 
+  with (getMin cl == ui) proof min_is_ui
+    | True = ?l4t
+    | False = ?l4f
+-}
 
 
 
@@ -443,8 +474,19 @@ unexpDelta cl {g} {gsize} {ops} {src}
     (psv' : Path src v' g) ->
     (sp : shortestPath g psv') ->
     dgte ops (length psv') (nodeDistN v cl) = True
+    
+    
+-- statement 3 : For any node v ∈ g, for each ui ∈ exploredn+1, n ≥ 1, 1 ≤ i ≤ n, distn+1[v] ≤ disti[ui] + weight(ui, v).
 
--- statement 3 :  distn+1[v] = δ(v) similar to stm of lemma 3
+distv_min : {g : Graph gsize weight ops} -> 
+            (cl : Column len g src) -> 
+            Type
+distv_min cl = (v, ui : Node gsize) -> 
+               (exp_ui : explored ui cl) -> 
+               dgte ops (nodeDistN v cl) (dplus ops (nodeDistN ui cl) (edgeW g ui v)) = False
+
+
+-- statement 4 :  distn+1[v] = δ(v) similar to stm of lemma 3
 expDistIsDelta : {g : Graph gsize weight ops} ->
                  (cl : Column len g src) ->
                  Type
@@ -485,7 +527,11 @@ l5_stm2 : {g : Graph gsize weight ops} ->
           (cl : Column (S len) g src) ->
           (ih5 : l5_stms cl) ->
           unexpDelta (runHelper cl)
-l5_stm2 cl (ih1, ih2, ih3) v v' expV unexpV' psv spsv = ?l52
+l5_stm2 cl (ih1, ih2, ih3) v v' expVR unexpVR' psv' spsv' 
+  with (getMin cl == v) proof min_is_v
+    | True = ?l2t
+    | False = dgteComm (ih2 v v' (expV_VNotMin cl v expVR (nodeNotEq {a=getMin cl} {b=v} $ sym min_is_v)) (unexpReverse cl v' unexpVR')  psv' spsv')
+                       (runDecre cl v)
 
 
 
@@ -512,7 +558,7 @@ l5_stm3 cl l2_ih st1 st2 (ih1, ih2, ih3) v expVR psv spsv {g} {ops} {src}
         rclv_path = l2_existPath cl l2_ih v (st1 v expVR)-}
       
       
-
+                                   
 l5_spath : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
            (l2_ih : neDInfPath cl) -> 
@@ -528,6 +574,11 @@ l5_spath cl l2_ih l5_ih
     
     pf3 p = ?pf3 ... (pf1 p) ... (pf2 p) ...
 -}
+
+
+
+
+
 
 
 {- proof of correctness -}
@@ -552,7 +603,7 @@ dijkstras_correctness : (gsize : Nat) ->
                                 (length psv) = True
 dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
 dijkstras_correctness (S len) g src v psv spsv {weight} {ops}
-  = (l5_sp {cl=runDijkstras col} (correctness col ?lemma2_ih ?base_stm)) v ?exp psv spsv
+  = (l5_sp {cl=runDijkstras col} (correctness col lemma2_ih base_stm)) v ?exp psv spsv
   where
     nodes : Vect (S len) (Node (S len))
     nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
@@ -560,6 +611,10 @@ dijkstras_correctness (S len) g src v psv spsv {weight} {ops}
     dist = mkdists (S len) src ops
     col : Column (S len) g src
     col = (MKColumn g src (S len) nodes dist) 
+    lemma2_ih : neDInfPath col
+    lemma2_ih v notInf = ?lemma2
+    base_stm : l5_stms col
+    base_stm = ?base
 
 
 {-
