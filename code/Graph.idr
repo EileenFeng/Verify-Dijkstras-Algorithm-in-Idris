@@ -211,6 +211,15 @@ dgteEq {d1=DVal w1} {d2=DVal w2} e1 e2 = ?egteEq
 
 
 
+
+dgtePlus : {ops : WeightOps weight} -> 
+           {d1, d2 : Distance weight} -> 
+           (d3 : Distance weight) -> 
+           (e1 : dgte ops d1 d2 = True) -> 
+           dgte ops (dplus ops d3 d1) d2 = True
+
+
+
 dvalNotInf : {ops : WeightOps weight} -> 
              {d1 : Distance weight} -> 
              {w : weight} -> 
@@ -468,6 +477,11 @@ length (Cons p v adj) {ops}
 
 
 
+adj_to_path : adj g n m -> Path n m g
+adj_to_path adj {n} {m} {g} = Cons (Unit g n) m adj
+
+
+
 
 append : Path s v g ->
          Path v w g ->
@@ -480,6 +494,7 @@ pathPrefix : (pprefix : Path s w g) ->
              (p : Path s v g) ->
              Type
 pathPrefix pprefix p {w} {v} {g} = (ppost : Path w v g ** append pprefix ppost = p)
+
 
 
 {- shortest path -}

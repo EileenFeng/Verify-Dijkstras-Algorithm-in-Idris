@@ -111,6 +111,14 @@ explored v cl = Not (CElem v cl)
 
 
 
+checkUnexplored : {g : Graph gsize weight ops} -> 
+               (v : Node gsize) -> 
+               (cl : Column len g src) -> 
+               Dec (CElem v cl)
+checkUnexplored v (MKColumn g src len unexp dist) = isElem v unexp
+
+
+
 {- getMin from Column -}
 getMinNode : (nodes : Vect (S len) (Node gsize)) ->
              (ops : WeightOps weight) ->
