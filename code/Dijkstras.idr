@@ -484,9 +484,12 @@ unexpDelta cl {g} {gsize} {ops} {src}
 distv_min : {g : Graph gsize weight ops} -> 
             (cl : Column len g src) -> 
             Type
-distv_min cl = (v, ui : Node gsize) -> 
-               (exp_ui : explored ui cl) -> 
-               dgte ops (nodeDistN v cl) (dplus ops (nodeDistN ui cl) (edgeW g ui v)) = False
+distv_min cl {src} {gsize} 
+  = (v, ui : Node gsize) -> 
+    (exp_ui : explored ui cl) -> 
+    (p_ui : Path src ui g) -> 
+    (adj_ui_v : adj g ui v) ->
+    dgte ops (nodeDistN v cl) (length (Cons p_ui v adj_ui_v)) = False
 
 
 -- statement 4 :  distn+1[v] = δ(v) similar to stm of lemma 3
@@ -543,10 +546,7 @@ l5_stm3 : {g : Graph gsize weight ops} ->
           (l2_ih : neDInfPath cl) -> 
           (l5_ih : l5_stms cl) ->
           distv_min (runHelper cl)
-l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) v ui exp_ui 
-  with (getMin cl == ui) proof min_is_ui
-    | True = ?l3t
-    | False = ?l3f
+l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) = ?l3
 
 
                             
@@ -568,17 +568,13 @@ l5_stm4 cl l2_ih st1 st2 st3 (ih1, ih2, ih3, ih4) v expVR (Cons psw v adj_wv) sp
                                 (dgtePlus (DVal (get_weight (getNeighbors g w) v adj_wv)) 
                                           (st2 v w expVR unexpW psw (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl))))
                                 
-          | No expW = ?n
+          | No expW  = absurd $ contradict (dgteEqTrans rclvEq True (spsv lpsv)) (st3 v w expW psw adj_wv)
     | False with (l2_existPath cl l2_ih v (st1 v expVR))
       | (path_sv ** rclvEq) = dgteEq (dgteEqTrans rclvEq True (spsv path_sv)) 
                                      (dgteEqTrans 
                                        (dEqComm $ ih4 v (expV_VNotMin cl v expVR (nodeNotEq {a=getMin cl} {b=v} $ sym min_is_v)) (Cons psw v adj_wv) spsv)
                                        True (runDecre cl v))
-      {-where 
-        clvEqLenPsv :  dEq ops (nodeDistN v cl) (length psv) = True
-        clvEqLenPsv = ih3 v (expV_VNotMin cl v expVR (nodeNotEq {a=getMin cl} {b=v} $ sym min_is_v)) psv spsv
-        rclv_path : (path_sv : Path src v g ** dEq ops (nodeDistN v (runHelper cl)) (length path_sv) = True)
-        rclv_path = l2_existPath cl l2_ih v (st1 v expVR)-}
+      
       
       
                                    
