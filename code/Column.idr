@@ -40,7 +40,7 @@ CElem : {g : Graph gsize weight ops} ->
         (cl : Column len g src) ->
         Type
 CElem v (MKColumn _ _ _ unexp _) = Elem v unexp
-               
+
 
 
 -- get the dist from Column
@@ -63,26 +63,26 @@ looseIndexN _ Nil deflt = deflt
 looseIndexN (S n) (x :: xs) deflt = looseIndexN n xs deflt
 
 
-indexN : (n : Nat) -> 
-         Vect m a -> 
-         {auto p : LT n m} -> 
+indexN : (n : Nat) ->
+         Vect m a ->
+         {auto p : LT n m} ->
          a
 indexN (S _) Nil {p} = absurd $ succNotLTEzero p
 indexN Z (x :: xs) = x
 indexN (S n) (x :: xs) {p=LTESucc p'} = indexN n xs {p=p'}
 
 
-nodeDistN : {g : Graph gsize weight ops} -> 
-            (v : Node gsize) -> 
-            (cl : Column len g src) -> 
+nodeDistN : {g : Graph gsize weight ops} ->
+            (v : Node gsize) ->
+            (cl : Column len g src) ->
             Distance weight
 nodeDistN v cl = indexN (finToNat (getVal v)) (cdist cl) {p=nvLTE (getVal v)}
 
 
 
-nodeDistL : {g : Graph gsize weight ops} -> 
-            (v : Node gsize) -> 
-            (cl : Column len g src) -> 
+nodeDistL : {g : Graph gsize weight ops} ->
+            (v : Node gsize) ->
+            (cl : Column len g src) ->
             Distance weight
 nodeDistL (MKNode nv) cl = looseIndexN (finToNat nv) (cdist cl) DInf
 
@@ -111,9 +111,9 @@ explored v cl = Not (CElem v cl)
 
 
 
-checkUnexplored : {g : Graph gsize weight ops} -> 
-               (v : Node gsize) -> 
-               (cl : Column len g src) -> 
+checkUnexplored : {g : Graph gsize weight ops} ->
+               (v : Node gsize) ->
+               (cl : Column len g src) ->
                Dec (CElem v cl)
 checkUnexplored v (MKColumn g src len unexp dist) = isElem v unexp
 
@@ -179,11 +179,11 @@ deleteMin cl@(MKColumn g src (S len) unexp dist)
 
 
 
-deleteMinElem : (min : Node gsize) -> 
-                (v : Node gsize) -> 
-                (nodes : Vect (S len) (Node gsize)) -> 
-                (p : Elem min nodes) -> 
-                (e : Elem v (deleteMinNode min nodes p)) -> 
+deleteMinElem : (min : Node gsize) ->
+                (v : Node gsize) ->
+                (nodes : Vect (S len) (Node gsize)) ->
+                (p : Elem min nodes) ->
+                (e : Elem v (deleteMinNode min nodes p)) ->
                 Elem v nodes
 deleteMinElem min v (_ :: xs) Here e = There e
 deleteMinElem min v (_ :: (x :: xs)) (There later) Here = Here
@@ -194,11 +194,11 @@ deleteMinElem min v (_ :: (x' :: xs)) (There pe) (There e) = There $ deleteMinEl
 
 
 deleteNElem : (min : Node gsize) ->
-             (v : Node gsize) -> 
+             (v : Node gsize) ->
              (nodes : Vect (S len) (Node gsize)) ->
              (p : Elem min nodes) ->
-             (ne : Not (Elem v nodes)) -> 
-             Not (Elem v (deleteMinNode min nodes p)) 
+             (ne : Not (Elem v nodes)) ->
+             Not (Elem v (deleteMinNode min nodes p))
 deleteNElem min v (_ :: xs) Here nev ev with (v == min) proof minIsV
   | True = absurd $ nev (rewrite (nodeEq {a=v} {b=min} $ sym minIsV) in Here)
   | False = nev (There ev)
@@ -208,20 +208,20 @@ deleteNElem min v (x :: (x' :: xs)) (There pe) nev ev with (v == min) proof minI
     | True = absurd $ nev (rewrite (nodeEq {a=v} {b=x} $ sym vIsx) in Here)
     | False = ?ff
     --(neitherHereNorThere (x' :: xs) (nodeNoteq {a=v} {b=x} $ sym vIsX)
-                   --               (deleteElem min v (x' :: xs) p ?nen)) 
-  
-  
+                   --               (deleteElem min v (x' :: xs) p ?nen))
+
+
 deleteNElemRev : (min : Node gsize) ->
-                (v : Node gsize) -> 
+                (v : Node gsize) ->
                 (nodes : Vect (S len) (Node gsize)) ->
                 (p : Elem min nodes) ->
-                (ne : Not (Elem v (deleteMinNode min nodes p))) -> 
-                (notMin : Not (min = v)) -> 
+                (ne : Not (Elem v (deleteMinNode min nodes p))) ->
+                (notMin : Not (min = v)) ->
                 Not (Elem v nodes)
 deleteNElemRev min v (_ :: xs) Here ne notMin (There e) = absurd $ ne e
 deleteNElemRev _ _ (_ :: xs) Here _ notMin Here = absurd $ notMin Refl
 deleteNElemRev min v (v :: xs) (There em) ne notMin Here = ?dhere
-deleteNElemRev min v (_ :: (x' :: xs)) (There em) ne notMin (There ve) 
+deleteNElemRev min v (_ :: (x' :: xs)) (There em) ne notMin (There ve)
   = ?derth
 
 
