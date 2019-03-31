@@ -592,7 +592,7 @@ l5_stm4 cl nadj l2_ih st1 st2 st3 (ih1, ih2, ih3, ih4) v expVR (Cons psw v adj_w
                                 (dgtePlus (DVal (get_weight (getNeighbors g w) v adj_wv))
                                           (st2 v w expVR unexpW psw (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl))))
           | No expW with (v == w) proof v_is_w
-            | True = ?l54t
+            | True  = absurd $ contradict (adj_sameNode (nodeEq {a=v} {b=w} $ sym v_is_w) adj_wv) (nadj w)
             | False = absurd $ contradict (dgteEqTrans rclvEq True (spsv lpsv))
                                               (dgtePlusEqFst {d1=nodeDistN v (runHelper cl)}
                                                        {d2=nodeDistN w (runHelper cl)}

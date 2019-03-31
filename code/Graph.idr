@@ -429,6 +429,15 @@ adj_getPrev : {g : Graph gsize weight ops} ->
               Node gsize
 adj_getPrev adj {n} = n
 
+
+
+adj_sameNode : {g : Graph gsize weight ops} ->
+               {n, m : Node gsize} ->
+               (eq : m = n) ->
+               (adj_nm : inNodeset m (getNeighbors g n) = True) ->
+               adj g n n
+adj_sameNode {g} {n} {m} eq refl = ?adjSameNode
+
 {- get the weight of certain edge adjacent to m, helper of edge_weight-}
 
 get_weight : (ns : nodeset gsize weight) ->
