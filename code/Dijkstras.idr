@@ -218,6 +218,7 @@ runDijkstras {len = S l'} cl@(MKColumn g src (S l') _ _ ) = runDijkstras $ runHe
 dijkstras : (gsize : Nat) ->
             (g : Graph gsize weight ops) ->
             (src : Node gsize) ->
+            --(nadj : inNodeset n (getNeighbors g n) = False) ->
             (Vect gsize (Distance weight))
 --dijkstras Z g s = absurd $ NodeZAbsurd s
 dijkstras gsize g src {weight} {ops} = cdist $ runDijkstras cl
@@ -574,6 +575,7 @@ l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) v w expW = ?l3
 
 l5_stm4 : {g : Graph gsize weight ops} ->
           (cl : Column (S len) g src) ->
+          --(nadj : inNodeset n (getNeighbors g n) = False) ->
           (l2_ih : neDInfPath cl) ->
           (st1 : lessDInf (runHelper cl)) ->
           (st2 : unexpDelta (runHelper cl)) ->
@@ -620,6 +622,7 @@ l5_stm4 cl l2_ih st1 st2 st3 (ih1, ih2, ih3, ih4) v expVR (Cons psw v adj_wv) sp
 
 l5_spath : {g : Graph gsize weight ops} ->
            (cl : Column (S len) g src) ->
+           --(nadj : inNodeset n (getNeighbors g n) = False) ->
            (l2_ih : neDInfPath cl) ->
            (l5_ih : l5_stms cl) ->
            l5_stms (runHelper cl)
@@ -646,12 +649,13 @@ l5_spath cl l2_ih l5_ih
 {- proof of correctness -}
 correctness : {g : Graph gsize weight ops} ->
               (cl : Column len g src) ->
+              --(nadj : inNodeset n (getNeighbors g n) = False) ->
               (l2_ih : neDInfPath cl) ->
               (l5_ih : l5_stms cl) ->
               l5_stms (runDijkstras cl)
 correctness {len = Z} cl l2_ih l5_ih = l5_ih
 correctness {len=S n} cl@(MKColumn g src (S n) unexp dist) l2_ih l5_ih
-  = ?crt--correctness (runHelper {len=n} cl) (l2_existPath cl l2_ih) (l5_spath cl l2_ih l5_ih)
+  = correctness (runHelper {len=n} cl) (l2_existPath cl l2_ih) (l5_spath cl l2_ih l5_ih)
 
 
 
@@ -664,7 +668,7 @@ dijkstras_correctness : (gsize : Nat) ->
                         dEq ops (indexN (finToNat (getVal v)) (dijkstras gsize g src) {p=nvLTE {gsize=gsize} (getVal v)}) (length psv) = True
 dijkstras_correctness Z g src _ _ _ = absurd $ NodeZAbsurd src
 dijkstras_correctness (S len) g src v psv spsv {weight} {ops}
-  = ?dijk--(l5_sp {cl=runDijkstras col} (correctness col lemma2_ih base_stm)) v ?exp psv spsv
+  = (l5_sp {cl=runDijkstras col} (correctness col lemma2_ih base_stm)) v ?exp psv spsv
   where
     nodes : Vect (S len) (Node (S len))
     nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
@@ -850,7 +854,7 @@ naDistEq : {g : Graph gsize weight ops} ->
            (v : Node gsize) ->
            (ne: Not (adj g (getMin cl) v)) ->
            dEq ops (index (getVal c) (cdist cl)) (index (getVal c) (cdist $ runHelper cl)) = True
-naDistEq {g} {gsize} cl@(MKColumn g src (S len) unexp dist) v ne
+naDistEq {g} {gsize} cl@(MKColumn g src (S len) unexp dist ) v ne
   = ?ll--updateEq g (getMin cl) (mkNodes gsize) (cdist cl) ne
 
 -}
