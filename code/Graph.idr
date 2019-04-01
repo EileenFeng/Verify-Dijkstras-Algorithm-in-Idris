@@ -97,6 +97,16 @@ dEqComm : {ops : WeightOps weight} ->
           (dEq ops d1 d2 = True) ->
           dEq ops d2 d1 = True
 
+
+
+dEqTrans : {ops : WeightOps weight} -> 
+           {d1, d2, d3 : Distance weight} -> 
+           (e1 : dEq ops d1 d2 = True) -> 
+           (e2 : dEq ops d2 d3 = True) -> 
+           dEq ops d1 d3 = True
+           
+           
+           
 -- plus for Distance type
 dplus : (ops : WeightOps weight) ->
         (Distance weight) ->
@@ -124,6 +134,28 @@ dlt : (ops : WeightOps weight) ->
 dlt ops d1 d2 = not $ dgte ops d1 d2
 
 
+
+
+dplusDInf : {ops : WeightOps weight} ->
+            {d : Distance weight} ->
+            dplus ops d DInf = DInf
+dplusDInf {d=DInf} = Refl
+dplusDInf {d=DVal _} = Refl
+
+
+
+dgteZeroInf : {ops : WeightOps weight} ->
+              dgte ops (DVal (zero ops)) DInf = False
+dgteZeroInf = Refl
+
+
+dgteDInfRefl : {ops : WeightOps weight} ->
+               {d : Distance weight} ->
+               dgte ops DInf d = True
+dgteDInfRefl {d=DInf} = Refl
+dgteDInfRefl {d=DVal _} = Refl
+
+
 dgteRefl : dgte ops d d = True
 dgteRefl {d = DInf} = Refl
 dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
@@ -131,12 +163,14 @@ dgteRefl {d= DVal dv} {ops} with (gtew ops dv dv) proof dvRefl
   | False = absurd $ contradict (gteRefl ops) (sym dvRefl)
 
 
+-- d1 >= d2 -> d2 <= d1
 dgteReverse : dgte ops d1 d2 = False -> dgte ops d2 d1 = True
 dgteReverse {d1=DInf} Refl impossible
 dgteReverse {d2=DInf} refl = Refl
 dgteReverse {d1=DVal v1} {d2=DVal v2} {ops} refl = gteReverse ops refl
 
 
+-- d3 <= d2, d2 <= d1 -> d3 <= d1
 dgteComm : {ops : WeightOps weight} ->
            {d1, d2, d3 : Distance weight} ->
            dgte ops d1 d2 = True ->
@@ -148,16 +182,17 @@ dgteComm {d1=DVal _} {d2=DVal _} {d3=DInf} r1 r2 = absurd $ trueNotFalse (sym r2
 dgteComm {ops} {d1=DVal v1} {d2=DVal v2} {d3=DVal v3} r1 r2 = gteComm ops r1 r2
 
 
-
+{-
 dgteAscTF : {ops : WeightOps weight} ->
             {d1, d2, d3 : Distance weight} ->
             dgte ops d2 d1 = False ->
             dgte ops d2 d3 = True ->
             dgte ops d3 d1 = False
+-}
 
 
 
-
+-- d2 <= d1 -> d2 + (DVal w) <= d1 + (DVal w)
 dgteBothPlus : {d1, d2: Distance weight} ->
                {ops : WeightOps weight} ->
                (w : weight) ->
@@ -171,13 +206,8 @@ dgteBothPlus {d1=DVal v1} {d2=DVal v2} w refl {ops}
 
 
 
-dgteZeroInf : {ops : WeightOps weight} ->
-              dgte ops (DVal (zero ops)) DInf = False
-dgteZeroInf = Refl
 
-
-
-
+-- d2 <= d1, d1 <= DInf -> d2 <= DInf
 dgteDInfTrans : (d1, d2 : Distance weight) ->
                 {ops : WeightOps weight} ->
                 (p1 : dgte ops d1 DInf = False) ->
@@ -190,9 +220,9 @@ dgteDInfTrans (DVal w1) (DVal w2)  _ p2 = Refl
 
 
 
-
-dgteEqTrans : {d1, d2, d3 : Distance weight} ->
-              {ops : WeightOps weight} ->
+-- d1 = d2, d3 <= d2 -> d3 <= d1
+dgteEqTrans : {ops : WeightOps weight} ->
+              {d1, d2, d3 : Distance weight} ->
               (eq : dEq ops d1 d2 = True) ->
               (b : Bool) ->
               (dgeq : dgte ops d2 d3 = b) ->
@@ -209,6 +239,18 @@ dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3=DVal w3} eq b refl = ?dgteET
 
 
 
+
+-- d1 <= d2, d1 >= d3 -> d3 <= d2
+dgteTrans : {ops : WeightOps weight} -> 
+            {d1, d2, d3 : Distance weight} -> 
+            (dgte1 : dgte ops d1 d2 = False) -> 
+            (dgte2 : dgte ops d1 d3 = True) -> 
+            dgte ops d3 d2 = False
+
+
+
+
+-- d2 <= d1, d1 <= d2 -> d1 = d2
 dgteEq : {ops : WeightOps weight} ->
          {d1, d2 : Distance weight} ->
          (e1 : dgte ops d1 d2 = True) ->
@@ -227,11 +269,18 @@ dgtePlus : {ops : WeightOps weight} ->
            (d3 : Distance weight) ->
            (e1 : dgte ops d1 d2 = True) ->
            dgte ops (dplus ops d3 d1) d2 = True
+dgtePlus {d1=DInf} {d2=DInf} DInf e = e
+dgtePlus {d1=DInf} {d2=DInf} (DVal _) e = e
+dgtePlus {d1=DInf} {d2=DVal w} DInf e = Refl
+dgtePlus {d1=DInf} {d2=DVal w} (DVal _) e = Refl
+dgtePlus {d1=DVal _} {d2= DInf} d3 e = absurd $ trueNotFalse (sym e)
+dgtePlus {d1=DVal v1} {d2=DVal v2} DInf e = Refl
+dgtePlus {d1=DVal v1} {d2=DVal v2} (DVal v3) e = ?dgtePlus_w
 
 
 
 
-dgtePlusEqFst : {ops : WeightOps weight} ->
+dgtePlusEq : {ops : WeightOps weight} ->
              {d1, d2, d3 : Distance weight} ->
              (dv_plus : Distance weight) ->
              (b : Bool) ->
@@ -239,17 +288,10 @@ dgtePlusEqFst : {ops : WeightOps weight} ->
              (eq : dEq ops d2 d3 = True) ->
              dgte ops d1 (dplus ops dv_plus d3) = b
 
-dgtePlusEqSnd : {ops : WeightOps weight} ->
-                {d1, d2, d3 : Distance weight} ->
-                (dv_plus : Distance weight) ->
-                (b : Bool) ->
-                (dgte ops d1 (dplus ops d2 dv_plus) = b) ->
-                (eq : dEq ops d2 d3 = True) ->
-                dgte ops d1 (dplus ops d3 dv_plus) = b
 
 
 
-
+-- d1 <= DInf -> d1 + (DVal w) <= DInf
 dvalNotInf : {ops : WeightOps weight} ->
              {d1 : Distance weight} ->
              {w : weight} ->
@@ -436,7 +478,7 @@ adj_sameNode : {g : Graph gsize weight ops} ->
                (eq : m = n) ->
                (adj_nm : inNodeset m (getNeighbors g n) = True) ->
                adj g n n
-adj_sameNode {g} {n} {m} eq refl = ?adjSameNode
+adj_sameNode {g} {n} {m} eq refl = ?adjSameNode1
 
 {- get the weight of certain edge adjacent to m, helper of edge_weight-}
 
@@ -476,7 +518,7 @@ edgeWEq : (g : Graph gsize weight ops) ->
           (m : Node gsize) ->
           (adj_nm : adj g n m) ->
           (edgeW g n m) = (DVal $ get_weight (getNeighbors g n) m adj_nm)
-
+edgeWEq g n m adj_nm = ?edgeWEq1
 
 
 
@@ -651,9 +693,14 @@ natOps : WeightOps Nat
 natOps = MKWeight Z gte (==) plus natEqRefl nat_gteRefl nat_gte_reverse nat_gte_comm nat_gteBothPlus nat_tri plusCommutative
 
 
-
 eg : Graph 4 Nat Graph.natOps
 eg = MKGraph 4 Nat natOps (set0 :: set1 :: set2 :: set3 :: Nil)
+
+nadj1 : inNodeset Graph.n0 Graph.set0 = False
+nadj1 = Refl
+
+nadj_eg : (n : Node 4) -> inNodeset n (getNeighbors Graph.eg n) = False
+
 
 eg' : Graph 4 Nat Graph.natOps
 eg' = MKGraph 4 Nat natOps (set0' :: set1' :: set2' :: set3' :: Nil)
