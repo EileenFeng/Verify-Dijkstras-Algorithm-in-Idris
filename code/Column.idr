@@ -227,6 +227,7 @@ deleteNElemRev min v (_ :: (x' :: xs)) (There em) ne notMin (There ve)
 
 
 {- proof of getMin indeed gets the min node -}
+
 minNodes : (nodes : Vect (S len) (Node gsize)) ->
            (ops : WeightOps weight) ->
            (dist : Vect gsize (Distance weight)) ->
@@ -244,3 +245,23 @@ minNodes (x :: (y :: xs)) ops dist (There e)
                  (index (getVal $ getMinNode (y :: xs) ops dist) dist)) proof xMin
     | True  = minNodes (y :: xs) ops dist e
     | False = dgteComm (minNodes (y :: xs) ops dist e) (dgteReverse $ sym xMin)
+
+
+
+
+indexEq : (dist : Vect gsize (Distance weight)) -> 
+          (x : Node gsize) ->
+          index (getVal x) dist = indexN (finToNat (getVal x)) dist {p=nvLTE $ getVal x}
+
+
+
+minCl : {g : Graph gsize weight ops} -> 
+        (cl : Column (S len) g src) -> 
+        (v : Node gsize) -> 
+        (ve : CElem v cl) -> 
+        dgte ops (nodeDistN v cl)
+                 (nodeDistN (getMin cl) cl) = True
+minCl (MKColumn g src (S len) unexp dist) v ve {ops} 
+  = rewrite (sym $ indexEq dist v) in 
+        (rewrite (sym $ indexEq dist (getMinNode unexp ops dist)) in (minNodes unexp ops dist ve))
+
