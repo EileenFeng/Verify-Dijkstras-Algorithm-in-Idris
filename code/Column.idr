@@ -249,19 +249,143 @@ minNodes (x :: (y :: xs)) ops dist (There e)
 
 
 
-indexEq : (dist : Vect gsize (Distance weight)) -> 
+indexEq : (dist : Vect gsize (Distance weight)) ->
           (x : Node gsize) ->
           index (getVal x) dist = indexN (finToNat (getVal x)) dist {p=nvLTE $ getVal x}
+indexEq Nil x = absurd $ NodeZAbsurd x
+indexEq (d :: ds) (MKNode FZ) = Refl
+indexEq (d :: ds) (MKNode (FS f)) = indexEq ds (MKNode f)
 
 
-
-minCl : {g : Graph gsize weight ops} -> 
-        (cl : Column (S len) g src) -> 
-        (v : Node gsize) -> 
-        (ve : CElem v cl) -> 
+minCl : {g : Graph gsize weight ops} ->
+        (cl : Column (S len) g src) ->
+        (v : Node gsize) ->
+        (ve : CElem v cl) ->
         dgte ops (nodeDistN v cl)
                  (nodeDistN (getMin cl) cl) = True
-minCl (MKColumn g src (S len) unexp dist) v ve {ops} 
-  = rewrite (sym $ indexEq dist v) in 
+minCl (MKColumn g src (S len) unexp dist) v ve {ops}
+  = rewrite (sym $ indexEq dist v) in
         (rewrite (sym $ indexEq dist (getMinNode unexp ops dist)) in (minNodes unexp ops dist ve))
 
+
+
+
+
+{- helper proofs for Dijkstra's -}
+lte_refl : (a : Nat) -> (lte a a = True)
+lte_refl Z = Refl
+lte_refl (S n) = lte_refl n
+
+
+lte_succ_refl : (lte (S a) b = True) ->
+                (lte a b = True)
+lte_succ_refl {a=Z} {b=Z} refl = absurd $ trueNotFalse (sym refl)
+lte_succ_refl {a=Z} {b=S b'} refl = refl
+lte_succ_refl {a=S _} {b=Z} refl = absurd $ trueNotFalse (sym refl)
+lte_succ_refl {a=S a'} {b=S b'} refl = lte_succ_refl {a=a'} {b=b'} refl
+
+
+
+
+bnot : (f = False) -> Not (f = True)
+bnot rt rf = absurd $ contradict rf rt
+
+{- proof of minus zero-}
+minusZ : minus a Z = a
+minusZ {a=Z} = Refl
+minusZ {a=S a'} = Refl
+
+{- proof of minusRefl -}
+minusRefl : minus a a = Z
+minusRefl {a=Z} = Refl
+minusRefl {a=S a'} = minusRefl {a=a'}
+
+
+-- minusInj : minus a b = minus (S a) (S b)
+
+
+-- LTE proofs
+lteMinus : (gsize, n : Nat) ->
+           (p : LTE (S n) gsize) ->
+           LT (minus gsize (S n)) gsize
+lteMinus Z _ LTEZero impossible
+lteMinus (S g) Z p = rewrite (minusZ {a=g}) in lteRefl
+lteMinus (S g) (S n) (LTESucc p) = lteSuccRight $ lteMinus g n p
+
+
+
+{-proof of plusSuccRight-}
+plusSuccRight : (a : Nat) -> (b : Nat) -> S (plus a b) = plus a (S b)
+plusSuccRight Z Z = Refl
+plusSuccRight Z (S b) = Refl
+plusSuccRight (S a) b = cong $ plusSuccRight a b
+
+
+
+{- converting nat to Fin without maybe -}
+natTofin : (m : Nat) -> (n : Nat) -> {auto p : LT m n} -> Fin n
+natTofin Z (S n) = FZ
+natTofin (S m) (S n) {p = LTESucc _} = FS $ natTofin m n
+
+
+
+
+{- get the third element from tuple-}
+third : (a, a, a) -> a
+third (a1, a2, a3) = a3
+
+{- proof of minusSuccLeft -}
+minusSuccLeft : (g : Nat) ->
+            (c : Nat) ->
+            (p : LTE c g) ->
+            S (minus (S g) (S c)) = minus (S g) c
+minusSuccLeft Z Z p = Refl
+minusSuccLeft (S g) Z p = Refl
+minusSuccLeft (S g) (S c) p = minusSuccLeft g c $ fromLteSucc p
+
+
+
+{- helper for making list of nodes: initial input to dijkstra's -}
+mknodes : (gsize : Nat) ->
+          (cur : Nat) ->
+          (p : LTE cur gsize) ->
+          (Vect (minus gsize cur) (Node gsize)) ->
+          (Vect gsize (Node gsize))
+mknodes Z Z p vec = Nil
+mknodes Z (S c) p vec = absurd p
+mknodes (S g) Z p vec = vec
+mknodes (S g) (S c) p vec
+  = mknodes (S g) c (lteSuccLeft p)
+            $ rewrite (sym $ minusSuccLeft g c (fromLteSucc p)) in ((MKNode $ natTofin c (S g)) :: vec)
+
+
+mkNodes : (gsize : Nat) ->
+          Vect gsize (Node gsize)
+mkNodes gsize
+  = mknodes gsize gsize lteRefl (rewrite (minusRefl {a=gsize}) in Nil)
+
+
+{- helper for making list of initial distance values-}
+
+allDInf : (gsize : Nat) ->
+          (weight : Type) ->
+          Vect gsize (Distance weight)
+allDInf Z _ = Nil
+allDInf (S n') w = DInf :: (allDInf n' w)
+
+
+
+mkdists : (gsize : Nat) ->
+          (src : Node gsize) ->
+          (ops : WeightOps weight) ->
+          Vect gsize (Distance weight)
+mkdists Z _ _ = Nil
+mkdists gsize (MKNode sv) ops {weight}
+  = replaceAt sv (DVal $ zero ops) (allDInf gsize weight)
+
+
+
+
+mkNodeEq : {gsize : Nat} ->
+           (nf : Fin gsize) ->
+           MKNode nf = (indexN (finToNat nf) (mkNodes gsize) {p=nvLTE nf})

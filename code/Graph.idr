@@ -99,14 +99,14 @@ dEqComm : {ops : WeightOps weight} ->
 
 
 
-dEqTrans : {ops : WeightOps weight} -> 
-           {d1, d2, d3 : Distance weight} -> 
-           (e1 : dEq ops d1 d2 = True) -> 
-           (e2 : dEq ops d2 d3 = True) -> 
+dEqTrans : {ops : WeightOps weight} ->
+           {d1, d2, d3 : Distance weight} ->
+           (e1 : dEq ops d1 d2 = True) ->
+           (e2 : dEq ops d2 d3 = True) ->
            dEq ops d1 d3 = True
-           
-           
-           
+
+
+
 -- plus for Distance type
 dplus : (ops : WeightOps weight) ->
         (Distance weight) ->
@@ -241,10 +241,10 @@ dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3=DVal w3} eq b refl = ?dgteET
 
 
 -- d1 <= d2, d1 >= d3 -> d3 <= d2
-dgteTrans : {ops : WeightOps weight} -> 
-            {d1, d2, d3 : Distance weight} -> 
-            (dgte1 : dgte ops d1 d2 = False) -> 
-            (dgte2 : dgte ops d1 d3 = True) -> 
+dgteTrans : {ops : WeightOps weight} ->
+            {d1, d2, d3 : Distance weight} ->
+            (dgte1 : dgte ops d1 d2 = False) ->
+            (dgte2 : dgte ops d1 d3 = True) ->
             dgte ops d3 d2 = False
 
 
@@ -284,9 +284,9 @@ dgtePlusEq : {ops : WeightOps weight} ->
              {d1, d2, d3 : Distance weight} ->
              (dv_plus : Distance weight) ->
              (b : Bool) ->
-             (dgte ops d1 (dplus ops dv_plus d2) = b) ->
+             (dgte ops (dplus ops dv_plus d2) d1= b) ->
              (eq : dEq ops d2 d3 = True) ->
-             dgte ops d1 (dplus ops dv_plus d3) = b
+             dgte ops (dplus ops dv_plus d3) d1 = b
 
 
 
@@ -523,33 +523,6 @@ edgeWEq g n m adj_nm = ?edgeWEq1
 
 
 
-{-
-  {- path with distance -}
-data Path : Node gsize ->
-            Node gsize ->
-            (weight : Type)  ->
-            Graph gsize weight ops ->
-            Distance weight -> Type where
-  Unit : (g : Graph gsize weight ops) ->
-         (n : Node gsize) ->
-         (ops : WeightOps weight) ->
-         Path n n weight g (DVal $ zero ops)
-  Cons : Path s v weight g d ->
-         (n : Node gsize) ->
-         (adj : adj {g=g} v n) ->
-         (ops : WeightOps weight) ->
-         Path s n weight g (dplus ops d (DVal $ edge_weight g v n adj))
-
-
-shortestPath : {g : Graph gsize weight ops}
-               (sp : Path s v w g d) ->
-               (lp : Path s v w g ld) ->
-               Type
-shortestPath {d} {ld} sp lp {ops} = (dgte ops ld d = True)
-
-
--}
-
 
   {- path without distance in Type -}
 
@@ -699,7 +672,7 @@ eg = MKGraph 4 Nat natOps (set0 :: set1 :: set2 :: set3 :: Nil)
 nadj1 : inNodeset Graph.n0 Graph.set0 = False
 nadj1 = Refl
 
-nadj_eg : (n : Node 4) -> inNodeset n (getNeighbors Graph.eg n) = False
+--nadj_eg : (n : Node 4) -> inNodeset n (getNeighbors Graph.eg n) = False
 
 
 eg' : Graph 4 Nat Graph.natOps
