@@ -175,7 +175,9 @@ calcDistV4 : (g : Graph gsize weight ops) ->
              (cur_dist : Distance weight) ->
              Distance weight
 calcDistV4 g min_node cur min_dist cur_dist
-  = min ops cur_dist (dplus ops min_dist (edgeW g min_node cur))
+  = case (min_node == cur) of 
+         True => cur_dist
+         False => min ops cur_dist (dplus ops min_dist (edgeW g min_node cur))
 
 
 
@@ -200,7 +202,7 @@ runHelper cl@(MKColumn g src (S len) unexp dist) {gsize} {weight} {ops}
     min_node : Node gsize
     min_node = getMin cl
     min_dist : Distance weight
-    min_dist = index (getVal min_node) dist
+    min_dist = indexN (finToNat $ getVal min_node) dist {p=nvLTE $ getVal min_node}
     newds : Vect gsize (Distance weight)
     newds = updateDist6 g min_node min_dist (mkNodes gsize) dist
 
@@ -242,9 +244,11 @@ calcDistV4Eq : (g : Graph gsize weight ops) ->
                (cur_dist : Distance weight) ->
                dgte ops cur_dist (calcDistV4 g min_node cur min_dist cur_dist) = True
 calcDistV4Eq g min_node cur min_dist cur_dist {ops}
-  with (dgte ops cur_dist (dplus ops min_dist (edgeW g min_node cur))) proof sdist
-    | True = sym sdist
-    | False = dgteRefl
+  with (min_node == cur) proof min_is_cur
+    | True = dgteRefl
+    | False with (dgte ops cur_dist (dplus ops min_dist (edgeW g min_node cur))) proof sdist
+                 | True = sym sdist
+                 | False = dgteRefl
 
 
 
@@ -272,40 +276,62 @@ runDecre (MKColumn g src (S len) unexp dist) (MKNode nv) {gsize} {ops} {weight}
     min_node : Node gsize
     min_node = (getMinNode unexp ops dist)
     min_dist : Distance weight
-    min_dist = (index (getVal (getMinNode unexp ops dist)) dist)
+    min_dist = (indexN (finToNat $ getVal (getMinNode unexp ops dist)) dist {p=nvLTE (getVal $ getMinNode unexp ops dist)})
 
 
 
 
-{-
-distDgteMin :  (g : Graph gsize weight ops) ->
+-- proof of `nodeDistN min cl = nodeDistN min (runHelper cl)
+minDist_preserve : {g : Graph gsize weight ops} -> 
+                   (cl : Column (S len) g src) -> 
+                   dEq ops (nodeDistN (getMin cl) cl) (nodeDistN (getMin cl) (runHelper cl)) = True
+minDist_preserve cl@(MKColumn g src (S len) unexp dist) = ?mindist
+
+
+
+
+-- proof of `(calcDist cur) <= edge(min, cur) + min_dist
+calcDistDgte : (g : Graph gsize weight ops) ->
                (min_node : Node gsize) ->
+               (cur : Node gsize) ->
                (min_dist : Distance weight) ->
-               (nodes : Vect m (Node gsize)) ->
-               (dist : Vect m (Distance weight)) ->
-               (nv : Nat) -> 
-               {auto p1 : LTE m gsize} -> 
-               {auto p2 : LT nv m} -> 
-               dgte ops (indexN nv (updateDist6 g min_node min_dist nodes dist))
-                        (dplus ops (edgeW g min_node (MKNode (natTofin nv gsize)))
-                        (indexN nv (updateDist6 g mn min_dist nodes dist))) = False
+               (cur_dist : Distance weight) ->
+               dgte ops (calcDistV4 g min_node cur min_dist cur_dist) 
+                        (dplus ops (edgeW g min_node cur) min_dist) = False
+calcDistDgte g min_node cur min_dist cur_dist = ?cdd      
+
+
+distDgteMin : (g : Graph gsize weight ops) -> 
+              (min_node : Node gsize) -> 
+              (min_dist : Distance weight) -> 
+              (nodes : Vect m (Node gsize)) -> 
+              (dist : Vect m (Distance weight)) -> 
+              (nf : Fin gsize) -> 
+              {auto p : LTE (S (finToNat nf)) m} -> 
+              dgte ops (indexN (finToNat nf) (updateDist6 g min_node min_dist nodes dist))
+                       (dplus ops (edgeW g min_node (MKNode nf)) min_dist) = False
+distDgteMin g mn md Nil Nil nf {p} = absurd $ succNotLTEzero p
+distDgteMin g mn md (n :: ns) (d :: ds) FZ = ?distFZ
+distDgteMin g mn md (n :: ns) (d :: ds) (FS f) = ?distFS
+
 
 
 runDgteMin : {g : Graph gsize weight ops} -> 
              (cl : Column (S len) g src) -> 
              (v : Node gsize) -> 
-             dgte ops (nodeDistN v (runHelper cl)) (dplus ops (edgeW g (getMin cl) v) (nodeDistN (getMin cl) cl)) = False
-runDgteMin cl@(MKColumn g src (S len) unexp dist) (MKNode nv) {gsize} {ops} {weight}
-  = distDgteMin g (getMinNode unexp ops dist) (index (getVal (getMinNode unexp ops dist)) dist) (mkNodes gsize) dist (finToNat nv) {p1=lteRefl} {p2=nvLTE nv}
-  where 
-    min_node : Node gsize
-    min_node = (getMinNode unexp ops dist)
-    min_dist : Distance weight
-    min_dist = (index (getVal (getMinNode unexp ops dist)) dist)
--}
+             dgte ops (nodeDistN v (runHelper cl)) 
+                      (dplus ops (edgeW g (getMin cl) v) 
+                                 (nodeDistN (getMin cl) cl)) = False
+runDgteMin (MKColumn g src (S len) unexp dist) (MKNode nf) {gsize} {ops} {weight}
+  = distDgteMin g (getMinNode unexp ops dist)
+                  (indexN (finToNat (getVal $ getMinNode unexp ops dist)) dist {p=nvLTE (getVal $ getMinNode unexp ops dist)})
+                  (mkNodes gsize) dist nf
+                  {p=nvLTE nf}
+                  
+                  
 
-{- path to Min -}
 
+{------------------ proof on distance values and paths -----------------}
 
 {- if `d` is equal to the length of some path, then d < DInf-}
 pathlenNotDInf : {g : Graph gsize weight ops} ->
@@ -344,13 +370,13 @@ expV_VNotMin cl@(MKColumn g src (S len) unexp dist) v expVR notMin expv
   = deleteNElemRev (getMin cl) v unexp (minCElem cl) expVR notMin expv
 
 
-
+{-
 {- there always exists a node with not infinity distance in unexplored (if not Nil)-}
 unexpV_not_DInf : {g : Graph gsize weight ops} ->
                   (cl : Column (S len) g src) ->
                   (src_ninf : dgte ops (nodeDistN src cl) DInf = False) ->
                   dgte ops (nodeDistN (getMin cl) cl) DInf = False
-
+-}
 
 unexpReverse : {g : Graph gsize weight ops} ->
                (cl : Column (S len) g src) ->
@@ -407,7 +433,7 @@ neDInfPath : {g : Graph gsize weight ops} ->
              Type
 neDInfPath cl {g} {src} {ops} {gsize}
   = (v : Node gsize) ->
-    (ne : dgte ops (nodeDistN v cl) DInf = False) ->
+    dgte ops (nodeDistN v cl) DInf = False ->
     (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
 
 
@@ -416,8 +442,15 @@ l2_existPath : {g : Graph gsize weight ops} ->
                (cl : Column (S len) g src) ->
                (ih : neDInfPath cl) ->
                neDInfPath (runHelper cl)
-l2_existPath {g} cl ih = ?l2
-
+l2_existPath cl l2_ih w wclNotDInf {ops} 
+  with (dgte ops (nodeDistN w cl) DInf) proof isDInf
+    | True = ?l2t
+    | False = ?l2f
+{-
+{ops}
+  with (dgte ops (nodeDistN v cl) DInf) proof vcl_not_inf
+    | True = ?l2t
+    | False = ?l2f-}
 
 
 {-----------------------------------------------------------------------------------------------------
@@ -600,7 +633,14 @@ l5_stm2 : {g : Graph gsize weight ops} ->
           distv_min (runHelper cl)
 l5_stm2 cl l2_ih (ih1, ih2, ih3, ih4) v w expW psw spsw {ops} {g}
   with (getMin cl == w) proof min_is_w
-    | True = ?l2ts
+    | True = rewrite (sym (nodeEq {a=getMin cl} {b=w} $ sym min_is_w)) in 
+                     (dgtePlusEq {d1=nodeDistN v (runHelper cl)}
+                                 {d2=nodeDistN (getMin cl) cl}
+                                 {d3=nodeDistN (getMin cl) (runHelper cl)}
+                                 (edgeW g (getMin cl) v) False 
+                                 (runDgteMin cl v)
+                                 (minDist_preserve cl))
+    
     | False = dgteTrans {d1 = nodeDistN v cl} 
                         {d2 = dplus ops (edgeW g w v) (nodeDistN w (runHelper cl))} 
                         {d3 = nodeDistN v (runHelper cl)} 
@@ -630,7 +670,7 @@ l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons psu w adj_
         | Yes unexpU = dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
                                 (l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v u expVR unexpU psu (l1_prefixSP {sp=Cons psu w adj_uw} {sp_pre = psu} spsw ((adj_to_path adj_uw) ** Refl)))
         | No expU with (v == u) proof v_is_u
-          | True = ?l3visu
+          | True = ?l53t
           | False = dgteComm (dgteReverse $ dgteTrans {d1=nodeDistN w cl} 
                                {d2=dplus ops (DVal $ get_weight (getNeighbors g u) w adj_uw) (length psu)}
                                {d3=nodeDistN v cl}
