@@ -393,3 +393,8 @@ mkNodeEq : {gsize : Nat} ->
            MKNode nf = (indexN (finToNat nf) (mkNodes gsize) {p=nvLTE nf})
 mkNodeEq {gsize=Z} f = absurd $ FinZAbsurd f
 mkNodeEq {gsize=S len} f = ?meq
+
+
+index_mkNodesEq : {gsize : Nat} -> 
+                  (w : Node gsize) -> 
+                  w = indexN (finToNat (getVal w)) (mkNodes gsize) {p=nvLTE $ getVal w}

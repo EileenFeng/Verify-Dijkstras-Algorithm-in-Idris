@@ -261,6 +261,29 @@ minDist_preserve (MKColumn g src (S len) unexp dist) {gsize} {weight} {ops}
 
 
 
+updateDistEq : {g : Graph gsize weight ops} -> 
+               (cl : Column (S len) g src) -> 
+               (v : Node gsize) -> 
+               nodeDistN v (runHelper cl) = min ops (nodeDistN v cl) 
+                                                    (dplus ops (edgeW g (getMin cl) v) 
+                                                               (nodeDistN (getMin cl) cl))
+
+
+updateDistEqT : {g : Graph gsize weight ops} -> 
+                (cl : Column (S len) g src) -> 
+                (v : Node gsize) -> 
+                (cp1 : dgte ops (nodeDistN v cl) 
+                                (dplus ops (edgeW g (getMin cl) v) (nodeDistN (getMin cl) cl)) = True) -> 
+                nodeDistN v (runHelper cl) = dplus ops (edgeW g (getMin cl) v) (nodeDistN (getMin cl) cl)
+
+
+updateDistEqF : {g : Graph gsize weight ops} -> 
+                (cl : Column (S len) g src) -> 
+                (v : Node gsize) -> 
+                (cp1 : dgte ops (nodeDistN v cl) 
+                                (dplus ops (edgeW g (getMin cl) v) (nodeDistN (getMin cl) cl)) = False) -> 
+                nodeDistN v (runHelper cl) = nodeDistN v cl
+                
 
 {------------------ proof on distance values and paths -----------------}
 
@@ -367,16 +390,50 @@ neDInfPath cl {g} {src} {ops} {gsize}
     dgte ops (nodeDistN v cl) DInf = False ->
     (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
 
+{-
+l2_distHelper : (g : Graph gsize weight ops) -> 
+                (min_node : Node gsize) -> 
+                (min_dist : Distance weight) ->
+                (nodes : Vect m (Node gsize)) -> 
+                (dist : Vect m (Distance weight)) -> 
+                (nv : Nat) -> 
+                {auto p : LT nv m} -> 
+                ((dgte ops (indexN nv dist) DInf) = False -> (psv : Path src (index nv nodes) g ** dEq ops (indexN nv dist) (length psv) = True)) -> 
+                (npsv : Path src (indexN nv nodes) g ** dEq ops (indexN nv (updateDist6 g min_node min_dist nodes dist)) (length npsv) = True)
+  
+l2_distHelper g min_node min_dist Nil Nil nv l2_ih {p} = absurd $ succNotLTEzero p
+l2_distHelper g min_node min_dist (n :: ns) (d :: ds) FZ l2_ih {ops}
+  with (dgte ops d (dplus ops (edgeW g min_node n) min_dist)) of 
+    | True = ?l2ht
+    | False = ?l2hf
+l2_distHelper g min_node min_dist (n :: ns) (d :: ds) (FS f) l2_ih {p=LTESucc p'} = ?l2h3
+-}
+
+
 
 
 l2_existPath : {g : Graph gsize weight ops} ->
                (cl : Column (S len) g src) ->
-               (ih : neDInfPath cl) ->
+               (l2_ih : neDInfPath cl) ->
                neDInfPath (runHelper cl)
 l2_existPath cl l2_ih w wclNotDInf {ops}
-  with (dgte ops (nodeDistN w cl) DInf) proof isDInf
-    | True = ?l2t
-    | False = ?l2f
+  with (dgte ops (nodeDistN w cl) (dplus ops (edgeW g (getMin cl) w) (nodeDistN (getMin cl) cl))) proof cur_lt_sum
+    | True with (getMin cl == w) proof min_is_w
+      | True = ?l2_isMin
+      | False = ?l2_notMin
+    | False = rewrite (updateDistEqF cl w $ sym cur_lt_sum) in (l2_ih w (rewrite (sym (updateDistEqF cl w $ sym cur_lt_sum)) in wclNotDInf))
+  
+  
+ {- = l2_distHelper g min_node min_dist (mkNodes gsize) dist wv (l2_ih (MKNode wv)) {p=nvLTE wv}
+  where
+    min_node : Node gsize
+    min_node = getMinNode unexp ops dist
+    min_dist : Distance weight
+    min_dist = indexN (finToNat $ getVal min_node) dist {p=nvLTE $ getVal min_node}
+  -}
+  
+    
+        
 {-
 {ops}
   with (dgte ops (nodeDistN v cl) DInf) proof vcl_not_inf
@@ -472,8 +529,8 @@ l4_distVIsMin cl l4_ih v u_i exp_ui
 --------------------------------------------------------------}
 -- statement 1: distn+1[v] < ∞
 lessDInf : {g : Graph gsize weight ops} ->
-          (cl : Column len g src) ->
-          Type
+           (cl : Column len g src) ->
+           Type
 lessDInf cl {gsize} {ops}
   = (v : Node gsize) ->
     (explored v cl) ->
@@ -496,7 +553,7 @@ distv_min cl {g} {gsize} {src}
 
 
 
--- statement 3: distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
+-- statement 3: v in explored_{n+1} distn+1[v] ≤ δ(v′), ∀v′ ∈ unexploredn+1.
 unexpDelta : {g : Graph gsize weight ops} ->
              (cl : Column len g src) ->
              Type
@@ -541,7 +598,7 @@ l5_sp (s1, s2, s3, s4) = s4
 
 -- proof of each statement
 
-
+-- assume connected graph
 
 l5_stm1 : {g : Graph gsize weight ops} ->
           (cl : Column (S len) g src) ->
@@ -602,6 +659,7 @@ l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons psu w adj_
                                 (l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v u expVR unexpU psu (l1_prefixSP {sp=Cons psu w adj_uw} {sp_pre = psu} spsw ((adj_to_path adj_uw) ** Refl)))
         | No expU with (v == u) proof v_is_u
           | True = ?l53t
+
           | False = dgteComm (dgteComm {d1=dplus ops (DVal $ get_weight (getNeighbors g u) w adj_uw) (length psu)}
                              {d2=nodeDistN w cl}
                              {d3=nodeDistN v cl}
