@@ -150,6 +150,12 @@ dplusDInf {d=DVal _} = Refl
 
 
 
+dgteDInfReduce : {ops : WeightOps weight} -> 
+                 {d1, d2 : Distance weight} -> 
+                 (dgte ops (dplus ops d1 d2) DInf = False) -> 
+                 dgte ops d2 DInf = False
+
+
 dgteZeroInf : {ops : WeightOps weight} ->
               dgte ops (DVal (zero ops)) DInf = False
 dgteZeroInf = Refl
