@@ -302,6 +302,14 @@ dgtePlusEq : {ops : WeightOps weight} ->
 
 
 
+{--- not yet used
+dgteEqPlus : {ops : WeightOps weight} -> 
+             {d1, d2 : Distance weight} -> 
+             (dv_plus : Distance weight) -> 
+             (deq : dEq ops d1 d2 = True) -> 
+             dgte ops (dplus ops dv_plus d2) d1 = True
+-}
+
 
 dgtePlusAbsurd : {ops : WeightOps weight} ->
                  (d1, d2 : Distance weight) ->
@@ -423,12 +431,18 @@ nodeEq : {a, b : Node gsize} ->
 nodeEq {a=MKNode av} {b=MKNode bv} refl = cong $ finEq av bv refl
 
 
+
 nodeNotEq : {a, b : Node gsize} ->
             (a == b) = False ->
             Not (a = b)
 nodeNotEq {a=MKNode av} {b=MKNode bv} refl ne
   = absurd $ contradict (finEqReverse $ NodeInjective ne) refl
 
+
+nodeEqTrans : {a, b, c : Node gsize} -> 
+              (e1 : a = b) -> 
+              (e2 : b = c) -> 
+              a = c
 
 
 nodeNotEqTrans : {a, b, c : Node gsize} ->

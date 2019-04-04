@@ -395,6 +395,16 @@ mkNodeEq {gsize=Z} f = absurd $ FinZAbsurd f
 mkNodeEq {gsize=S len} f = ?meq
 
 
+
+indexClEq : {g : Graph gsize weight ops} -> 
+            (cl : Column len g src) -> 
+            (v, u : Node gsize) -> 
+            (eq : v = u) -> 
+            nodeDistN u cl = nodeDistN v cl
+indexClEq cl v u eq = rewrite eq in Refl
+
+{-
 index_mkNodesEq : {gsize : Nat} -> 
                   (w : Node gsize) -> 
                   w = indexN (finToNat (getVal w)) (mkNodes gsize) {p=nvLTE $ getVal w}
+-}

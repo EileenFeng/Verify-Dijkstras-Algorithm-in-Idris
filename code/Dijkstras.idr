@@ -650,18 +650,19 @@ l5_stm2 cl l2_ih (ih1, ih2, ih3, ih4) v w expW psw spsw {ops} {g}
 total 
 l5_stm3 : {g : Graph gsize weight ops} ->
           (cl : Column (S len) g src) ->
+          (nadj : ((n : Node gsize) -> inNodeset n (getNeighbors g n) = False)) ->
           (l2_ih : neDInfPath cl) ->
           (l5_ih : l5_stms cl) ->
           (st1 : lessDInf (runHelper cl)) ->
           (st2 : distv_min (runHelper cl)) ->
           unexpDelta (runHelper cl)
-l5_stm3 cl l2_ih l5_ih st1 st2 v w expVR unexpWR {src=w} (Unit _ _) spsw = ?l53Impossible
-l5_stm3 cl l2_ih l5_ih st1 st2 v w expVR unexpWR {src} (Cons (Unit g src) w adj_src_w) spsw = ?l52Base
-l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons psx u adj_x_u) w adj_uw) spsw {g} {ops}
+l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src=w} (Unit _ _) spsw = ?l53Impossible
+l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src} (Cons (Unit g src) w adj_src_w) spsw = ?l52Base
+l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons psx u adj_x_u) w adj_uw) spsw {g} {ops}
   with (getMin cl == v) proof min_is_v
     | True with (checkUnexplored u (runHelper cl)) proof u_exp
         | Yes unexpU = dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
-                                (l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v u expVR unexpU (Cons psx u adj_x_u) 
+                                (l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v u expVR unexpU (Cons psx u adj_x_u) 
                                                                                                 (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw} 
                                                                                                              {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl)))
         | No expU with (v == u) proof v_is_u
@@ -669,12 +670,46 @@ l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons psx 
             | x with (checkUnexplored x (runHelper cl)) proof x_exp
              | Yes unexpX =  dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
                                 $ dgtePlus (DVal $ get_weight (getNeighbors g x) u adj_x_u)
-                                           (l5_stm3 cl l2_ih (ih1, ih2, ih3, ih4) st1 st2 v x expVR unexpX psx
+                                           (l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v x expVR unexpX psx
                                                    (l1_prefixSP {sp= Cons psx u adj_x_u} {sp_pre = psx} 
                                                      (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw} 
                                                                   {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl))
                                                      ((adj_to_path adj_x_u) ** Refl)))
-             | No expX = ?nx
+                                                     
+             | No expX with (u == x) proof u_is_x
+               | True = absurd $ contradict (adj_sameNode (nodeEq {a=u} {b=x} $ sym u_is_x) adj_x_u) (nadj x)
+               | False with (l2_existPath cl l2_ih v (st1 v expVR)) 
+                     | (lpsv ** rclvEq) = rewrite (sym $ indexClEq (runHelper cl) v u (nodeEq {a=v} {b=u} $ sym v_is_u)) in 
+                                                  (dgtePlus {d1=dplus ops (DVal (get_weight (getNeighbors g x) u adj_x_u)) (length psx)}
+                                                   {d2=nodeDistN u (runHelper cl)}
+                                                   (DVal $ get_weight (getNeighbors g u) w adj_uw)
+                                                   (dgtePlusEq {d1=nodeDistN u (runHelper cl)}
+                                                               {d2=nodeDistN x (runHelper cl)}
+                                                               {d3=length psx}
+                                                               (DVal $ get_weight (getNeighbors g x) u adj_x_u)
+                                                               True
+                                                               (rewrite (sym $ edgeWEq g x u adj_x_u) in 
+                                                                        (st2 u x expX psx (l1_prefixSP {sp= Cons psx u adj_x_u} {sp_pre = psx} 
+                                                                                                       (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw} 
+                                                                                                                    {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl))
+                                                                                                       ((adj_to_path adj_x_u) ** Refl))))
+                                                               (l3_preserveDelta cl l2_ih x psx
+                                                                                 (l1_prefixSP {sp= Cons psx u adj_x_u} {sp_pre = psx} 
+                                                                                              (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw} 
+                                                                                                           {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl))
+                                                                                              ((adj_to_path adj_x_u) ** Refl))
+                                                                                 (ih4 x (expV_VNotMin cl x expX 
+                                                                                                      (nodeNotEqTrans 
+                                                                                                        (nodeEqTrans (nodeEq {a=getMin cl} {b=v} $ sym min_is_v) 
+                                                                                                                     (nodeEq {a=v} {b=u} $ sym v_is_u))
+                                                                                                        (nodeNotEq {a=u} {b=x} $ sym u_is_x)))
+                                                                                      psx
+                                                                                      (l1_prefixSP {sp= Cons psx u adj_x_u} {sp_pre = psx} 
+                                                                                                   (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw} 
+                                                                                                                {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl))
+                                                                                                                                                ((adj_to_path adj_x_u) ** Refl))))))
+                                   
+                                  
           | False = dgteComm (dgteComm {d1=dplus ops (DVal $ get_weight (getNeighbors g u) w adj_uw) (length (Cons psx u adj_x_u))}
                              {d2=nodeDistN w cl}
                              {d3=nodeDistN v cl}
@@ -758,10 +793,10 @@ l5_spath : {g : Graph gsize weight ops} ->
 l5_spath cl nadj l2_ih l5_ih
   = (l5_stm1 cl l5_ih,
      l5_stm2 cl l2_ih l5_ih,
-     l5_stm3 cl l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih),
+     l5_stm3 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih),
      l5_stm4 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih)
                                  (l5_stm2 cl l2_ih l5_ih)
-                                 (l5_stm3 cl l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih)))
+                                 (l5_stm3 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih)))
 {-(pf1, pf2, pf3)
   where
     pf1 p = ?pf1
