@@ -1,0 +1,8 @@
+PWD /Users/yazhefeng/Desktop/Dropbox/thesis/senior_thesis/writing/second_draft/verification
+INPUT /usr/local/texlive/2017/texmf.cnf
+INPUT /usr/local/texlive/2017/texmf-dist/web2c/texmf.cnf
+INPUT /usr/local/texlive/2017/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT data_structures.tex
+OUTPUT data_structures.log
+INPUT /usr/local/texlive/2017/texmf-dist/fonts/map/fontname/texfonts.map
+INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm

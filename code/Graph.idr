@@ -38,6 +38,10 @@ using (weight : type)
     add : weight -> weight -> weight
     eqRefl : {w : weight} -> eq w w = True
     eqComm : {w1, w2 : weight} -> eq w1 w2 = True -> eq w2 w1 = True
+    eqTrans : {w1, w2, w3 : weight} -> 
+              eq w1 w2 = True -> 
+              eq w2 w3 = True -> 
+              eq w1 w3 = True
     gteRefl : {a : weight} -> (gtew a a = True)
     gteReverse : {a, b : weight} -> (p : gtew a b = False) -> gtew b a = True
     gteComm : {a, b, c : weight} ->
@@ -110,6 +114,15 @@ dEqTrans : {ops : WeightOps weight} ->
            (e1 : dEq ops d1 d2 = True) ->
            (e2 : dEq ops d2 d3 = True) ->
            dEq ops d1 d3 = True
+dEqTrans {d1=DInf} {d2=DInf} {d3=DInf} e1 e2 = Refl
+dEqTrans {d1=DInf} {d2=DInf} {d3=DVal _} e1 e2 = absurd $ trueNotFalse (sym e2)
+dEqTrans {d1=DInf} {d2=DVal _} {d3=DInf} e1 e2 = absurd $ trueNotFalse (sym e1)
+dEqTrans {d1=DVal _} {d2=DInf} {d3=DInf} e1 e2 = absurd $ trueNotFalse (sym e1)
+dEqTrans {d1=DInf} {d2=DVal _} {d3=DVal _} e1 e2 = absurd $ trueNotFalse (sym e1)
+dEqTrans {d1=DVal _} {d2=DInf} {d3=DVal _} e1 e2 = absurd $ trueNotFalse (sym e1)
+dEqTrans {d1=DVal _} {d2=DVal _} {d3=DInf} e1 e2 = absurd $ trueNotFalse (sym e2)
+dEqTrans {d1=DVal v1} {d2=DVal v2} {d3=DVal v3} e1 e2 {ops} = eqTrans ops e1 e2
+
 
 
 
@@ -149,11 +162,12 @@ dplusDInf {d=DInf} = Refl
 dplusDInf {d=DVal _} = Refl
 
 
-
-dgteDInfReduce : {ops : WeightOps weight} -> 
-                 {d1, d2 : Distance weight} -> 
-                 (dgte ops (dplus ops d1 d2) DInf = False) -> 
+{-
+dgteDInfReduce : {ops : WeightOps weight} ->
+                 {d1, d2 : Distance weight} ->
+                 (dgte ops (dplus ops d1 d2) DInf = False) ->
                  dgte ops d2 DInf = False
+-}
 
 
 dgteZeroInf : {ops : WeightOps weight} ->
@@ -251,14 +265,14 @@ dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3=DVal w3} deq b refl {ops} = gtewEqTran
 
 
 
-
+{-
 -- d1 <= d2, d1 >= d3 -> d3 <= d2
 dgteTrans : {ops : WeightOps weight} ->
             {d1, d2, d3 : Distance weight} ->
             (dgte1 : dgte ops d1 d2 = False) ->
             (dgte2 : dgte ops d1 d3 = True) ->
             dgte ops d3 d2 = False
-
+-}
 
 
 
@@ -299,17 +313,38 @@ dgtePlusEq : {ops : WeightOps weight} ->
              (dgte ops (dplus ops dv_plus d2) d1= b) ->
              (eq : dEq ops d2 d3 = True) ->
              dgte ops (dplus ops dv_plus d3) d1 = b
-
-
-
+dgtePlusEq DInf False de e = absurd $ trueNotFalse de
+dgtePlusEq DInf True _ _ = Refl
+dgtePlusEq (DVal val) _ _ _ = ?dgtePlusEq_rhs_1
 {--- not yet used
-dgteEqPlus : {ops : WeightOps weight} -> 
-             {d1, d2 : Distance weight} -> 
-             (dv_plus : Distance weight) -> 
-             (deq : dEq ops d1 d2 = True) -> 
+dgteEqPlus : {ops : WeightOps weight} ->
+             {d1, d2 : Distance weight} ->
+             (dv_plus : Distance weight) ->
+             (deq : dEq ops d1 d2 = True) ->
              dgte ops (dplus ops dv_plus d2) d1 = True
 -}
 
+
+
+dgtePlusDInf: {ops : WeightOps weight} -> 
+              {dp_val, d : Distance weight} -> 
+              dgte ops (dplus ops dp_val d) DInf = False -> 
+              dgte ops d DInf = False
+dgtePlusDInf {dp_val = DInf} {d=DInf} e1 = e1
+dgtePlusDInf {dp_val=DInf} {d=DVal _} e1 = absurd $ trueNotFalse e1
+dgtePlusDInf {dp_val=DVal _} {d=DInf} e1 = absurd $ trueNotFalse e1
+dgtePlusDInf {dp_val=DVal d1} {d=DVal d2} e1 = Refl
+
+
+
+dgteReplace : {ops : WeightOps weight} -> 
+              {d1, d2, d3 : Distance weight} -> 
+              (b : Bool) -> 
+              (neq : dgte ops d1 d3 = b) -> 
+              (deq : d1 = d2) -> 
+              dgte ops d2 d3 = b
+dgteReplace b neq deq = rewrite (sym deq) in neq 
+ 
 
 dgtePlusAbsurd : {ops : WeightOps weight} ->
                  (d1, d2 : Distance weight) ->
@@ -439,16 +474,19 @@ nodeNotEq {a=MKNode av} {b=MKNode bv} refl ne
   = absurd $ contradict (finEqReverse $ NodeInjective ne) refl
 
 
-nodeEqTrans : {a, b, c : Node gsize} -> 
-              (e1 : a = b) -> 
-              (e2 : b = c) -> 
+nodeEqTrans : {a, b, c : Node gsize} ->
+              (e1 : a = b) ->
+              (e2 : b = c) ->
               a = c
+nodeEqTrans e1 e2 = rewrite (sym e2) in e1
 
 
 nodeNotEqTrans : {a, b, c : Node gsize} ->
                  (eq : a = b) ->
                  (neq : Not (b = c)) ->
                  Not (a = c)
+nodeNotEqTrans e1 ne eac = absurd $ ne (rewrite (sym e1) in eac)
+
 
 
 {- a = b -> a == b = True -}
@@ -518,7 +556,8 @@ adj_sameNode : {g : Graph gsize weight ops} ->
                (eq : m = n) ->
                (adj_nm : inNodeset m (getNeighbors g n) = True) ->
                adj g n n
-adj_sameNode {g} {n} {m} eq refl = ?adjSameNode1
+adj_sameNode {g} {n} {m} eq refl = ?adjSN
+
 
 {- get the weight of certain edge adjacent to m, helper of edge_weight-}
 
@@ -558,7 +597,8 @@ edgeWEq : (g : Graph gsize weight ops) ->
           (m : Node gsize) ->
           (adj_nm : adj g n m) ->
           (edgeW g n m) = (DVal $ get_weight (getNeighbors g n) m adj_nm)
-edgeWEq g n m adj_nm = ?edgeWEq
+edgeWEq g n m adj_nm = ?edgeEq
+
 
 
 
@@ -618,6 +658,14 @@ shortestPath g sp {ops} {v}
   = (lp : Path s v g) ->
     dgte ops (length lp) (length sp) = True
 
+
+
+
+-- connected Graph
+connected : (g : Graph gsize weight ops) ->
+            (v, w : Node gsize) ->
+            Type
+connected g v w = Path v w g
 
 
 -- example with Nat as weight
@@ -703,7 +751,7 @@ natEqRefl {n=S n'} = natEqRefl {n=n'}
 
 
 natOps : WeightOps Nat
-natOps = MKWeight Z gte (==) plus natEqRefl ?eqComm nat_gteRefl nat_gte_reverse nat_gte_comm nat_gteBothPlus nat_tri ?gtewPlusFalseN ?gtewEqTransN plusCommutative
+natOps = MKWeight Z gte (==) plus natEqRefl ?eqComm ?eqTrans nat_gteRefl nat_gte_reverse nat_gte_comm nat_gteBothPlus nat_tri ?gtewPlusFalseN ?gtewEqTransN plusCommutative
 
 
 eg : Graph 4 Nat Graph.natOps

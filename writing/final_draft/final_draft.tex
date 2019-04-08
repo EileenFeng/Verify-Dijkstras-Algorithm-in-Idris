@@ -1,0 +1,345 @@
+% Credits are indicated where needed. The general idea is based on a template by Vel (vel@LaTeXTemplates.com) and Frits Wenneker.
+
+\documentclass[11pt, a4paper]{article} % General settings in the beginning (defines the document class of your paper)
+% 11pt = is the font size
+% A4 is the paper size
+% “article” is your document class
+
+%----------------------------------------------------------------------------------------
+% Packages
+%----------------------------------------------------------------------------------------
+
+% Necessary
+\usepackage[german,english]{babel} % English and German language 
+\usepackage{booktabs} % Horizontal rules in tables 
+% For generating tables, use “LaTeX” online generator (https://www.tablesgenerator.com)
+\usepackage{comment} % Necessary to comment several paragraphs at once
+\usepackage[utf8]{inputenc} % Required for international characters
+\usepackage[T1]{fontenc} % Required for output font encoding for international characters
+
+% Might be helpful
+\usepackage{amsmath,amsfonts,amsthm} % Math packages which might be useful for equations
+\usepackage{tikz} % For tikz figures (to draw arrow diagrams, see a guide how to use them)
+\usepackage{tikz-cd}
+\usepackage{hyperref}
+\usepackage{import}
+\usepackage{listings}
+
+\usetikzlibrary{positioning,arrows} % Adding libraries for arrows
+\usetikzlibrary{decorations.pathreplacing} % Adding libraries for decorations and paths
+\usepackage{tikzsymbols} % For amazing symbols ;) https://mirror.hmc.edu/ctan/graphics/pgf/contrib/tikzsymbols/tikzsymbols.pdf 
+\usepackage{blindtext} % To add some blind text in your paper
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\newcommand\ftab[1][5cm]{\hspace*{#1}}
+\newcommand\ttab[1][2cm]{\hspace*{#1}}
+\newcommand\tsp[1][0.2cm]{\hspace*{#1}}
+\newcommand\htab[1][0.5cm]{\hspace*{#1}}
+\setcounter{secnumdepth}{4}
+
+\graphicspath{ {images/} }
+
+\newtheorem*{theorem}{Theorem}
+\newtheorem*{lemma}{Lemma}
+\newtheorem{sublemma}{Lemma}[section]
+
+%---------------------------------------------------------------------------------
+% Additional settings
+%---------------------------------------------------------------------------------
+
+%---------------------------------------------------------------------------------
+% Define your margins
+\usepackage{geometry} % Necessary package for defining margins
+
+\geometry{
+  top=2cm, % Defines top margin
+  bottom=2cm, % Defines bottom margin
+  left=2.5cm, % Defines left margin
+  right=2.5cm, % Defines right margin
+  includehead, % Includes space for a header
+  %includefoot, % Includes space for a footer
+  %showframe, % Uncomment if you want to show how it looks on the page 
+}
+
+\setlength{\parindent}{15pt} % Adjust to set you indent globally 
+
+%---------------------------------------------------------------------------------
+% Define your spacing
+\usepackage{setspace} % Required for spacing
+% Two options:
+\linespread{1.1}
+%\onehalfspacing % one-half-spacing linespread
+
+%----------------------------------------------------------------------------------------
+% Define your fonts
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+
+\usepackage{XCharter} % Use the XCharter font
+
+
+%---------------------------------------------------------------------------------
+% Define your headers and footers
+
+\usepackage{fancyhdr} % Package is needed to define header and footer
+\pagestyle{fancy} % Allows you to customize the headers and footers
+
+%\renewcommand{\sectionmark}[1]{\markboth{#1}{}} % Removes the section number from the header when \leftmark is used
+
+% Headers
+\lhead{} % Define left header
+\chead{\textit{}} % Define center header - e.g. add your paper title
+\rhead{} % Define right header
+
+% Footers
+\lfoot{} % Define left footer
+\cfoot{\footnotesize \thepage} % Define center footer
+\rfoot{ } % Define right footer
+
+%---------------------------------------------------------------------------------
+% Add information on bibliography
+\usepackage{natbib} % Use natbib for citing
+\usepackage{har2nat} % Allows to use harvard package with natbib https://mirror.reismil.ch/CTAN/macros/latex/contrib/har2nat/har2nat.pdf
+
+% For citing with natbib, you may want to use this reference sheet: 
+% http://merkel.texture.rocks/Latex/natbib.php
+
+%---------------------------------------------------------------------------------
+% Add field for signature (Reference: https://tex.stackexchange.com/questions/35942/how-to-create-a-signature-date-page)
+\newcommand{\signature}[2][5cm]{%
+  \begin{tabular}{@{}p{#1}@{}}
+    #2 \\[2\normalbaselineskip] \hrule \\[0pt]
+    {\small \textit{Signature}} \\[2\normalbaselineskip] \hrule \\[0pt]
+    {\small \textit{Place, Date}}
+  \end{tabular}
+}
+%---------------------------------------------------------------------------------
+% General information
+%---------------------------------------------------------------------------------
+% \title{Shortest Path Algorithms Verification with Idris} % Adds your title
+% \author{
+% Yazhe Feng % Add your first and last name
+%     %\thanks{} % Adds a footnote to your title
+%     %\institution{YOUR INSTITUTION} % Adds your institution
+%   }
+
+% \date{\small \today} % Adds the current date to your “cover” page; leave empty if you do not want to add a date
+
+%---------------------------------------------------------------------------------
+% Define what’s in your document
+%---------------------------------------------------------------------------------
+
+\begin{document}
+\lstset{
+  language=Haskell, 
+  backgroundcolor=\color{white}
+  frame=single,                    
+  keepspaces=true,                 
+  keywordstyle=\color{blue},
+  basicstyle=\fontsize{10}{12}\selectfont\ttfamily,
+  breaklines=true, 
+  commentstyle=\color{orange}, 
+  showtabs=false,     
+  showspaces=false,                
+  showstringspaces=false,             
+  tabsize=2
+}
+
+
+\begin{titlepage}
+\pagenumbering{gobble}
+\addcontentsline{toc}{section}{Abstract}
+\begin{center}
+\tab\\
+\vspace{1.5cm}
+\LARGE
+\text{\uppercase{Verification of Shortest Path Algorithms}}\\
+\text{\uppercase{ in Idris}}
+
+\Large
+\vspace{1.5cm}
+\text{Yazhe Feng}\\
+\vspace{2cm}
+\large
+A thesis submitted in partial fulfillment of the requirements for the \\ degree of Bachelor of Arts \\ 
+\vspace{0.5cm}
+\large
+in the \\ 
+\vspace{0.5cm}
+\large
+Department of Computer Science \\ 
+\vspace{0.5cm}
+\large
+at Bryn Mawr College \\
+\vspace{1cm}
+Advisor: Richard A. Eisenberg
+
+\pagebreak
+
+\end{center}
+\pagenumbering{roman}
+\Large
+\textbf{Acknowledgments} 
+\\\\
+\small
+%\addcontentsline{toc}{section}{Acknowledgments}
+(To be finished...)
+
+\pagebreak
+\begin{center}
+\large
+\textbf{Abstract}
+\end{center}
+\pagebreak
+%\end{center}
+
+\end{titlepage}
+
+\vfill
+% \begin{figure}[H]
+% \begin{center}
+% \includegraphics[width = .2\textwidth]{university_seal}
+% \end{center}
+% \end{figure}
+% You can add your university seal here. It'll appear right above the department and it'll look fancy af.
+%\end{titlepage}
+\pagebreak
+\pagenumbering{roman}
+\tableofcontents
+%\listoffigures
+%\listoftables
+\pagebreak
+\pagenumbering{arabic}
+
+% If you want a cover page, uncomment "\input{coverpage.tex}" and uncomment "\begin{comment}" and "\end{comment}" to comment the following lines
+%\input{coverpage.tex}
+
+%\begin{comment}
+%\maketitle % Print your title, author name and date; comment if you want a cover page 
+
+% \begin{center} % Center text
+%     Word count: XXXX
+% % How to check words in a LaTeX document: https://www.overleaf.com/help/85-is-there-a-way-to-run-a-word-count-that-doesnt-include-latex-commands
+% \end{center}
+% %\end{comment}
+
+%----------------------------------------------------------------------------------------
+% Introduction
+%----------------------------------------------------------------------------------------
+\setcounter{page}{1} % Sets counter of page to 1
+
+\section{Introduction}
+\import{./}{introduction}
+
+% \subsection{Citing} % Add another subsection
+% Citing in \LaTeX is easy. You could easier cite with the text flow like this ``Referring to \citet{collier2004greed} ...''  or at the end of the sentence \cite{collier2004greed}. You can also cite pages like this \citep[55]{collier2004greed}. If you want to add an additional note, you might want to do it this way \citep[cp.][22]{collier2004greed} or like this \citep[cp.][]{collier2004greed}.\\
+% \blindtext % Adds some blintext to your text
+
+%----------------------------------------------------------------------------------------
+% Literature review
+%----------------------------------------------------------------------------------------
+\section{Motivation}
+\import{./}{motivation}
+
+\section{Background}
+\import{./}{background}
+
+\section{Overview of Algorithms Implementations and Proofs of Correctness}
+\subsection{Dijkstra's Algorithm}
+\import{dijkstras_highlevel/}{data_structure}
+
+\import{dijkstras_highlevel/}{definitions}
+
+\import{dijkstras_highlevel/}{pseudocode}
+
+\import{dijkstras_highlevel/}{correctness_proof}
+
+%---------------------------------------------------------------------------------
+% Low-Level Contribution // need to change the title name
+%---------------------------------------------------------------------------------
+
+\section{Concrete Implementation of Dijkstra's Verification}
+Our verification program consists three parts: data structures, implementation of Dijkstra's algorithm, and verification of the implementation. We implemented Dijkstra's algorithm with a matrix representation, where each column of the matrix represents one iteration of the algorithm and carries the source node, current list of unexplored nodes, and distance values of all nodes calculated by the algorithm. New column is then calculated based on the existing columns, and the last column calculated is the output, which contains the minimum distance values from source to all nodes in the graph. Implementation details are provided in the following sections. 
+\import{verification/}{data_structures.tex}
+\import{verification/}{implementation.tex}
+\import{verification/}{lemmas.tex}
+\import{verification/}{correctness.tex}
+
+
+%----------------------------------------------------------------------------------------
+% Discussion
+%----------------------------------------------------------------------------------------
+
+\section{Discussion}
+
+
+
+%----------------------------------------------------------------------------------------
+% Related Work
+%----------------------------------------------------------------------------------------
+\import{./}{related_work}
+
+
+%----------------------------------------------------------------------------------------
+% Conclusion
+%----------------------------------------------------------------------------------------
+
+\section{Conclusion}
+
+%----------------------------------------------------------------------------------------
+% Bibliography
+%----------------------------------------------------------------------------------------
+\newpage % Includes a new page
+
+\pagenumbering{roman} % Changes page numbering to roman page numbers
+%\bibliography{literature}
+
+\bibliography{./literature.bib} % Add the filename of your bibliography
+\bibliographystyle{apsr} % Defines your bibliography style
+[1] V. Klasen, "Verifying dijkstra's algorithm with key," in Diploma Thesis, Universitat Koblenz-Landau, 2010.%\url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
+\newline
+[2] Bove, Ana, and Peter Dybjer. “Dependent Types at Work.” Language Engineering and Rigorous Software Development Lecture Notes in Computer Science, 2009, pp. 57–99., \url{doi:10.1007/978-3-642-03153-3_2}. %\url{http://www.cse.chalmers.se/~peterd/papers/DependentTypesAtWork.pdf}
+\newline
+[3] R. Mange and J. Kuhn, "Verifying dijkstra algorithm in Jahob," 2007, student project, EPFL.%\url{https://lara.epfl.ch/w/_media/dijkstra.pdf} 
+\newline
+[4] Filliâtre, Jean-Christophe. “Toccata.” Dijkstra's Shortest Path Algorithm, \url{toccata.lri.fr/gallery/dijkstra.en.html}.%\url{http://toccata.lri.fr/gallery/dijkstra.en.html}
+\newline
+[5] “Why3.” Why3, May 2015, \url{why3.lri.fr/#provers}. %\url{http://why3.lri.fr/#provers}
+\newline
+%[6] \url{http://lara.epfl.ch/w/jahob_system}
+[6] E. W. Dijkstra. A note on two problems in connexion with graphs. Numerische Mathematik, 1:269–271, 1959.
+\newline 
+[7] Richard E. Bellman. On a routing problem. Quarterly of Applied Mathematics, 16:87–90, 1958.
+\newline
+[8] A. Shimbel. Structure in communication nets. Polytechnic Press of the Poly- technic Institute of Brooklyn, page 199–203, 1955.
+% For citing, please see this sheet: http://merkel.texture.rocks/Latex/natbib.php
+
+%----------------------------------------------------------------------------------------
+% Appendix
+%----------------------------------------------------------------------------------------
+\newpage % Includes a new page
+\section*{Appendix} % Stars disable section numbers
+% \appendix % Uncomment if you want to add an "automatic" appendix
+\pagenumbering{Roman} % Changes page numbering to Roman page numbers
+
+
+%----------------------------------------------------------------------------------------
+% Declaration
+%----------------------------------------------------------------------------------------
+\newpage % Includes a page break
+\thispagestyle{empty} % Leaves the page style empty (no page number, no header, no footer)
+\section*{Statutory Declaration} % Stars disable section numbers
+
+\vspace*{1in} % Adds extra space between two paragraphs
+
+
+%\vspace*{1in} % Adds extra space
+% % Add field for signature, date, and place
+% \hfill \signature{} 
+
+
+%---------------------------------------------------------------------------------
+
+\end{document}

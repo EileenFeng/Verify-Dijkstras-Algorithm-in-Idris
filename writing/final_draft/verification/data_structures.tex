@@ -1,0 +1,124 @@
+\lstset{
+  language=Haskell, 
+  backgroundcolor=\color{white}
+  frame=single,                    
+  keepspaces=true,                 
+  keywordstyle=\color{blue},
+  basicstyle=\fontsize{9}{11}\selectfont\ttfamily,
+  breaklines=true, 
+  commentstyle=\color{orange}, 
+  showtabs=false,     
+  showspaces=false,                
+  showstringspaces=false,             
+  tabsize=2
+}
+
+\subsection{Data Structures}
+Key structures of our implementation include \texttt{WeightOps}, \texttt{Distance}, \texttt{Graph}, and \texttt{Column}. Our implementation allows edge weight type to be user defined, with \texttt{WeightOps} specifying all the properties that users need to provide. Below presents the definition of \texttt{WeightOps}. 
+\newline
+\begin{lstlisting}
+using (weight : type)
+  record WeightOps weight where
+    constructor MKWeight
+    zero : weight
+    gtew : weight -> weight -> Bool
+    eq : weight -> weight -> Bool
+    add : weight -> weight -> weight
+    eqRefl : {w : weight} -> eq w w = True
+    eqComm : {w1, w2 : weight} -> 
+    	     eq w1 w2 = True -> 
+    	     eq w2 w1 = True
+    gteRefl : {a : weight} -> (gtew a a = True)
+    gteReverse : {a, b : weight} -> 
+    			(p : gtew a b = False) -> 
+    			gtew b a = True
+    gteComm : {a, b, c : weight} ->
+              (p1 : gtew a b = True) ->
+              (p2 : gtew b c = True) ->
+              gtew a c = True
+    gteBothPlus : {a, b : weight} ->
+                  (c : weight) ->
+                  (p1 : gtew a b = False) ->
+                  gtew (add a c) (add b c) = False
+    triangle_ineq : (a : weight) -> 
+    				(b : weight) -> gtew (add a b) a = True
+    gtewPlusFalse : (a, b : weight) -> gtew a (add b a) = False
+    gtewEqTrans : {w1, w2, w3 : weight} -> 
+    			  (eq w1 w2 = True) -> 
+    			  (b : Bool) -> 
+    			  (gtew w2 w3 = b) -> 
+    			  gtew w1 w3 = b
+    addComm : (a : weight) -> 
+    		  (b : weight) -> 
+    		  add a b = add b a
+\end{lstlisting}
+The type constructor of \texttt{WeightOps} takes in the userdefined edge weight type and returns a type, and the data contructor \texttt{MKWeight}, which takes in all the properties specified by the projection functions, builds the \texttt{WeightOps weight} type. As Dijkstra's algorithm requires non-negative edge weights, the user-defined edge weight type is required to fulfill triangle inequality, as specified by the \texttt{triangle\_ineq} function. 
+\\
+
+Our implementation defined a few key structures to represent graph and its main components, which includes \texttt{Node, nodeset, Graph} and \texttt{Path}. Definition of each data types are specified below. 
+\\
+
+The \texttt{Node} type reprensents a node in the graph. As presented in the definition of \texttt{Node} below, the type constructor of \texttt{Node} takes in a \texttt{Nat} that specifies the size of the input graph (i.e., the number of nodes in the graph), and the data constructor \texttt{MKNode} takes in a \texttt{Fin n} type, which carries a natural number that is strictly smaller than \texttt{n}, and builds a node of type \texttt{Node n}. Such construction ensures that the natural number value carried by each node is strictly smaller than the size of the graph. As the value carried by each \texttt{Node} type is used to index distance value in the graph, this ensures that each indexing is in-bound. Below presents the definition of \texttt{Node} type. Any well-typed \texttt{Node n} is a valid node in a graph of size \texttt{n}, and any valid node in the graph must have a correcsponding \texttt{Node n} value. 
+\\
+\begin{lstlisting}
+		data Node : Nat -> Type where
+		  MKNode : Fin n -> Node n
+\end{lstlisting}
+We define a \texttt{nodeset} type to carry the set of pairs of adjacent node and corresponding edge weight for a specifi node. As the number of neighboring nodes is undecidable for each node in the input graph, \texttt{nodeset} is defined as a \texttt{List} rather than a \texttt{Vect}. 
+\\
+\texttt{Graph} is defined based on \texttt{Node} and \texttt{ndoeset}. The type of \texttt{Graph} carries a \texttt{Nat} that specifies the size of the graph, the user defined edge weight \texttt{weight}, and \texttt{WeightOps weight} that carries properties of the edge weight type. Data constructor \texttt{MKGraph} takes in the graph size, denotes as \texttt{gsize}, the type of edge weight \texttt{weight}, \texttt{WeightOps weight}, and a vector of \texttt{gsize} number of \texttt{nodeset}s, one for each node in the graph. As the definiton of \texttt{Node} type ensures that a node is valid if and only if it has a corresponding value of type \texttt{Node gsize}, it is not necessary for the \texttt{Graph} data type to carry a list of all nodes in the graph. Below are the definition of \texttt{nodeset} and \texttt{Graph} types. 
+\\
+\begin{lstlisting}
+	nodeset : (gsize : Nat) -> (weight : Type) -> Type
+			nodeset gsize weight = List (Node gsize, weight)
+
+	data Graph : Nat -> (weight : Type) -> (WeightOps weight)-> Type where
+	  MKGraph : (gsize : Nat) ->
+	            (weight : Type) ->
+	            (ops : WeightOps weight) ->
+	            (edges : Vect gsize (nodeset gsize weight)) ->
+	            Graph gsize weight ops
+\end{lstlisting}
+Path is defined as a sequence of non-repeating nodes, where each two adjacent nodes have an edge in the graph. A path can contain only one node, as specified by the \texttt{Unit} data constructor below. The \texttt{Cons} data constructor allows a new path to be constructed from an existing path, that given a path from node \texttt{s} to \texttt{v}, if \texttt{n} is an adjacent to \texttt{v} (\texttt{adj g v n} denotes that there is an edge from \texttt{v} to \texttt{n} in the graph \texttt{g}), then we can obtain a new path from \texttt{s} to \texttt{n} by appending the node \texttt{n} to the end of the existing \texttt{s}-to-\texttt{v} path. 
+\\
+\begin{lstlisting}
+	data Path : Node gsize ->
+	            Node gsize ->
+	            Graph gsize weight ops -> Type where
+	  Unit : (g : Graph gsize weight ops) ->
+	         (n : Node gsize) ->
+	         Path n n g
+	  Cons : Path s v g ->
+	         (n : Node gsize) ->
+	         (adj : adj g v n) ->
+	         Path s n g
+\end{lstlisting}
+A shortest path from node \texttt{s} to \texttt{v} is then defined as a path whose length is smaller than or equal to any other \texttt{s}-to-\texttt{v} paths in the graph, as presented below. 
+\\
+\begin{lstlisting}
+	shortestPath : (g : Graph gsize weight ops) ->
+	               (sp : Path s v g) ->
+	               Type
+	shortestPath g sp {ops} {v}
+	  = (lp : Path s v g) ->
+	    dgte ops (length lp) (length sp) = True
+\end{lstlisting}
+
+
+We defined a \texttt{Column} type to represent one column of the matrix generated by the algorithm, which contains the input graph, the source node, the number of current unexplored nodes, a vector of current unexplored nodes, and a vector of distance values from source to all nodes in the graph. The definition of \texttt{Column} type is providede below. 
+\\
+\begin{lstlisting}
+	data Column : Nat -> (Graph gsize weight ops) -> (Node gsize) -> Type where
+	  MKColumn : (g : Graph gsize weight ops) ->
+	             (src : Node gsize) ->
+	             (len : Nat) ->
+	             (unexp : Vect len (Node gsize)) ->
+	             (dist : Vect gsize (Distance weight)) ->
+	             Column len g src
+
+\end{lstlisting}
+Such definition of \texttt{Column} data type provides enough information for us to calculate the current unexplored nodes with minimum distance value, and the updated distance values for all nodes for the next column. Given an input graph of size \texttt{gsize}, the first column in the matrix should have length \texttt{gsize} as all nodes are unexplored, and the last column of the matrix should contain an empty vector for unexlored nodes, as well as a vector of the minimum value from source to all nodes in the graph. 
+\\
+
+
+(To be continued....)

@@ -1,0 +1,39 @@
+
+%-----------------------------------------------------------------------------------------------
+% Dijkstra's pseudocode
+%-----------------------------------------------------------------------------------------------
+\subsubsection{Pseudocode}
+We denote $(u, v)$ as an edge from node $u$ to $v$, $weight(u, v)$ as the weight of edge $(u, v)$. Let \texttt{gsize} denote the size of the input graph, i.e., the number of nodes in the graph. The type \texttt{Graph gsize weight} specifies a graph with \texttt{gsize} nodes and edge weight of type \texttt{weight}. 
+\\
+Given input graph $g$ and source node $s$ with types:
+\\\\
+  \tab g : Graph gsize weight\\
+  \tab s : Node gsize
+\\\\
+Define $unexplored$ as the list of unexplored nodes, and $dist$ as a list storing the distance value from $s$ to all nodes in $g$ calculated by the Dijkstra's algorithm. $dist[v]$ gives the corresponding distance value of $v$ from $s$.
+\\\\
+\tab (initially $unexplored$ contains all nodes in graph $g$)\\
+\tab $unexplored : List (Node \tsp gsize)$\\
+\tab $unexplored = \{v : v \in g\}$
+\\\\
+\tab (node value is used to index $dist$, initially distance of all nodes are infinity except 
+\\ \tab the source node)\\
+\tab $dist : List \tsp distance$ \\
+\tab $dist[s] = 0, dist[a] = \infty, \forall a \in g, a \neq s$
+\\\\
+We index $unexplored$ and $dist$ by the number of iterations. Specifically, denote $u_i$ as the node being explored at the $i^th$ iteration, and denote $dist_i$, $unexplored_i$ as the value of distance list and unexplored list at the beginning of the $i^{th}$ iteration. Then during each iteration the Dijkstra's Algorithm calculates $dist, unexplored, explored$ as follows:
+\\\\
+\texttt{
+  \tab\tab choose $u_k \in unexplored_k$ and $\forall u' \in unexplored_k, dist_k[u_k] \leq dist_k[u']$ \\
+  \tab\tab $unexplored_{k+1} = unexplored_k - \{u_k\}$                    \\
+  \tab\tab for($\forall v \in g$) $\{$
+  \tab\[
+        dist_{k+1}[v] = \left.
+       \begin{cases} 
+          min(dist_k[v], (dist_k[u_k] + weight(u_k,v))), & (u_k,v) \in g \\ 
+          dist_k[v] & otherwise 
+        \end{cases}
+        \right\}
+      \]
+  \tab\tab $\}$ \\
+}

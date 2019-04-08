@@ -1,0 +1,48 @@
+\lstset{
+  language=Haskell, 
+  backgroundcolor=\color{white}
+  frame=single,                    
+  keepspaces=true,                 
+  keywordstyle=\color{blue},
+  basicstyle=\fontsize{8}{11}\selectfont\ttfamily,
+  breaklines=true, 
+  commentstyle=\color{orange}, 
+  showtabs=false,     
+  showspaces=false,                
+  showstringspaces=false,             
+  tabsize=2
+}
+
+\subsection{Verification of Correctness}
+The implementation of lemma proofs in the previous section shows that if certain properties, such as those specified by the function \texttt{l5\_stms}, holds for the current column \texttt{cl}, then they must hold for the new column generated based on \texttt{cl}. With the proofs of the lemmas, we are able to define the below recursive function, \texttt{correctness}, which specifies that given a column \texttt{cl} relating to an input graph \texttt{g} and source node \texttt{src}, if all properties stated by \texttt{neDInfPath} and \texttt{l5\_stms} hold for \texttt{cl} (specified by \texttt{l2\_ih} and \texttt{l5\_ih} inputs), then the properties should also hold after calling \texttt{runDijkstras} on \texttt{cl}. We updates the inputs to the next recursive call by applying lemmas to \texttt{l2\_ih} and \texttt{l5\_ih}, which is indeed equivalent to the inductive steps in our theoretical proofs of Dijkstra's algorithm provided back in Section 4. 
+\\
+\begin{lstlisting}
+correctness : {g : Graph gsize weight ops} ->
+              (cl : Column len g src) ->
+              (nadj : ((n : Node gsize) -> inNodeset n (getNeighbors g n) = False)) ->
+              (l2_ih : neDInfPath cl) ->
+              (l5_ih : l5_stms cl) ->
+              l5_stms (runDijkstras cl)
+correctness {len = Z} cl nadj l2_ih l5_ih = l5_ih
+correctness {len=S n} cl@(MKColumn g src (S n) unexp dist) nadj l2_ih l5_ih
+  = correctness (runHelper {len=n} cl) nadj 
+  				(l2_existPath cl l2_ih) 
+  				(l5_spath cl nadj l2_ih l5_ih)
+\end{lstlisting}
+We then defined a \texttt{dijkstras\_correctness} function that wraps up all proofs and verify the minimum distance property for all nodes in the input graph. 
+\begin{lstlisting}
+dijkstras_correctness : (gsize : Nat) ->
+                        (g : Graph gsize weight ops) ->
+                        (src : Node gsize) ->
+                        (v : Node gsize) ->
+                        (psv : Path src v g) ->
+                        (spsv : shortestPath g psv) ->
+                        (nadj : ((n : Node gsize) -> 
+                        		inNodeset n (getNeighbors g n) = False)) ->
+                        dEq ops (indexN (finToNat (getVal v)) 
+                        				(dijkstras gsize g src nadj) 
+                        				{p=nvLTE {gsize=gsize} (getVal v)}) 
+                        		(length psv) = True
+\end{lstlisting}
+
+(To be continued....)

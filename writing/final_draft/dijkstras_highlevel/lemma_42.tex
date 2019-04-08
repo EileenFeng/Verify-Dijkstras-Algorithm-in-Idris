@@ -1,0 +1,52 @@
+%-----------------------------------------------------------------------------------------------
+% Dijkstra's lemma 4.2
+%-----------------------------------------------------------------------------------------------
+\begin{sublemma}
+After the $n^{th}$ iteration for $n \geq 1$, forall node $v \in explored_{n+1}$, if $dist_{n+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path, i.e, $path(s, v) \neq \emptyset$.  
+\end{sublemma}
+\begin{proof}
+We will prove \texttt{Lemma 4.2} by inducting on the number of iterations. 
+\\
+Let P(n) be: After the $n^{th}$ iteration, $n \geq 1$, for all node $v \in g$, if $dist_{n+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path. 
+
+\paragraph*{Base Case}: We shall show P(1) holds. 
+\\
+Based on the algorithm, initially $dist_1[s] = 0$ and for all node $v \in g, v \neq s, dist_1[v] = \infty$, then $s$ is the only node whose distance value is not infinity. Based on the definition of path, the path from the source node $s$ to itself is $s$, $path(s, s) = \{s\}$. Hence P(1) holds. 
+\paragraph*{Inductive Hypothesis}: Suppose $\forall i, 1 \leq i \leq k$, P(i) holds. That is, after the $i^{th}$ iteration, $1 \leq i \leq k$, for all nodes $v \in g$, if $dist_{i+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path. 
+
+\paragraph*{Inductive Step}: We shall show P(k+1) holds.
+\\
+For node $u_{k+1}$ being explored during the $(k+1)^{th}$ iteration, based on the algorithm, $dist_{k+1}[u_{k+1}]$ is calculated as: 
+\\\\
+\tab\[
+        dist_{k+2}[u_{k+1}] = \left.
+       \begin{cases} 
+          min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + weight(u_{k+1},u_{k+1})), & (u_{k+1},u_{k+1}) \in g \\ 
+          dist_{k+1}[u_{k+1}] & otherwise 
+        \end{cases}
+        \right\}
+      \]
+\\\\
+Since the distance value from $u_{k+1}$ to itself is $0$, then $dist_{k+2}[u_{k+1}] = dist_{k+1}[u_{k+1}]$, and that $dist_{k+2}[u_{k+1}]$ and $dist_{k+1}[u_{k+1}]$ are the length of the same $s-u_{k+1}$ path if there exists one. 
+\\
+If $dist_{k+2}[u_{k+1}] \neq \infty$, then $dist_{k+1}[u_{k+1}] = dist_{k+2}[u_{k+1}] \neq \infty$. Since $k \leq k$ and $dist_{k+1}[u_{k+1}] \neq \infty$, then based on the inductive hypothesis, $dist_{k+1}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path, and hence $dist_{k+2}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path.
+\\
+Then for all node $v \in g$ other than $u_{k+1}$, there are two cases: (1) $(u_{k+1}, v) \in g$; (2) $u_{k+1}$ does not have an edge to $v$. We will prove P(k+1) holds in both cases separately. 
+\\\\
+\textbf{Case (1): $(u_{k+1}, v) \in g$}
+\tab\\
+Based on the algorithm, as $(u_{k+1}, v) \in g$, $dist_{k+2}[v] = min(dist_{k+1}[v], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v))$. 
+\begin{itemize}
+  \item If $dist_{k+1}[v] < dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)$, then $dist_{k+2}[v] = dist_{k+1}[v]$. Then if $dist_{k+2}[v] \neq \infty$, we have $dist_{k+1}[v] \neq \infty$, and that $dist_{k+2}[v]$ and $dist_{k+1}[v]$ are the length of the same $s-v$ path if there exists one. Since $dist_{k+1}[v] \neq \infty$, the inductive hypothesis implies that $dist_{k+1}[v]$ is the length of some $s-v$ path, hence $dist_{k+2}[v]$ is the length of some $s-v$ path. P(k+1) holds. 
+
+  \item If $dist_{k+1}[v] \geq dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)$, then $dist_{k+2}[v] = dist_{k+1}[u_{k+1}] + weight(w, v)$. If $dist_{k+2}[v] \neq \infty$, then it follows that $dist_{k+1}[u_{k+1}] = dist_{k+2}[v] - weight(u_{k+1}, v) \neq \infty$. Then the inductive hypothesis implies that $dist_{k+1}[u_{k+1}]$ must be the length of some $s-u_{k+1}$ path, denote as $p(s, u_{k+1})$. Since there is an edge $(u_{k+1}, v) \in g$, then $dist_{k+2}[v] = dist_{k+1}[u_{k+1}] + weight(u_{k+1}, v)$ must be the length of the $s-v$ path through $u_{k+1}$. P(k+1) holds. 
+\end{itemize}
+Hence P(k+1) holds under under \texttt{Case(1)}. 
+\\\\
+\textbf{Case (2): $u_{k+1}$ does not have an edge to $v$}
+\tab\\
+Under this case, our algorithm indicates that $dist_{k+2}[v] = dist_{k+1}[v]$, and that $dist_{k+1}[v]$ and $dist_{k+2}[v]$ are the length of the same $s-v$ path if there exists one. If $dist_{k+1}[v] = dist_{k+2}[v] \neq \infty$, then based on the inductive hypothesis, $dist_{k+1}[v]$ is the length of some $s-v$ path, and hence $dist_{k+2}[v]$ is the length of some $s-v$ path. P(k+1) holds under \texttt{Case(2)}. 
+\\\\
+We have proved P(k+1) holds for $u_{k+1}$ and both cases for all nodes $v \in g$ other than $u_{k+1}$. Hence by the principle of prove by induction, P(n) holds. Thus \texttt{\texttt{Lemma 4.2}} holds. 
+\end{proof}
+\tab\\ 
