@@ -12,14 +12,13 @@ Denote $explored$ as the list of nodes in $g$ but not in $unexplored$, i.e., $ex
 \import{./}{lemma_42}
 \import{./}{lemma_43}
 \import{./}{lemma_44}
-\import{./}{lemma_45}
-{}
+
 \paragraph{Proof of Termination} 
-\begin{proof}{}
+\begin{proof}
 The inner for loop is guaranteed to terminate as the algorithm goes through each adjacent node exactly once. As the size of list \texttt{unexplored} decreases by one during each iteration of the while loop, the algorithm is guaranteed to terminate. 
 \end{proof}
 
 \paragraph{Prove of Correctness}
 \begin{proof}
-By applying \texttt{Lemma 4.5} to the last iteration, denote as $m^{th}$ iteration, of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist_{m+1}[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
+By applying \texttt{Lemma 3.4} to the last iteration of the algorithm, we obtained that for all nodes $n$ in the explored list, $dist[n]$ is indeed the shortest path distance value from source $s$ to $n$, hence Dijkstra's algorithm indeed calculates the shortest path distance value from the source $s$ to each node $n \in g$. 
 \end{proof}

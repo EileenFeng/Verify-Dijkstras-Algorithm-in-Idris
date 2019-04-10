@@ -2,24 +2,28 @@
 % Background
 %-----------------------------------------------------------------------------------------------
 \subsection{Introduction of Idris}
-Idris is a general-purpose functional programming language with dependent types. Many aspects of Idris are influenced by Haskell and ML. Features of Idris include but not limit to dependent types, \texttt{with} rule, \texttt{case} expressions, lambda binding, and interactive editing. 
+Idris is a general-purpose functional programming language with dependent types. Many aspects of Idris are influenced by Haskell and ML. Features of Idris include but not limit to dependent types, \inl{with} rule, \inl{case} expressions, lambda binding, and interactive editing. 
 
 \subsubsection*{Variables and Types}
 Idris requires type declarations for all variables and functions defined. To define a variable, we provide the type on one line, and specify the value on the next line. Below presents the syntax for variable declaration. 
 \begin{lstlisting}
-      <variable_name> :<type> 
+      <variable_name> : <type> 
       <variable_name> = <value>
 \end{lstlisting}
-The example below defines a variable \texttt{n} of type \texttt{Int} with value $37$. 
+The example below defines a variable \texttt{n} of type \inl{Int} with value $37$. 
 \begin{lstlisting}
       n : Int
       n = 37
 \end{lstlisting}
-Types in Idris are first-class values, which means types can be operated as any other values. Type declaration is the same as declaring any other variables, with exactly the same syntax, except that the type of all types is \texttt{Type}. By convention, variables that represent types are capitalized. Below example declares a type \texttt{CharList}, which denotes the type of list of characters. 
+
+Types in Idris are first-class values, which means types can be operated as any other values. Type declaration is the same as declaring any other variables, with exactly the same syntax, except that the type of a type is \inl{Type}. By convention, variables that represent types are capitalized. Below example declares a type \st{CharList}, which denotes the type of list of characters. 
 \begin{lstlisting}
       CharList : Type
       CharList = List Char
 \end{lstlisting}
+
+Given the above declaration we can declare a variable \st{lisChar} whose type is \st{CharList}. 
+
 
 % To define a function a Idris, the types for all input values and output values must be specified in the function type signature, connecting by rightarrows. The example below provides the type signature for a \texttt{plus} function that adds up two integers. \texttt{plus} should take in two integers and returns an integer. 
 % \begin{lstlisting}
@@ -29,30 +33,32 @@ Types in Idris are first-class values, which means types can be operated as any 
 
 \subsubsection*{Function}
 To define a function a Idris, the types for all input values and output values must be specified in the function type signature, connecting by right arrows. Specifically, function type is of the form: 
-\begin{lstlisting}
-      <func_name> : x_1 -> x_2 -> ... ->  x_n
-\end{lstlisting}
-where $x_1, x_2, ..., x_{n-1}$ are types for the input values, and $x_n$ is the output type of the function. Input values can be annotated to provide more information, and also allows each input to be referred to easily later. For instance the type of the \texttt{reverse} function below names the first input as \texttt{elem}, which specifies that the input and output lists contain elements of same type. 
+\\\\
+\tab <func\_name> : $x_1$ -> $x_2$ -> ... ->  $x_n$
+\\\\
+where $x_1, x_2, ..., x_{n-1}$ are types for the input values, and $x_n$ is the output type of the function. Input values can be named to provide more information, and also allows each input to be referred to easily later. For instance the type of the \texttt{reverse} function below names the first input as \texttt{elem}, which specifies that the input and output lists contain elements of same type. 
 \begin{lstlisting}
       -- "reverse" reverse a list
       reverse : (elem : Type) -> List elem -> List elem
 \end{lstlisting}
+
 A function definition is provided on the line below the function type. In Idris, functions are defined by pattern matching, which will be elaborated on later. Here we provide an example for function definition that requires little experience with pattern matching, only aiming to illustrate the syntax for defining functions. The \texttt{mult} function defined below multiplies the two input integers. 
 \begin{lstlisting}
-      -- "mult" calculates the multiplication of two input integers 'n' and 'm'
+      -- calculates the multiplication of two input integers 'n' and 'm'
       mult : Int -> Int -> Int
       mult n m = n * m
 \end{lstlisting}
 
 \subsubsection*{Data Types}
-User defined data types are supported in Idris. To define a data type, we provide the name and type of the data type on one line, starting with the keyword \texttt{data}, followed by the id of the data type, a colon \texttt{:}, the type of the data type, and the keyword \texttt{where}. On the next few lines we define the constructors for this data type. Below provides the definition of the natural number type \texttt{Nat} in Idris. 
+User defined data types are supported in Idris. To define a data type, we need to provide the name and type of the data type starting with the keyword \inl{data}, followed by the id of the data type and the type of the data type. On the next few lines we define the constructors for this data type. Below provides the definition of the natural number type \inl{Nat} in Idris. 
 \begin{lstlisting}
-      -- natural number can be either zero(Z) or plus one of another natural number (S Nat)
+      -- natural number can be either zero, written as 'Z', or successor of another natural number 'n', written as 'S n'
       data Nat : Type where
         Z : Nat
         S : (n : Nat) -> Nat 
 \end{lstlisting}
-Idris allows data types to be parameterized over other types. The \texttt{List} data type below takes the parameter \texttt{elem} of type \texttt{Type}, which stands for the type of elements in the list. 
+
+Idris allows data types to be parameterized. The data type defined below shows that the type constructor \inl{List} takes in a parameter \inl{elem} of type \inl{Type}, which stands for the type of elements in the list, and the type constructed is a list of elements of type \inl{elem}. \inl{List} type has two data constructor, \inl{Nil} and \inl{(::)}. \inl{Nil} builds an empty list of type \inl{List elem}. \inl{(::)} append a new element \inl{x} of type \inl{elem} to the head of an existing list \inl{xs} of type \inl{List elem}, and builds a new list \inl{x :: xs} of the same type as \inl{xs}. 
  \begin{lstlisting}
       -- declaration of List data type in Idris standard library
       data List : (elem : Type) -> Type where
@@ -62,7 +68,7 @@ Idris allows data types to be parameterized over other types. The \texttt{List} 
 
 
 \subsubsection*{Dependent Types}
-Dependent types are types that depend on elements of other types[2]. They allow programmers to specify certain properties of data types explicitly in their type signature. The following example provides a definition of a vector data type, which is indexed by the vector length \texttt{len} and parameterized over the element type \texttt{elem}.
+Dependent types are types that depend on elements of other types\cite{Bove}. They allow programmers to specify certain properties of data types explicitly in their type signature. The following example provides a definition of a vector data type, which is indexed by the vector length \texttt{len} and parameterized over the element type \texttt{elem}.
 \begin{lstlisting}
       -- declaration of Vect data type in Idris standard library
       data Vect : (len : Nat) -> (elem : Type) -> Type where
@@ -71,41 +77,50 @@ Dependent types are types that depend on elements of other types[2]. They allow 
                (xs : Vect len elem) -> 
                Vect (S len) elem
 \end{lstlisting}
-The type \texttt{Vect len elem} is dependent on the value of type variables \texttt{len} and \texttt{elem}, which means a \texttt{Vect} of length $3$ and $4$ are considered as different types. With dependent types, programmers can ensure the behaviors of functions through their type signatures by defining more precise types. Consider a function \texttt{concate} that concatenates two \texttt{Vect}. As \texttt{concate} takes in two vectors, then we have the function type for \texttt{concate} as follows: 
-\begin{lstlisting}
-      concate : Vect n elem -> Vect m elem -> resultType
-\end{lstlisting}
-The output value of \texttt{concate} should be the result of concatenating two vectors, which means the resulting vector should have length (n+m), hence \texttt{resultType} should be of type \texttt{Vect (n+m) elem}. With dependent types, Idris can help to ensure the function correctness of \texttt{concate} with the Idris type checker. By providing a function type for \texttt{concat} that specifies the length of the output \texttt{Vect}, if the definition of \texttt{concate} does not return a vector of length (n+m), \texttt{concate} would fail type check. Take the following definition of \texttt{concate} as an example. 
-\begin{lstlisting}
-      concate : Vect n elem -> Vect m elem -> Vect (n+m) elem
-      concate v1 v2 = v1
-\end{lstlisting}
-The type of the above \texttt{concate} function specifies that the output value should be a \texttt{Vect} of length \texttt{(n+m)}, where \texttt{n}, \texttt{m} are the length of the two input \texttt{Vect}, however the function is defined to return the first input vector of length \texttt{n}. Idris gives the following error message when compiling this function definition: 
-\begin{lstlisting}
-    |
-    | concate v1 v2 = v1
-    |                ~~
-  When checking right hand side of Haha.concat with expected type
-          Vect (n + m) elem
 
-  Type mismatch between
-          Vect n elem (Type of v1)
-  and
-          Vect (plus n m) elem (Expected type)
-
-  Specifically:
-          Type mismatch between
-                  n
-          and
-                  plus n m
-\end{lstlisting}
-The error message indicates that the type of the return value of \texttt{concate}, i.e., type of \texttt{v1}, does not match with the output type specified in the function signature, which is \texttt{Vect (n+m) elem}. Idris type checker will only accept definitions for \texttt{concate} that return a vector of length \texttt{(n+m)}, which helps to ensure the correct behaviors of functions defined. A correct implementation of \texttt{concate} is provided below. 
+The type \inl{Vect len elem} is dependent on the value of type variables \texttt{len} and \texttt{elem}, which means a \inl{Vect} of length $3$ and $4$ are considered as different types. Dependent types allow programmers to obtain more confidence in a function's correctness by specifying its expected behaviors in its type. For instance, consider a function \texttt{concat} that concatenates two \inl{Vect}, whose type signature is presented below. 
 \begin{lstlisting}
-      concate : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
-      concate v1 v2 = v1 ++ v2
+      concat : Vect n elem -> Vect m elem -> resultType
+\end{lstlisting}
+
+The output value of \texttt{concat} is a vector that concatenates both input vectors, which means its length should be the sum of the length of the two input vectors, i.e., (n+m), hence \texttt{resultType} has the type \inl{Vect (n+m) elem}. The dependent type system helps to ensure the function correctness of \texttt{concat} through the Idris type checker. By providing a function type for \texttt{concat} that specifies the length of the output \inl{Vect}, if the definition of \texttt{concate} does not return a vector of length (n+m), \texttt{concat} would fail type check. Take the following definition of \texttt{concate} as an example. 
+\begin{lstlisting}
+      concat : Vect n elem -> Vect m elem -> Vect (n+m) elem
+      concat Nil v2 = v2
+      concat (x :: xs) ys = concat xs ys
+\end{lstlisting}
+
+The type of \texttt{concat} specifies that the output value should be a \inl{Vect} of length \texttt{(n+m)}, where \texttt{n}, \texttt{m} are the length of the two input \inl{Vect}, however the definition of \texttt{concat} eliminates one element from the input vector \texttt{x :: xs} during each recursive call, which is not the expected function behavior. Idris gives the following error message when compiling this function definition: 
+\begin{lstlisting}
+Type checking ./Example.idr
+Example.idr:6:23-34:
+  |
+6 | concat (x :: xs) ys = concat xs ys
+  |                       ~~~~~~~~~~~~
+When checking right hand side of Example.concat with expected type
+        Vect (S len + m) Nat
+
+Type mismatch between
+        Vect (len + m) Nat (Type of concat xs ys)
+and
+        Vect (S (plus len m)) Nat (Expected type)
+
+Specifically:
+        Type mismatch between
+                plus len m
+        and
+                S (plus len m)
+\end{lstlisting}
+
+The error message clearly indicates that the expected return type is \inl{Vect (S (plus len m)) Nat (Expected type)}, which is a vector of length \texttt{S (plus len m)}, however the type of \texttt{concat xs ys} is \inl{Vect (len + m) Nat}, whose length is one less than the length of the expected type. As the return type of this definition fail to match with the return type specified in the type of \texttt{concat}, it fails to be type checked. A correct implementation of \texttt{concat} is provided below. 
+\begin{lstlisting}
+      concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+      concat Nil v2 = v2
+      concat (x :: xs) ys = x :: (concat xs ys)
  \end{lstlisting}
+
 % maybe mention implicit parameters somewhere
-The example above illustrates that dependent types in Idris allow programmers to provide more precise description of function behaviors through function type signatures, which helps to ensure function correctness with the Idris type checker. In verification, dependent types be used to specify program behaviors, and thus allowing us to verify the correctness of program through the Idris type checker. 
+The example above illustrates how dependent types help programmers to ensure function correctness with the Idris type checker. In program verification, dependent types can be used to specify intended behaviors of a program, and thus allowing us to verify its correctness. 
 
 
 \subsubsection*{Pattern Matching and Totality Checking}
@@ -113,18 +128,143 @@ Pattern matching is the process of matching values against specific patterns. In
 \begin{lstlisting}
       concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
       concat Nil v2 = v2
-      concat v1 Nil = v1
       concat (x :: xs) v2 = x :: concat xs v2
 \end{lstlisting}
 
-Functions defined for all possible values of input are total functions, and are guaranteed to produce a result in finite time given well-typed inputs. Partial functions are not total, and hence might crash for some inputs. To secure the termination of programs, every function definition in Idris are checked for totality after type checking. Specifically, Idris decides whether a function terminates based on two aspects: first, function must be defined for all possible inputs; and second, if a function definition includes a recursive call, then there must be an argument that strictly decreases over each recursion, and converges towards a base case. An error or warning will be given for any function that fails totality checking. 
+Total function are defined for all possible input values and are guaranteed to terminate. Partial functions are not total, and hence might crash for some inputs. To secure the termination of programs, every function definition in Idris is checked for totality after type checking. However, due to the undecidability of the halting problem, the Idris totality checker is conservative, i.e., is never certain on whether a function is total or not. Based on the Idris Tutorial, Idris decides a function \texttt{f} is total based on the following aspects \cite{idris_tutorial}: 
+\begin{itemize}
+  \item Cover all possible inputs
+  \item Be well-founded — i.e. by the time a sequence of (possibly mutually) recursive calls reaches f again, it must be possible to show that one of its arguments has decreased.
+  \item Not use any data types which are not strictly positive
+  \item Not call any non-total functions
+\end{itemize}
+Specifically, \texttt{f} is considered as total if it is defined for all possible input values, and must have at least one argument that has a property, for instance its value (the \texttt{Nat} data type) or length (the \inl{Vect} data type), that is strictly decreasing during each recursive call; the strictly positive restriction on data types further ensures that the decreasing argument will reach a base case and terminates the recursion eventually, and lastly, \texttt{f} cannot call any non-total functions, otherwise \texttt{f} might fail to terminate due to the non-total functions called. To illustrate totality checking in Idirs, continue with our \texttt{concat} function. 
+\begin{lstlisting}
+    concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+    concat (x :: xs) ys = x :: (concat xs ys)
+\end{lstlisting}
+
+We use the \texttt{:total} command to check whether the above definition of \texttt{concat} is total, and we get the following message:
+\begin{lstlisting}
+    *Example> :total Example.concat
+    Example.concat is not total as there are missing cases
+\end{lstlisting}
+
+As \texttt{concat} is not defined for the case where the first input vector is \texttt{Nil}, hence the Idris totality checker marks \texttt{concat} as not total. If we check totality for the correct implementation of \texttt{concat} provided under the \texttt{Dependent Types} section, we see that Idris considers it as total: 
+\begin{lstlisting}
+      concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+      concat Nil v2 = v2
+      concat (x :: xs) ys = x :: (concat xs ys)
+
+      -- totality checking result for concat
+      Type checking ./Example.idr
+      *Example> :total Example.concat
+      Example.concat is Total
+ \end{lstlisting}
+
+
+\subsubsection*{\textbf{\inl{case}} expressions}
+\texttt{case} expression can be used to inspect a data value by matching on several cases. The syntax for case expression is as follow: 
+\begin{lstlisting}
+    case <test> of
+        <case 1>  => <expr>
+        <case 2>  => <expr>
+        ...
+        otherwise => <expr>
+\end{lstlisting}
+where \texttt{<test>} is the expression being matched on, followed by all cases in the next few lines. 
+Consider the following example that defines a function \texttt{findNat} with \inl{case} expressions. \texttt{findNat} checks whether a given number \texttt{n} is an element of the input vector of \inl{Nat}s. 
+\begin{lstlisting}
+    findNat : Nat -> Vect m Nat -> Bool
+    findNat _ Nil = False
+    findNat n (x :: xs) = case (n == x) of 
+                            True => True
+                            False => findNat n xs
+\end{lstlisting}
+
+The base case is when input vector is \texttt{Nil}, which indicates that \texttt{n} is not an element in the vector. Otherwise we check whether the head of the input vector \texttt{(x ::xs)} is equal to \texttt{n} with \texttt{(n == x)}. Using \inl{case} expression, we can match on the value of \texttt{(n == x)}, that if \texttt{(n == x)} is True, then \texttt{n} is an element of the input vector, \texttt{findNat} returns \inl{True}; otherwise we recur on the remaining of the vector \texttt{xs} to keep searching. 
+
+
+\subsubsection*{The \textbf{\inl{with}} Rule}
+In a dependently typed language, matching on the resulting value of an intermediate computation can affect what we know about other values. In program implementation and theorem proving, it is a common technique to match on intermediate value in order to obtain more information. Idris provides the \inl{with} rule for this purpose. Consider the following example \texttt{checkEvenPrf}: 
+\begin{lstlisting}
+    checkEven : Nat -> Bool
+    checkEven Z = True
+    checkEven (S n) = case (checkEven n) of 
+                           True => False
+                           False => True
+
+
+    checkEvenPrf : (n : Nat) -> 
+                   (checkEven n = True) -> 
+                   checkEven (S n) = False
+    checkEvenPrf n prf = ?check
+\end{lstlisting}
+
+The \inl{checkEven} function checks whether a given \inl{Nat} is even or not. It returns \inl{True} if the input \inl{Nat} is an even number, and returns \inl{False} otherwise. The \inl{checkEvenPrf} function is a proof that if a natural number is even, then its successor must not be even. The type of \inl{checkEvenPrf} describes the premise and conclusion of this proof: given a natural number \inl{n}, if the result of calling \inl{checkEven} on \inl{n} is true (as specified by \inl{checkEven n = True}), then the successor of \inl{n} must not be even, and the result of calling \inl{checkEven} on \inl{(S n)} must be \inl{False}, which is specified by the output type \inl{checkEven (S n) = False}. 
+\\
+
+
+Idris allows holes in a proof which stands for incomplete parts of a program, for instance \st{?check} in the example above is a hole. Idris allows programmers to inspect the type of holes and write functions incrementally. Inspecting the type of \st{check} we get the following:
+\begin{lstlisting}
+    *Example> :t check
+      n : Nat
+      prf : checkEven n = True
+    --------------------------------------
+    check : case checkEven n of   True => False False => True = False
+    Holes: Example.check
+\end{lstlisting}
+
+The information presented above shows that the type of \st{check} relies on the value of \texttt{(checkEven n)}, which indicates that matching on the value of \st{(checkEven n)} with \st{with} rule might provide more insignts in writing this proof, as presented below. 
+\begin{lstlisting}
+    checkEvenPrf : (n : Nat) -> 
+                   (checkEven n = True) -> 
+                   checkEven (S n) = False
+    checkEvenPrf n prf with (checkEven n) proof nIsEven
+      | True = ?checkT
+      | False = ?checkF
+\end{lstlisting}
+
+In the \st{checkEvenPrf} definition above we use the \inl{with} rule to match on the value of \st{checkEven n}, which can be either \inl{True} or \inl{False} (as \st{checkEven} has return type \inl{Bool}). By postfix the \inl{with} clause with \inl{proof nIsEven}, a proof named \texttt{nIsEven} generated by the pattern match will be in scope. By inspecting the type of \texttt{checkT} under the cases where \texttt{(checkEven n)} is matched as \inl{True}, we get the following information. 
+\begin{lstlisting}
+    *Example> :t checkT
+      n : Nat
+      prf : True = True
+      nIsEven : True = checkEven n
+    --------------------------------------
+    checkT : False = False
+    Holes: Example.checkF, Example.checkT
+\end{lstlisting}
+
+Notice that \st{nIsEven} is a proof of \inl{True = checkEven n} generated by the pattern match directly. As the \inl{with} rule matches the value of \texttt{(checkEven n)} to \inl{True}, and based on the definition of \st{checkEven}, Idris is able to deduce that the value of \st{checkEven (S n)} should be \inl{False}, and hence the expected type of \st{checkT} is \inl{False = False} as presented above. When \st{(checkEven n)} is matched to \inl{False}, the type of \st{checkF} is as follows: 
+\begin{lstlisting}
+    *Example> :t checkF
+      n : Nat
+      prf : False = True
+      nIsEven : False = checkEven n
+    --------------------------------------
+    checkF : True = False
+    Holes: Example.checkF, Example.checkT
+\end{lstlisting}
+
+As the second argument of \st{checkEvenPrf} indicates that the value of \st{(checkEven n)} should be \inl{True}, Idris is able to deduce that under this case the type of \st{prf} should be \inl{(False = True)}, which is impossible, hence we call \st{absurd} on \st{prf} to show that the case where \st{(checkEven n)} is matched to \inl{False} is impossible. The complete \st{checkEvenPrf} proof is presented below. 
+\begin{lstlisting}
+    checkEvenPrf : (n : Nat) -> 
+                   (checkEven n = True) -> 
+                   checkEven (S n) = False
+    checkEvenPrf n prf with (checkEven n) proof nIsEven
+      | True = Refl
+      | False = absurd $ trueNotFalse (sym prf)
+\end{lstlisting}
+
+
 
 \subsection{Dijkstra's and Bellman-Ford algorithms}
 \subsubsection*{Dijkstra's Algorithm}
-Dijkstra's algorithm is a greedy algorithm that finds the shortest path from a given source to all other nodes in a directed graph with weighted edges. It was first introduced in 1959 by Edsger Wybe Dijkstra[6], and it is widely applied in many real-life applications, including shortest path finding in road map, or Internet routing protocols such as the Open Shortest Path First protocol. 
+Dijkstra's algorithm is a greedy algorithm that finds the shortest path from a given source to all other nodes in a directed graph with weighted edges. It was first introduced in 1959 by Edsger Wybe Dijkstra\cite{Dijkstras}, and it is widely applied in many real-life applications, for instance Internet routing protocols such as the Open Shortest Path First protocol, and a variant of Dijkstra's algorithm is formulated as an instance of the best-first search algorithm in aritificial intelligence. 
 \\
 
 Dijkstra's algorithm takes in a directed graph with non-negative edge weights, and computes the shortest path distance from one single source node to all other reachable nodes in the graph. The algorithm maintains a list of unexplored nodes and their distance values to the source node. Initially, the list of unexplored nodes contains all nodes in the input graph, and the distance value of all node are set as infinity except for the source node itself, which is set to zero. The algorithm extracts the node $v$ with minimum distance value from the unexplored list during each iteration, and for each neighbor $v'$ of $v$, if the path from source to $v'$ via $v$ contributes a smaller distance value, then the distance value of $v'$ is updated. 
 
 \subsubsection*{Bellman-Ford Algorithm}
-Bellman-Ford algorithm was first introduced by Alfonso Shimbel in 1955, and was published by Richard Bellman and Lester Ford, Jr in 1958 and 1956 respectively[7]. The algorithm solves the issue of calculating the minimum distance value from a single source to all other nodes in a given graph, and different from Dijkstra's algorithm, Bellman-Ford algorithm allows negative edge weights in the input graph, and is capable of detecting the existence of negative cycle(a cycle whose edge weights sum up to a negative value). Applications of Bellman-Ford includes routing protocols such as the Routing Information Protocol. 
+Bellman-Ford algorithm was first introduced by Alfonso Shimbel in 1955\cite{Shimbel}, and was published by Richard Bellman and Lester Ford, Jr in 1958 and 1956 respectively\cite{Bellman}. The algorithm solves the issue of calculating the minimum distance value from a single source to all other nodes in a given graph, and different from Dijkstra's algorithm, Bellman-Ford algorithm allows negative edge weights in the input graph, and is capable of detecting the existence of negative cycle(a cycle whose edge weights sum up to a negative value). Applications of Bellman-Ford includes routing protocols such as the Routing Information Protocol. 

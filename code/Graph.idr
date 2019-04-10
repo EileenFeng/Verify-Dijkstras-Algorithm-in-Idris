@@ -29,7 +29,7 @@ nat_tri (S a) (S b)
 
 
 {- `distance` and `weight` types -}
-using (weight : type)
+using (weight : Type)
   record WeightOps weight where
     constructor MKWeight
     zero : weight

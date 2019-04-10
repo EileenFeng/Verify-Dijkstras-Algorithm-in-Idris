@@ -1,0 +1,130 @@
+%-----------------------------------------------------------------------------------------------
+% Background
+%-----------------------------------------------------------------------------------------------
+\subsection{Introduction of Idris}
+Idris is a general-purpose functional programming language with dependent types. Many aspects of Idris are influenced by Haskell and ML. Features of Idris include but not limit to dependent types, \texttt{with} rule, \texttt{case} expressions, lambda binding, and interactive editing. 
+
+\subsubsection*{Variables and Types}
+Idris requires type declarations for all variables and functions defined. To define a variable, we provide the type on one line, and specify the value on the next line. Below presents the syntax for variable declaration. 
+\begin{lstlisting}
+      <variable_name> :<type> 
+      <variable_name> = <value>
+\end{lstlisting}
+The example below defines a variable \texttt{n} of type \texttt{Int} with value $37$. 
+\begin{lstlisting}
+      n : Int
+      n = 37
+\end{lstlisting}
+Types in Idris are first-class values, which means types can be operated as any other values. Type declaration is the same as declaring any other variables, with exactly the same syntax, except that the type of all types is \texttt{Type}. By convention, variables that represent types are capitalized. Below example declares a type \texttt{CharList}, which denotes the type of list of characters. 
+\begin{lstlisting}
+      CharList : Type
+      CharList = List Char
+\end{lstlisting}
+
+% To define a function a Idris, the types for all input values and output values must be specified in the function type signature, connecting by rightarrows. The example below provides the type signature for a \texttt{plus} function that adds up two integers. \texttt{plus} should take in two integers and returns an integer. 
+% \begin{lstlisting}
+%       plus : Int -> Int -> Int
+% \end{lstlisting}
+%A function type takes the forma->b->...->t, wherea,b, and so on, are the input types, and t is the output type. Inputs may also be annotated with names, taking the form(x:a)->(y:b)->...->t.
+
+\subsubsection*{Function}
+To define a function a Idris, the types for all input values and output values must be specified in the function type signature, connecting by right arrows. Specifically, function type is of the form: 
+\begin{lstlisting}
+      <func_name> : x_1 -> x_2 -> ... ->  x_n
+\end{lstlisting}
+where $x_1, x_2, ..., x_{n-1}$ are types for the input values, and $x_n$ is the output type of the function. Input values can be annotated to provide more information, and also allows each input to be referred to easily later. For instance the type of the \texttt{reverse} function below names the first input as \texttt{elem}, which specifies that the input and output lists contain elements of same type. 
+\begin{lstlisting}
+      -- "reverse" reverse a list
+      reverse : (elem : Type) -> List elem -> List elem
+\end{lstlisting}
+A function definition is provided on the line below the function type. In Idris, functions are defined by pattern matching, which will be elaborated on later. Here we provide an example for function definition that requires little experience with pattern matching, only aiming to illustrate the syntax for defining functions. The \texttt{mult} function defined below multiplies the two input integers. 
+\begin{lstlisting}
+      -- "mult" calculates the multiplication of two input integers 'n' and 'm'
+      mult : Int -> Int -> Int
+      mult n m = n * m
+\end{lstlisting}
+
+\subsubsection*{Data Types}
+User defined data types are supported in Idris. To define a data type, we provide the name and type of the data type on one line, starting with the keyword \texttt{data}, followed by the id of the data type, a colon \texttt{:}, the type of the data type, and the keyword \texttt{where}. On the next few lines we define the constructors for this data type. Below provides the definition of the natural number type \texttt{Nat} in Idris. 
+\begin{lstlisting}
+      -- natural number can be either zero(Z) or plus one of another natural number (S Nat)
+      data Nat : Type where
+        Z : Nat
+        S : (n : Nat) -> Nat 
+\end{lstlisting}
+Idris allows data types to be parameterized over other types. The \texttt{List} data type below takes the parameter \texttt{elem} of type \texttt{Type}, which stands for the type of elements in the list. 
+ \begin{lstlisting}
+      -- declaration of List data type in Idris standard library
+      data List : (elem : Type) -> Type where
+        Nil : List elem
+        (::) : (x : elem) -> (xs : List elem) -> List elem
+\end{lstlisting}
+
+
+\subsubsection*{Dependent Types}
+Dependent types are types that depend on elements of other types[2]. They allow programmers to specify certain properties of data types explicitly in their type signature. The following example provides a definition of a vector data type, which is indexed by the vector length \texttt{len} and parameterized over the element type \texttt{elem}.
+\begin{lstlisting}
+      -- declaration of Vect data type in Idris standard library
+      data Vect : (len : Nat) -> (elem : Type) -> Type where
+        Nil  : Vect Z elem
+        (::) : (x : elem) -> 
+               (xs : Vect len elem) -> 
+               Vect (S len) elem
+\end{lstlisting}
+The type \texttt{Vect len elem} is dependent on the value of type variables \texttt{len} and \texttt{elem}, which means a \texttt{Vect} of length $3$ and $4$ are considered as different types. With dependent types, programmers can ensure the behaviors of functions through their type signatures by defining more precise types. Consider a function \texttt{concate} that concatenates two \texttt{Vect}. As \texttt{concate} takes in two vectors, then we have the function type for \texttt{concate} as follows: 
+\begin{lstlisting}
+      concate : Vect n elem -> Vect m elem -> resultType
+\end{lstlisting}
+The output value of \texttt{concate} should be the result of concatenating two vectors, which means the resulting vector should have length (n+m), hence \texttt{resultType} should be of type \texttt{Vect (n+m) elem}. With dependent types, Idris can help to ensure the function correctness of \texttt{concate} with the Idris type checker. By providing a function type for \texttt{concat} that specifies the length of the output \texttt{Vect}, if the definition of \texttt{concate} does not return a vector of length (n+m), \texttt{concate} would fail type check. Take the following definition of \texttt{concate} as an example. 
+\begin{lstlisting}
+      concate : Vect n elem -> Vect m elem -> Vect (n+m) elem
+      concate v1 v2 = v1
+\end{lstlisting}
+The type of the above \texttt{concate} function specifies that the output value should be a \texttt{Vect} of length \texttt{(n+m)}, where \texttt{n}, \texttt{m} are the length of the two input \texttt{Vect}, however the function is defined to return the first input vector of length \texttt{n}. Idris gives the following error message when compiling this function definition: 
+\begin{lstlisting}
+    |
+    | concate v1 v2 = v1
+    |                ~~
+  When checking right hand side of Haha.concat with expected type
+          Vect (n + m) elem
+
+  Type mismatch between
+          Vect n elem (Type of v1)
+  and
+          Vect (plus n m) elem (Expected type)
+
+  Specifically:
+          Type mismatch between
+                  n
+          and
+                  plus n m
+\end{lstlisting}
+The error message indicates that the type of the return value of \texttt{concate}, i.e., type of \texttt{v1}, does not match with the output type specified in the function signature, which is \texttt{Vect (n+m) elem}. Idris type checker will only accept definitions for \texttt{concate} that return a vector of length \texttt{(n+m)}, which helps to ensure the correct behaviors of functions defined. A correct implementation of \texttt{concate} is provided below. 
+\begin{lstlisting}
+      concate : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+      concate v1 v2 = v1 ++ v2
+ \end{lstlisting}
+% maybe mention implicit parameters somewhere
+The example above illustrates that dependent types in Idris allow programmers to provide more precise description of function behaviors through function type signatures, which helps to ensure function correctness with the Idris type checker. In verification, dependent types be used to specify program behaviors, and thus allowing us to verify the correctness of program through the Idris type checker. 
+
+
+\subsubsection*{Pattern Matching and Totality Checking}
+Pattern matching is the process of matching values against specific patterns. In Idris, functions are implemented by pattern matching on possible values of inputs. Continuing with the above example of \texttt{concate} function that concatenates two vectors, to define \texttt{concate}, we need to provide definitions on all possible values of \texttt{Vect}, which can either be \texttt{Nil}, i.e., a vector of length zero, or a non-empty vector of the pattern \texttt{(x :: xs)}. 
+\begin{lstlisting}
+      concat : Vect n Nat -> Vect m Nat -> Vect (n+m) Nat
+      concat Nil v2 = v2
+      concat v1 Nil = v1
+      concat (x :: xs) v2 = x :: concat xs v2
+\end{lstlisting}
+
+Functions defined for all possible values of input are total functions, and are guaranteed to produce a result in finite time given well-typed inputs. Partial functions are not total, and hence might crash for some inputs. To secure the termination of programs, every function definition in Idris are checked for totality after type checking. Specifically, Idris decides whether a function terminates based on two aspects: first, function must be defined for all possible inputs; and second, if a function definition includes a recursive call, then there must be an argument that strictly decreases over each recursion, and converges towards a base case. An error or warning will be given for any function that fails totality checking. 
+
+\subsection{Dijkstra's and Bellman-Ford algorithms}
+\subsubsection*{Dijkstra's Algorithm}
+Dijkstra's algorithm is a greedy algorithm that finds the shortest path from a given source to all other nodes in a directed graph with weighted edges. It was first introduced in 1959 by Edsger Wybe Dijkstra[6], and it is widely applied in many real-life applications, including shortest path finding in road map, or Internet routing protocols such as the Open Shortest Path First protocol. 
+\\
+
+Dijkstra's algorithm takes in a directed graph with non-negative edge weights, and computes the shortest path distance from one single source node to all other reachable nodes in the graph. The algorithm maintains a list of unexplored nodes and their distance values to the source node. Initially, the list of unexplored nodes contains all nodes in the input graph, and the distance value of all node are set as infinity except for the source node itself, which is set to zero. The algorithm extracts the node $v$ with minimum distance value from the unexplored list during each iteration, and for each neighbor $v'$ of $v$, if the path from source to $v'$ via $v$ contributes a smaller distance value, then the distance value of $v'$ is updated. 
+
+\subsubsection*{Bellman-Ford Algorithm}
+Bellman-Ford algorithm was first introduced by Alfonso Shimbel in 1955, and was published by Richard Bellman and Lester Ford, Jr in 1958 and 1956 respectively[7]. The algorithm solves the issue of calculating the minimum distance value from a single source to all other nodes in a given graph, and different from Dijkstra's algorithm, Bellman-Ford algorithm allows negative edge weights in the input graph, and is capable of detecting the existence of negative cycle(a cycle whose edge weights sum up to a negative value). Applications of Bellman-Ford includes routing protocols such as the Routing Information Protocol. 

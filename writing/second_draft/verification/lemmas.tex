@@ -1,0 +1,42 @@
+\lstset{
+  language=Haskell, 
+  backgroundcolor=\color{white}
+  frame=single,                    
+  keepspaces=true,                 
+  keywordstyle=\color{blue},
+  basicstyle=\fontsize{9}{11}\selectfont\ttfamily,
+  breaklines=true, 
+  commentstyle=\color{orange}, 
+  showtabs=false,     
+  showspaces=false,                
+  showstringspaces=false,             
+  tabsize=2
+}
+
+\subsection{Lemmas}
+We present the type signatures of key lemmas of Dijkstra's verification. 
+\\
+
+The first lemma specifies that the prefix of shortest path is also a shortest path. We first provide the definition of prefix of path below. 
+\begin{lstlisting}
+pathPrefix : (pprefix : Path s w g) ->
+             (p : Path s v g) ->
+             Type
+pathPrefix pprefix p {w} {v} {g} 
+	= (ppost : Path w v g ** append pprefix ppost = p)
+\end{lstlisting}
+The function \texttt{pathPrefix} specifies that, given a path \texttt{p} in \texttt{g} from node \texttt{s} to \texttt{v}, a path \texttt{pprefix} of type \texttt{Path s w g} is a prefix of \texttt{p} if there exists a path \texttt{ppost} of type \texttt{Path w v g}, which is a path from node \texttt{w} to \texttt{v} in \texttt{g}, such that the path obtained by appending \texttt{pprefix} to \texttt{ppost} is equal to \texttt{p}. 
+\\
+
+The type of the first lemma \texttt{l1\_prefixSP} is defined as follows. Given an input graph \texttt{g}, nodes \texttt{s, v, w}, a path \texttt{sp} from \texttt{s} to \texttt{v}, path \texttt{sp\_pre} from \texttt{s} to \texttt{w}, if \texttt{sp} is a shortest \texttt{s}-to-\texttt{v} path in \texttt{g}, (specified by \texttt{shortestPath g sp}), and that \texttt{sp\_pre} is a prefix of \texttt{sp} (specified by \texttt{pathPrefix sp\_pre sp}), then \texttt{sp\_pre} is a shortest  \texttt{s}-to-\texttt{w} path in \texttt{g}. 
+\begin{lstlisting}
+l1_prefixSP : {g: Graph gsize weight ops} ->
+              {s, v, w : Node gsize} ->
+              {sp : Path s v g} ->
+              {sp_pre : Path s w g} ->
+              (shortestPath g sp) ->
+              (pathPrefix sp_pre sp) ->
+              (shortestPath g sp_pre)
+\end{lstlisting}
+
+(To be continued....)

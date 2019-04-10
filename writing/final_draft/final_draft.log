@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 APR 2019 12:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  10 APR 2019 13:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -2009,48 +2009,48 @@ Package: har2nat 2005/12/01 1.0 Harvard to natbib
 Package: suffix 2006/07/15 1.5a Variant command support
 ))
 LaTeX Font Info:    Try loading font information for T1+XCharter-TLF on input l
-ine 134.
+ine 191.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/xcharter/T1XCharter-TLF.fd
 File: T1XCharter-TLF.fd 2013/10/27 (autoinst) Font definitions for T1/XCharter-
 TLF.
 )
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 134.
+(Font)              scaled to size 10.0pt on input line 191.
 
 (./final_draft.aux)
 \openout1 = `final_draft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 134.
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 134.
-LaTeX Font Info:    Try loading font information for LY1+ptm on input line 134.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 191.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 191.
+LaTeX Font Info:    Try loading font information for LY1+ptm on input line 191.
 
  (/usr/local/texlive/2017/texmf-dist/tex/latex/ly1/ly1ptm.fd
 File: ly1ptm.fd 2001/02/01 font definitions for LY1/ptm using Berry names.
 )
-LaTeX Font Info:    ... okay on input line 134.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 134.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 134.
+LaTeX Font Info:    ... okay on input line 191.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 191.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 191.
 
  (/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 134.
+LaTeX Font Info:    ... okay on input line 191.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 134.
+(Font)              scaled to size 10.95pt on input line 191.
 
 ABD: EveryShipout initializing macros
 (/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -2084,7 +2084,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box59
-Package hyperref Info: Link coloring OFF on input line 134.
+Package hyperref Info: Link coloring OFF on input line 191.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -2094,9 +2094,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count282
 )
-LaTeX Info: Redefining \ref on input line 134.
-LaTeX Info: Redefining \pageref on input line 134.
-LaTeX Info: Redefining \nameref on input line 134.
+LaTeX Info: Redefining \ref on input line 191.
+LaTeX Info: Redefining \pageref on input line 191.
+LaTeX Info: Redefining \nameref on input line 191.
 
 (./final_draft.out) (./final_draft.out)
 \@outlinefile=\write5
@@ -2140,30 +2140,24 @@ LaTeX Info: Redefining \nameref on input line 134.
 
 \c@mv@tabular=\count284
 \c@mv@boldtabular=\count285
-(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2015/06/04 1.6 listings language file
-)
-(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang2.sty
-File: lstlang2.sty 2015/06/04 1.6 listings language file
-)
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 157.
+(Font)              scaled to size 17.28pt on input line 225.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 14.4pt on input line 161.
+(Font)              scaled to size 14.4pt on input line 229.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 165.
- [1
+(Font)              scaled to size 12.0pt on input line 233.
+[1
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 14.4pt on input line 184.
+(Font)              scaled to size 14.4pt on input line 252.
 
-Underfull \hbox (badness 10000) in paragraph at lines 184--189
+Underfull \hbox (badness 10000) in paragraph at lines 252--257
 
  []
 
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/it' will be
-(Font)              scaled to size 10.95pt on input line 191.
+(Font)              scaled to size 10.95pt on input line 259.
 
 Package Fancyhdr Warning: \headheight is too small (12.0pt): 
  Make it at least 13.59999pt.
@@ -2171,10 +2165,10 @@ Package Fancyhdr Warning: \headheight is too small (12.0pt):
  This may cause the page layout to be inconsistent, however.
 
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 191.
+(Font)              scaled to size 9.0pt on input line 259.
 [1]
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 193.
+(Font)              scaled to size 12.0pt on input line 261.
  [2] (./final_draft.toc
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
 (Font)              scaled to size 10.95pt on input line 2.
@@ -2195,95 +2189,134 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.214 \pagenumbering
+l.282 \pagenumbering
                     {arabic} [1] (./introduction.tex
 Underfull \hbox (badness 10000) in paragraph at lines 5--7
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 11--13
+Underfull \hbox (badness 10000) in paragraph at lines 8--10
 
  []
 
-) (./motivation.tex
-Underfull \hbox (badness 10000) in paragraph at lines 4--6
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 7--9
-
- []
-
-[1]) (./background.tex
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 5.
-
-(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1cmtt.fd
-File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
-) [2] [3] [4]
-Underfull \hbox (badness 10000) in paragraph at lines 124--126
-
- []
-
-) [5] (./dijkstras_highlevel/data_structure.tex
+LaTeX Font Info:    Try loading font information for TS1+XCharter-TLF on input 
+line 13.
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xcharter/TS1XCharter-TLF.fd
+File: TS1XCharter-TLF.fd 2013/10/27 (autoinst) Font definitions for TS1/XCharte
+r-TLF.
+)
+LaTeX Font Info:    Font shape `TS1/XCharter-TLF/m/n' will be
+(Font)              scaled to size 10.95pt on input line 13.
+)
+(./motivation.tex
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
 (Font)              scaled to size 8.0pt on input line 4.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
 (Font)              scaled to size 6.0pt on input line 4.
 
+Underfull \hbox (badness 10000) in paragraph at lines 4--6
+
+ []
+
+[1]
+Underfull \hbox (badness 10000) in paragraph at lines 7--9
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--12
+
+ []
+
+) (./background.tex
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 5.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+
+LaTeX Font Warning: Font shape `T1/cmtt/b/n' undefined
+(Font)              using `T1/cmtt/m/n' instead on input line 5.
+
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 35--40
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 35--40
+
+ []
+
+[3] [4] [5]
+LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
+(Font)              scaled to size 10.0pt on input line 166.
+ [6]
+Underfull \hbox (badness 10000) in paragraph at lines 204--206
+
+ []
+
+
+Overfull \hbox (4.4969pt too wide) in paragraph at lines 218--219
+[]\T1/XCharter-TLF/m/n/10.95 The in-for-ma-tion pre-sented above shows that the
+ type of \T1/cmtt/m/n/10.95 check \T1/XCharter-TLF/m/n/10.95 re-lies on the val
+ue of \T1/cmtt/m/n/10.95 (checkEven
+ []
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 264--266
+
+ []
+
+[8]) (./dijkstras_highlevel/data_structure.tex
 Overfull \hbox (2.19737pt too wide) in paragraph at lines 2--7
 \T1/XCharter-TLF/m/n/10.95 The type of edge weight is user-defined in our im-pl
 e-men-ta-tion. Specif-i-cally, we de-fine a \T1/cmtt/m/n/10.95 WeightOps
  []
 
-) (./dijkstras_highlevel/definitions.tex
+) (./dijkstras_highlevel/definitions.tex [9]
 Underfull \hbox (badness 10000) in paragraph at lines 8--12
 
  []
 
-[6]) (./dijkstras_highlevel/pseudocode.tex
-Underfull \hbox (badness 10000) in paragraph at lines 6--39
+) (./dijkstras_highlevel/pseudocode.tex
+Underfull \hbox (badness 10000) in paragraph at lines 14--38
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 6--39
+Underfull \hbox (badness 10000) in paragraph at lines 14--38
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 6--39
+Underfull \hbox (badness 10000) in paragraph at lines 14--38
+
+ []
+
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 38--40
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 6--39
+Underfull \hbox (badness 10000) in paragraph at lines 38--40
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 6--39
+Underfull \hbox (badness 10000) in paragraph at lines 38--40
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 6--39
-
- []
-
-[7])
-Underfull \hbox (badness 10000) in paragraph at lines 39--256
-
- []
-
-(./dijkstras_highlevel/correctness_proof.tex
+) (./dijkstras_highlevel/correctness_proof.tex
 (./dijkstras_highlevel/lemma_41.tex
 Underfull \hbox (badness 10000) in paragraph at lines 8--4
 
  []
 
-
+[11]
 Underfull \hbox (badness 10000) in paragraph at lines 8--29
 
  []
@@ -2323,7 +2356,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 8--29
 
  []
 
-[8]) (./dijkstras_highlevel/lemma_42.tex
+) (./dijkstras_highlevel/lemma_42.tex
 Underfull \hbox (badness 10000) in paragraph at lines 30--4
 
  []
@@ -2333,7 +2366,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 17--21
 
  []
 
-
+[12]
 Underfull \hbox (badness 10000) in paragraph at lines 28--39
 
  []
@@ -2356,16 +2389,7 @@ cmr/m/n/10.95 (\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.9
  . 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+XCharter-TLF on input 
-line 40.
-(/usr/local/texlive/2017/texmf-dist/tex/latex/xcharter/TS1XCharter-TLF.fd
-File: TS1XCharter-TLF.fd 2013/10/27 (autoinst) Font definitions for TS1/XCharte
-r-TLF.
-)
-LaTeX Font Info:    Font shape `TS1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 40.
 
-[9]
 Overfull \hbox (12.07964pt too wide) in paragraph at lines 42--43
 []\T1/XCharter-TLF/m/n/10.95 If $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [
 \OML/cmm/m/it/10.95 v\OT1/cmr/m/n/10.95 ] \OMS/cmsy/m/n/10.95 ^^U \OML/cmm/m/it
@@ -2393,7 +2417,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 52--4
 
  []
 
-
+[13]
 Underfull \hbox (badness 10000) in paragraph at lines 12--16
 
  []
@@ -2403,7 +2427,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 23--30
 
  []
 
-[10]
+
 Underfull \hbox (badness 10000) in paragraph at lines 35--58
 
  []
@@ -2433,216 +2457,204 @@ Underfull \hbox (badness 10000) in paragraph at lines 35--58
 
  []
 
-) (./dijkstras_highlevel/lemma_44.tex [11]
-Overfull \hbox (5.1386pt too wide) in paragraph at lines 31--39
-[]\T1/XCharter-TLF/b/n/12 Part(a)\T1/XCharter-TLF/m/n/10.95 : \T1/cmtt/m/n/10.9
-5 WTP: After the $\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 k \OT1/cmr/m/n/10.95 
-+ 1)[]$ \T1/cmtt/m/n/10.95 iteration, $\OMS/cmsy/m/n/10.95 8\OML/cmm/m/it/10.95
- w \OMS/cmsy/m/n/10.95 2 \OML/cmm/m/it/10.95 explored[]$\T1/cmtt/m/n/10.95 , (a
-.1) $\OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w\OT1/cmr/m
-/n/10.95 ) \OMS/cmsy/m/n/10.95 ^^T \OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\
-OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 )$\T1/cmtt/m/n/10.95 ,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 31--39
+[14]) (./dijkstras_highlevel/lemma_44.tex
+Underfull \hbox (badness 10000) in paragraph at lines 18--26
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 31--39
+Underfull \hbox (badness 10000) in paragraph at lines 18--26
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 46--51
-
- []
-
-<pic.png, id=277, 593.21625pt x 376.40625pt>
-File: pic.png Graphic file (type png)
- <use pic.png>
-Package pdftex.def Info: pic.png used on input line 71.
-(pdftex.def)             Requested size: 266.94484pt x 169.38124pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 55--111
-
- []
-
-[12] [13 <./pic.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Overfull \hbox (53.3154pt too wide) in paragraph at lines 118--149
-\T1/XCharter-TLF/m/n/10.95 Based on [E1] we know that $\OML/cmm/m/it/10.95 ^^N\
-OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) = \OML/cmm/m/it/
-10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) + \OML
-/cmm/m/it/10.95 weight\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[] \OT1/cmr/m/n/
-10.95 + \OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 )$\T1/XCharter-TLF/m/n/10.95 
-, then $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 w[]\O
-T1/cmr/m/n/10.95 ] = \OML/cmm/m/it/10.95 min\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/1
-0.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ]\OML/
-cmm/m/it/10.95 ; ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.
-95 ))$\T1/XCharter-TLF/m/n/10.95 .
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Overfull \hbox (6.00954pt too wide) in paragraph at lines 118--149
-\T1/XCharter-TLF/m/n/10.95 Based on our as-sump-tion, at the be-gin-ning of the
- $\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 k \OT1/cmr/m/n/10.95 + 1)[]$ \T1/XCha
-rter-TLF/m/n/10.95 gen-er-a-tion, $\OML/cmm/m/it/10.95 u[]; w[] [] explored[]$
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 118--149
-
- []
-
-
-Overfull \hbox (24.7042pt too wide) in paragraph at lines 118--149
-\OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 q\OT1/cmr/m/n/10
-.95 ) \OMS/cmsy/m/n/10.95 ^^U \OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/c
-mm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 )$\T1/XCharter-TLF/m/n/10.95 , and $\OML/cm
-m/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 v[]\OT1/cmr/m/n/10.95 )
- \OMS/cmsy/m/n/10.95 ^^T \OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/
-it/10.95 u[]\OT1/cmr/m/n/10.95 )$\T1/XCharter-TLF/m/n/10.95 , then $\OML/cmm/m/
-it/10.95 v[]$ \T1/XCharter-TLF/m/n/10.95 can-not be in $\OML/cmm/m/it/10.95 une
-xplored[]$\T1/XCharter-TLF/m/n/10.95 . Since $\OML/cmm/m/it/10.95 unexplored[] 
-\OT1/cmr/m/n/10.95 =
- []
-
-
-Overfull \hbox (0.12698pt too wide) in paragraph at lines 118--149
-\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m
-/n/10.95 ]$\T1/XCharter-TLF/m/n/10.95 . Thus $\OML/cmm/m/it/10.95 dist[]\OT1/cm
-r/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] \OMS/cmsy/m/n/10.95 ^^
-T \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/
-10.95 v[]\OT1/cmr/m/n/10.95 ) + \OML/cmm/m/it/10.95 weight\OT1/cmr/m/n/10.95 (\
-OML/cmm/m/it/10.95 v[]; u[]\OT1/cmr/m/n/10.95 ))$\T1/XCharter-TLF/m/n/10.95 , i
-.e. $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/
-cmr/m/n/10.95 ] \OMS/cmsy/m/n/10.95 ^^T \OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.
-95 (\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 )$\T1/XCharter-TLF/m/n/10.95 ,
- []
-
-[14])) (./verification/data_structures.tex
-Underfull \hbox (badness 10000) in paragraph at lines 17--19
+) (./dijkstras_highlevel/lemma_45.tex
+Underfull \hbox (badness 10000) in paragraph at lines 40--4
 
  []
 
 [15]
+Underfull \hbox (badness 10000) in paragraph at lines 14--17
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 23--26
+
+ []
+
+
+Overfull \hbox (6.17378pt too wide) in paragraph at lines 30--41
+[]\T1/XCharter-TLF/m/n/10.95 Part(a): \T1/cmtt/m/n/10.95 WTP: After the $\OT1/c
+mr/m/n/10.95 (\OML/cmm/m/it/10.95 k \OT1/cmr/m/n/10.95 + 1)[]$ \T1/cmtt/m/n/10.
+95 iteration, $\OMS/cmsy/m/n/10.95 8\OML/cmm/m/it/10.95 w \OMS/cmsy/m/n/10.95 2
+ \OML/cmm/m/it/10.95 explored[]$\T1/cmtt/m/n/10.95 , (L1)(L2)(L3) holds. 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 30--41
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 30--41
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 30--41
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 30--41
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 30--41
+
+ []
+
+[16]
+Overfull \hbox (30.6759pt too wide) in paragraph at lines 51--57
+\OML/cmm/m/it/10.95 min\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m
+/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ]\OML/cmm/m/it/10.95 ; dist
+[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] + 0) = \OML/c
+mm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.
+95 ]$\T1/XCharter-TLF/m/n/10.95 , then $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/
+10.95 [\OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] \OML/cmm/m/it/10.95 < \OMS/c
+msy/m/n/10.95 1$\T1/XCharter-TLF/m/n/10.95 . \T1/cmtt/m/n/10.95 Lemma 4.4 \T1/X
+Charter-TLF/m/n/10.95 im-plies $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\
+OML/cmm/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] \OMS/cmsy/m/n/10.95 ^^T
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 51--57
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--63
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--63
+
+ []
+
+<pic.png, id=416, 593.21625pt x 376.40625pt>
+File: pic.png Graphic file (type png)
+ <use pic.png>
+Package pdftex.def Info: pic.png used on input line 64.
+(pdftex.def)             Requested size: 326.26994pt x 207.02406pt.
+ [17 <./pic.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 82--94
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--94
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--94
+
+ []
+
+[18]
+Underfull \hbox (badness 10000) in paragraph at lines 116--119
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 116--119
+
+ []
+
+
+Overfull \hbox (26.70457pt too wide) in paragraph at lines 135--139
+\T1/XCharter-TLF/m/n/10.95 path. Since $\OML/cmm/m/it/10.95 ^^N\OT1/cmr/m/n/10.
+95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 ^^T \OML/cm
+m/m/it/10.95 length\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 
+)\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 8\OML/cmm/m/it/10.95 p \OMS/cmsy/m/n
+/10.95 2 \OML/cmm/m/it/10.95 path\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 s; w[]
+\OT1/cmr/m/n/10.95 )$\T1/XCharter-TLF/m/n/10.95 , then $\OML/cmm/m/it/10.95 dis
+t[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ] = \OML/cmm/m
+/it/10.95 min\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [
+\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 ]\OML/cmm/m/it/10.95 ; ^^N\OT1/cmr/m/
+n/10.95 (\OML/cmm/m/it/10.95 w[]\OT1/cmr/m/n/10.95 )) =
+ []
+
+[19]
+Overfull \hbox (5.55493pt too wide) in paragraph at lines 153--158
+\T1/XCharter-TLF/m/n/10.95 of prove by con-tra-dic-tion, when $\OML/cmm/m/it/10
+.95 w[] \OMS/cmsy/m/n/10.95 6\OT1/cmr/m/n/10.95 = \OML/cmm/m/it/10.95 u[]$\T1/X
+Charter-TLF/m/n/10.95 , $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm
+/m/it/10.95 u[]\OT1/cmr/m/n/10.95 ] \OMS/cmsy/m/n/10.95 ^^T \OML/cmm/m/it/10.95
+ ^^N\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 w\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/
+10.95 ; \OMS/cmsy/m/n/10.95 8\OML/cmm/m/it/10.95 w \OMS/cmsy/m/n/10.95 2 \OML/c
+mm/m/it/10.95 unexplored[]$\T1/XCharter-TLF/m/n/10.95 . 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 153--158
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 158--163
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 174--180
+
+ []
+
+[20]
+Underfull \hbox (badness 10000) in paragraph at lines 192--202
+
+ []
+
+
+Overfull \hbox (8.41219pt too wide) in paragraph at lines 192--202
+\T1/XCharter-TLF/m/n/10.95 Since $\OML/cmm/m/it/10.95 v[] [] explored[]$\T1/XCh
+arter-TLF/m/n/10.95 , i.e., $\OML/cmm/m/it/10.95 v[] \OMS/cmsy/m/n/10.95 2 \OML
+/cmm/m/it/10.95 unexplored[]$\T1/XCharter-TLF/m/n/10.95 , based on proof of (L2
+), $\OML/cmm/m/it/10.95 dist[]\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 u[]\OT1/c
+mr/m/n/10.95 ] \OMS/cmsy/m/n/10.95 ^^T
+ []
+
+)) (./verification/data_structures.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2015/06/04 1.6 listings language file
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang2.sty
+File: lstlang2.sty 2015/06/04 1.6 listings language file
+)
+Underfull \hbox (badness 10000) in paragraph at lines 17--19
+
+ []
+
+[21]
 Underfull \hbox (badness 10000) in paragraph at lines 55--57
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 58--60
+Underfull \hbox (badness 10000) in paragraph at lines 65--67
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 61--63
-
- []
-
-[16]
-Underfull \hbox (badness 10000) in paragraph at lines 67--71
+[22]
+Underfull \hbox (badness 10000) in paragraph at lines 68--70
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 82--84
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 96--98
-
- []
-
-[17]
-Underfull \hbox (badness 10000) in paragraph at lines 108--110
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 120--122
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 132--134
 
  []
 
@@ -2656,70 +2668,82 @@ Underfull \hbox (badness 10000) in paragraph at lines 28--30
 
  []
 
-[18]) (./verification/correctness.tex
+[24]) (./verification/correctness.tex
 Underfull \hbox (badness 10000) in paragraph at lines 17--19
 
  []
 
-) (./related_work.tex
+[25]) (./related_work.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--6
 
  []
 
-[19]
+
 Underfull \hbox (badness 10000) in paragraph at lines 7--9
 
  []
 
-) [20] (./final_draft.bbl
-
-Package natbib Warning: Empty `thebibliography' environment on input line 3.
-
-)pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has
- been already used, duplicate ignored
+) [26] (./final_draft.bbl)pdfTeX warning (ext4): destination with the same iden
+tifier (name{page.i}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.322 \newpage
+l.392 \newpage
                % Includes a new page [1] [1] [2]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 345.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 345.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 415.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 415.
  (./final_draft.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 345.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 345.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 415.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 415.
 Package rerunfilecheck Info: File `final_draft.out' has not changed.
 (rerunfilecheck)             Checksum: 8ED868920FF003998ADF5346CB0807AA;1311.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 345.
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 415.
  ) 
 Here is how much of TeX's memory you used:
- 31791 strings out of 492995
- 605849 string characters out of 6132704
- 917427 words of memory out of 5000000
- 34508 multiletter control sequences out of 15000+600000
- 85785 words of font info for 64 fonts, out of 8000000 for 9000
+ 32232 strings out of 492995
+ 611122 string characters out of 6132704
+ 934294 words of memory out of 5000000
+ 34828 multiletter control sequences out of 15000+600000
+ 94440 words of font info for 76 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,12n,82p,10474b,1871s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
-{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/xcharter/xch_jfcsri.enc}{/u
-sr/local/texlive/2017/texmf-dist/fonts/enc/dvips/xcharter/xch_tuu2ww.enc}</usr/
-local/texlive/2017/texmf-dist/fonts/type1/public/xcharter/XCharter-Bold.pfb></u
-sr/local/texlive/2017/texmf-dist/fonts/type1/public/xcharter/XCharter-Italic.pf
-b></usr/local/texlive/2017/texmf-dist/fonts/type1/public/xcharter/XCharter-Roma
-n.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10
-.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.
-pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pf
-b></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></u
-sr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></us
-r/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/
-local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/lo
-cal/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt0800.pfb></usr/loca
-l/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/local/
-texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/te
-xlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on final_draft.pdf (27 pages, 389090 bytes).
+ 56i,12n,82p,10474b,1869s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{Hfootnote.4} has been referenced but does not exi
+st, replaced by a fixed one
+
+pdfTeX warning (dest): name{Hfootnote.3} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Hfootnote.2} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
+, replaced by a fixed one
+
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/
+usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/xcharter/xch_tuu2ww.enc}{/usr
+/local/texlive/2017/texmf-dist/fonts/enc/dvips/xcharter/xch_jfcsri.enc}</usr/lo
+cal/texlive/2017/texmf-dist/fonts/type1/public/xcharter/XCharter-Bold.pfb></usr
+/local/texlive/2017/texmf-dist/fonts/type1/public/xcharter/XCharter-Italic.pfb>
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/xcharter/XCharter-Roman.
+pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.p
+fb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pf
+b></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb>
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
+usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr
+/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/
+local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/lo
+cal/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb></usr/loca
+l/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt0800.pfb></usr/local/
+texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/local/te
+xlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texl
+ive/2017/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on final_draft.pdf (33 pages, 421517 bytes).
 PDF statistics:
- 569 PDF objects out of 1000 (max. 8388607)
- 517 compressed objects within 6 object streams
- 259 named destinations out of 1000 (max. 500000)
+ 751 PDF objects out of 1000 (max. 8388607)
+ 692 compressed objects within 7 object streams
+ 369 named destinations out of 1000 (max. 500000)
  178 words of extra memory for PDF output out of 10000 (max. 10000000)
 

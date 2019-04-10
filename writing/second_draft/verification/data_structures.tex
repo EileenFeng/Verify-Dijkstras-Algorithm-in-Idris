@@ -14,7 +14,7 @@
 }
 
 \subsection{Data Structures}
-Key structures of our implementation include \texttt{WeightOps}, \texttt{Distance}, \texttt{Graph}, and \texttt{Column}. Our implementation allows edge weight type to be user defined, with \texttt{WeightOps} specifying all the properties of \texttt{weight} that user needs to provide. Below presents the definition of \texttt{WeightOps}. 
+Key structures of our implementation include \texttt{WeightOps}, \texttt{Distance}, \texttt{Graph}, and \texttt{Column}. Our implementation allows edge weight type to be user defined, with \texttt{WeightOps} specifying all the properties that users need to provide. Below presents the definition of \texttt{WeightOps}. 
 \newline
 \begin{lstlisting}
 using (weight : type)
@@ -55,30 +55,19 @@ using (weight : type)
 The type constructor of \texttt{WeightOps} takes in the userdefined edge weight type and returns a type, and the data contructor \texttt{MKWeight}, which takes in all the properties specified by the projection functions, builds the \texttt{WeightOps weight} type. As Dijkstra's algorithm requires non-negative edge weights, the user-defined edge weight type is required to fulfill triangle inequality, as specified by the \texttt{triangle\_ineq} function. 
 \\
 
-As we assume the input graph is a connected graph, the value of edge weight between two adjacent nodes are considered as not infinity, whereas Dijkstra's algorithm initializes the distance value from source node to all other nodes in the graph as infinity. Consider that the value of edge weight is not infinity, and Dijkstra's algorithm requires a representation of infinity value, we define a \texttt{Distance} type to represent the distance value between two nodes. \st{Distance} is parameterized over the user-defined \st{weight} type, and the value of \st{Distance weight} can be either infinity or sum of \st{weight}s. The definition of \st{Distance} data type is provided below. 
-\begin{lstlisting}
-    data Distance : Type -> Type where
-      DInf : Distance weight
-      DVal : (val : weight) -> Distance weight
-\end{lstlisting}
-
-The data constructor \st{DInf} builds a value of \st{Distance weight} that represents infinity distance, and \st{DVal} carries a value \st{val} of type \st{weight}, which can be the sum of one or more \st{weight}s. 
-\\
-
-We also defined data structures to represent graph and its main components, such as \texttt{Node, nodeset} and \texttt{Path}. Definition of each data types are specified below. 
+Our implementation defined a few key structures to represent graph and its main components, which includes \texttt{Node, nodeset, Graph} and \texttt{Path}. Definition of each data types are specified below. 
 \\
 
 The \texttt{Node} type reprensents a node in the graph. As presented in the definition of \texttt{Node} below, the type constructor of \texttt{Node} takes in a \texttt{Nat} that specifies the size of the input graph (i.e., the number of nodes in the graph), and the data constructor \texttt{MKNode} takes in a \texttt{Fin n} type, which carries a natural number that is strictly smaller than \texttt{n}, and builds a node of type \texttt{Node n}. Such construction ensures that the natural number value carried by each node is strictly smaller than the size of the graph. As the value carried by each \texttt{Node} type is used to index distance value in the graph, this ensures that each indexing is in-bound. Below presents the definition of \texttt{Node} type. Any well-typed \texttt{Node n} is a valid node in a graph of size \texttt{n}, and any valid node in the graph must have a correcsponding \texttt{Node n} value. 
-
+\\
 \begin{lstlisting}
 		data Node : Nat -> Type where
 		  MKNode : Fin n -> Node n
 \end{lstlisting}
-
 We define a \texttt{nodeset} type to carry the set of pairs of adjacent node and corresponding edge weight for a specifi node. As the number of neighboring nodes is undecidable for each node in the input graph, \texttt{nodeset} is defined as a \texttt{List} rather than a \texttt{Vect}. 
 \\
 \texttt{Graph} is defined based on \texttt{Node} and \texttt{ndoeset}. The type of \texttt{Graph} carries a \texttt{Nat} that specifies the size of the graph, the user defined edge weight \texttt{weight}, and \texttt{WeightOps weight} that carries properties of the edge weight type. Data constructor \texttt{MKGraph} takes in the graph size, denotes as \texttt{gsize}, the type of edge weight \texttt{weight}, \texttt{WeightOps weight}, and a vector of \texttt{gsize} number of \texttt{nodeset}s, one for each node in the graph. As the definiton of \texttt{Node} type ensures that a node is valid if and only if it has a corresponding value of type \texttt{Node gsize}, it is not necessary for the \texttt{Graph} data type to carry a list of all nodes in the graph. Below are the definition of \texttt{nodeset} and \texttt{Graph} types. 
-
+\\
 \begin{lstlisting}
 	nodeset : (gsize : Nat) -> (weight : Type) -> Type
 			nodeset gsize weight = List (Node gsize, weight)
@@ -90,9 +79,8 @@ We define a \texttt{nodeset} type to carry the set of pairs of adjacent node and
 	            (edges : Vect gsize (nodeset gsize weight)) ->
 	            Graph gsize weight ops
 \end{lstlisting}
-
 Path is defined as a sequence of non-repeating nodes, where each two adjacent nodes have an edge in the graph. A path can contain only one node, as specified by the \texttt{Unit} data constructor below. The \texttt{Cons} data constructor allows a new path to be constructed from an existing path, that given a path from node \texttt{s} to \texttt{v}, if \texttt{n} is an adjacent to \texttt{v} (\texttt{adj g v n} denotes that there is an edge from \texttt{v} to \texttt{n} in the graph \texttt{g}), then we can obtain a new path from \texttt{s} to \texttt{n} by appending the node \texttt{n} to the end of the existing \texttt{s}-to-\texttt{v} path. 
-
+\\
 \begin{lstlisting}
 	data Path : Node gsize ->
 	            Node gsize ->
@@ -105,9 +93,8 @@ Path is defined as a sequence of non-repeating nodes, where each two adjacent no
 	         (adj : adj g v n) ->
 	         Path s n g
 \end{lstlisting}
-
 A shortest path from node \texttt{s} to \texttt{v} is then defined as a path whose length is smaller than or equal to any other \texttt{s}-to-\texttt{v} paths in the graph, as presented below. 
-
+\\
 \begin{lstlisting}
 	shortestPath : (g : Graph gsize weight ops) ->
 	               (sp : Path s v g) ->
@@ -117,8 +104,9 @@ A shortest path from node \texttt{s} to \texttt{v} is then defined as a path who
 	    dgte ops (length lp) (length sp) = True
 \end{lstlisting}
 
-We defined a \texttt{Column} type to represent one column of the matrix generated by the algorithm, which contains the input graph, the source node, the number of current unexplored nodes, a vector of current unexplored nodes, and a vector of distance values from source to all nodes in the graph. The definition of \texttt{Column} type is providede below. 
 
+We defined a \texttt{Column} type to represent one column of the matrix generated by the algorithm, which contains the input graph, the source node, the number of current unexplored nodes, a vector of current unexplored nodes, and a vector of distance values from source to all nodes in the graph. The definition of \texttt{Column} type is providede below. 
+\\
 \begin{lstlisting}
 	data Column : Nat -> (Graph gsize weight ops) -> (Node gsize) -> Type where
 	  MKColumn : (g : Graph gsize weight ops) ->

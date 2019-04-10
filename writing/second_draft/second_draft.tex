@@ -37,7 +37,6 @@
 \newcommand\ttab[1][2cm]{\hspace*{#1}}
 \newcommand\tsp[1][0.2cm]{\hspace*{#1}}
 \newcommand\htab[1][0.5cm]{\hspace*{#1}}
-\newcommand\st{\texttt}
 \setcounter{secnumdepth}{4}
 
 \graphicspath{ {images/} }
@@ -49,7 +48,6 @@
 %---------------------------------------------------------------------------------
 % Additional settings
 %---------------------------------------------------------------------------------
-
 
 %---------------------------------------------------------------------------------
 % Define your margins
@@ -120,172 +118,41 @@
 %---------------------------------------------------------------------------------
 % General information
 %---------------------------------------------------------------------------------
-% \title{Shortest Path Algorithms Verification with Idris} % Adds your title
-% \author{
-% Yazhe Feng % Add your first and last name
-%     %\thanks{} % Adds a footnote to your title
-%     %\institution{YOUR INSTITUTION} % Adds your institution
-%   }
+\title{Shortest Path Algorithms Verification with Idris} % Adds your title
+\author{
+Yazhe Feng % Add your first and last name
+    %\thanks{} % Adds a footnote to your title
+    %\institution{YOUR INSTITUTION} % Adds your institution
+  }
 
-% \date{\small \today} % Adds the current date to your “cover” page; leave empty if you do not want to add a date
+\date{\small \today} % Adds the current date to your “cover” page; leave empty if you do not want to add a date
 
 %---------------------------------------------------------------------------------
 % Define what’s in your document
 %---------------------------------------------------------------------------------
-\usepackage{xcolor}% http://ctan.org/pkg/xcolor
-\definecolor{gray_ulisses}{gray}{0.55}
-\definecolor{castanho_ulisses}{rgb}{0.71,0.33,0.14}
-\definecolor{preto_ulisses}{rgb}{0.41,0.20,0.04}
-\definecolor{green_ulises}{rgb}{0.2,0.75,0}
-\definecolor{dark_yello}{rgb}{0.42, 0.93, 0.93}
-\definecolor{kw_pink}{rgb}{0.858, 0.188, 0.478}
-\definecolor{kw_green}{RGB}{0,102,51}
-\definecolor{kw_ground}{RGB}{204,102,0}
-\definecolor{kw_orange}{RGB}{255, 128, 0}
-
-\lstdefinelanguage{Idris} {
-  morekeywords={->,=,:},
-  basicstyle=\fontsize{10}{12}\selectfont\ttfamily,
-  sensitive=true,
-  morecomment=[l][\color{blue}]{--},
-  morecomment=[s][\color{blue}]{\{-}{-\}},
-  morestring=[b]",
-  stringstyle=\color{red},
-  showstringspaces=false,
-  numberstyle=\tiny,
-  numberblanklines=true,
-  showspaces=false,
-  breaklines=true,
-  showtabs=false,
-  emph=
-  {[1]
-    ->,=,:
-  },
-  emphstyle={[1]\color{w_orange}\textbf},
-  emph=
-  {[2]
-    Bool,Char,List,Vect,Nat,Type,Int,Maybe,String,Fin
-  },
-  emphstyle={[2]\color{kw_ground}\textbf},
-  emph=
-  {[3]
-    case,of,proof,with,data,record,where,import,in,module,if,then,else,total,\%default,?
-  },
-  emphstyle={[3]\color{kw_green}\textbf},
-  % emph=
-  % {[4]
-  %   quot,rem,div,mod,elem,notElem,seq
-  % },
-  % emphstyle={[4]\color{castanho_ulisses}\textbf},
-  emph=
-  {[4]
-    False,Just,LT,Left,Nothing,Right,True,Show,Eq,Ord,Num
-  },
-  emphstyle={[4]\color{castanho_ulisses}\textbf}
-}
-\newcommand\inl{\lstinline}
-
-
-
 
 \begin{document}
 \lstset{
-  language=Idris, 
-  morekeywords={->,=,:},
-  backgroundcolor=\color{white},
-  keywordstyle=\color{kw_orange},
+  language=Haskell, 
+  backgroundcolor=\color{white}
+  frame=single,                    
+  keepspaces=true,                 
+  keywordstyle=\color{blue},
+  basicstyle=\fontsize{10}{12}\selectfont\ttfamily,
+  breaklines=true, 
+  commentstyle=\color{orange}, 
   showtabs=false,     
   showspaces=false,                
   showstringspaces=false,             
-  tabsize=2  
+  tabsize=2
 }
 
-% \lstset{
-%   language=Haskell, 
-%   backgroundcolor=\color{white}
-%   frame=single,                    
-%   keepspaces=true,                 
-%   keywordstyle=\color{blue},
-%   basicstyle=\fontsize{10}{12}\selectfont\ttfamily,
-%   breaklines=true, 
-%   commentstyle=\color{orange}, 
-%   showtabs=false,     
-%   showspaces=false,                
-%   showstringspaces=false,             
-%   tabsize=2
-% }
-
-
-\begin{titlepage}
-\pagenumbering{gobble}
-\addcontentsline{toc}{section}{Abstract}
-\begin{center}
-\tab\\
-\vspace{1.5cm}
-\LARGE
-\text{\uppercase{Verification of Shortest Path Algorithms}}\\
-\text{\uppercase{ in Idris}}
-
-\Large
-\vspace{1.5cm}
-\text{Yazhe Feng}\\
-\vspace{2cm}
-\large
-A thesis submitted in partial fulfillment of the requirements for the \\ degree of Bachelor of Arts \\ 
-\vspace{0.5cm}
-\large
-in the \\ 
-\vspace{0.5cm}
-\large
-Department of Computer Science \\ 
-\vspace{0.5cm}
-\large
-at Bryn Mawr College \\
-\vspace{1cm}
-Advisor: Richard A. Eisenberg
-
-\pagebreak
-
-\end{center}
-\pagenumbering{roman}
-\Large
-\textbf{Acknowledgments} 
-\\\\
-\small
-%\addcontentsline{toc}{section}{Acknowledgments}
-(To be finished...)
-
-\pagebreak
-\begin{center}
-\large
-\textbf{Abstract}
-\end{center}
-\pagebreak
-%\end{center}
-
-\end{titlepage}
-
-\vfill
-% \begin{figure}[H]
-% \begin{center}
-% \includegraphics[width = .2\textwidth]{university_seal}
-% \end{center}
-% \end{figure}
-% You can add your university seal here. It'll appear right above the department and it'll look fancy af.
-%\end{titlepage}
-\pagebreak
-\pagenumbering{roman}
-\tableofcontents
-%\listoffigures
-%\listoftables
-\pagebreak
-\pagenumbering{arabic}
 
 % If you want a cover page, uncomment "\input{coverpage.tex}" and uncomment "\begin{comment}" and "\end{comment}" to comment the following lines
 %\input{coverpage.tex}
 
 %\begin{comment}
-%\maketitle % Print your title, author name and date; comment if you want a cover page 
+\maketitle % Print your title, author name and date; comment if you want a cover page 
 
 % \begin{center} % Center text
 %     Word count: XXXX
@@ -363,27 +230,25 @@ Our verification program consists three parts: data structures, implementation o
 
 \pagenumbering{roman} % Changes page numbering to roman page numbers
 %\bibliography{literature}
-\medskip
-\bibliographystyle{unsrt} % Defines your bibliography style
-\bibliography{literature} % Add the filename of your bibliography
-% [1] V. Klasen, "Verifying dijkstra's algorithm with key," in Diploma Thesis, Universitat Koblenz-Landau, 2010.%\url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
-% \newline
-% [2] Bove, Ana, and Peter Dybjer. “Dependent Types at Work.” Language Engineering and Rigorous Software Development Lecture Notes in Computer Science, 2009, pp. 57–99., \url{doi:10.1007/978-3-642-03153-3_2}. %\url{http://www.cse.chalmers.se/~peterd/papers/DependentTypesAtWork.pdf}
-% \newline
-% [3] R. Mange and J. Kuhn, "Verifying dijkstra algorithm in Jahob," 2007, student project, EPFL.%\url{https://lara.epfl.ch/w/_media/dijkstra.pdf} 
-% \newline
-% [4] Filliâtre, Jean-Christophe. “Toccata.” Dijkstra's Shortest Path Algorithm, \url{toccata.lri.fr/gallery/dijkstra.en.html}.%\url{http://toccata.lri.fr/gallery/dijkstra.en.html}
-% \newline
-% [5] “Why3.” Why3, May 2015, \url{why3.lri.fr/#provers}. %\url{http://why3.lri.fr/#provers}
-% \newline
-% %[6] \url{http://lara.epfl.ch/w/jahob_system}
-% [6] E. W. Dijkstra. A note on two problems in connexion with graphs. Numerische Mathematik, 1:269–271, 1959.
-% \newline 
-% [7] Richard E. Bellman. On a routing problem. Quarterly of Applied Mathematics, 16:87–90, 1958.
-% \newline
-% [8] A. Shimbel. Structure in communication nets. Polytechnic Press of the Poly- technic Institute of Brooklyn, page 199–203, 1955.
-% \newline
-% [9] Dijkstra (1970) \href{http://www.cs.utexas.edu/users/EWD/ewd02xx/EWD249.PDF}{"Notes On Structured Programming"} (EWD249), Section 3 ("On The Reliability of Mechanisms"), corollary at the end.
+
+\bibliography{./literature.bib} % Add the filename of your bibliography
+\bibliographystyle{apsr} % Defines your bibliography style
+[1] V. Klasen, "Verifying dijkstra's algorithm with key," in Diploma Thesis, Universitat Koblenz-Landau, 2010.%\url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
+\newline
+[2] Bove, Ana, and Peter Dybjer. “Dependent Types at Work.” Language Engineering and Rigorous Software Development Lecture Notes in Computer Science, 2009, pp. 57–99., \url{doi:10.1007/978-3-642-03153-3_2}. %\url{http://www.cse.chalmers.se/~peterd/papers/DependentTypesAtWork.pdf}
+\newline
+[3] R. Mange and J. Kuhn, "Verifying dijkstra algorithm in Jahob," 2007, student project, EPFL.%\url{https://lara.epfl.ch/w/_media/dijkstra.pdf} 
+\newline
+[4] Filliâtre, Jean-Christophe. “Toccata.” Dijkstra's Shortest Path Algorithm, \url{toccata.lri.fr/gallery/dijkstra.en.html}.%\url{http://toccata.lri.fr/gallery/dijkstra.en.html}
+\newline
+[5] “Why3.” Why3, May 2015, \url{why3.lri.fr/#provers}. %\url{http://why3.lri.fr/#provers}
+\newline
+%[6] \url{http://lara.epfl.ch/w/jahob_system}
+[6] E. W. Dijkstra. A note on two problems in connexion with graphs. Numerische Mathematik, 1:269–271, 1959.
+\newline 
+[7] Richard E. Bellman. On a routing problem. Quarterly of Applied Mathematics, 16:87–90, 1958.
+\newline
+[8] A. Shimbel. Structure in communication nets. Polytechnic Press of the Poly- technic Institute of Brooklyn, page 199–203, 1955.
 % For citing, please see this sheet: http://merkel.texture.rocks/Latex/natbib.php
 
 %----------------------------------------------------------------------------------------
