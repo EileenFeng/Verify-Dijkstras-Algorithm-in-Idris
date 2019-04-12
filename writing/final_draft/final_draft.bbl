@@ -33,6 +33,14 @@ Jean-Christophe Filliâtre et~al. François~Bobot.
 \newblock Toccata, Inria Saclay-Île-de-France / LRI Univ Paris-Sud 11 / CNRS,
   1 edition.
 
+\bibitem{idris}
+Christoph~Herrmann Edwin~Brady and Kevin Hammond.
+\newblock
+  \href{https://eb.host.cs.st-andrews.ac.uk/drafts/tfp08.pdf}{Lightweight
+  Invariants with Full Dependent Types}.
+\newblock In {\em Draft Proceedings of Trends in Functional Programming 2008},
+  2008.
+
 \bibitem{Bove}
 Ana Bove and Peter Dybjer.
 \newblock {\em

@@ -133,15 +133,18 @@
 % Define what’s in your document
 %---------------------------------------------------------------------------------
 \usepackage{xcolor}% http://ctan.org/pkg/xcolor
-\definecolor{gray_ulisses}{gray}{0.55}
+\definecolor{gray_ulisses}{gray}{0.7}
 \definecolor{castanho_ulisses}{rgb}{0.71,0.33,0.14}
 \definecolor{preto_ulisses}{rgb}{0.41,0.20,0.04}
-\definecolor{green_ulises}{rgb}{0.2,0.75,0}
-\definecolor{dark_yello}{rgb}{0.42, 0.93, 0.93}
-\definecolor{kw_pink}{rgb}{0.858, 0.188, 0.478}
+\definecolor{green_ulises}{rgb}{0.3,0.75,0.1}
+\definecolor{dark_yellow}{RGB}{247, 191, 9}
+\definecolor{kw_pink}{RGB}{155, 82, 121}
 \definecolor{kw_green}{RGB}{0,102,51}
+\definecolor{vgreen}{RGB}{123, 135, 21}
 \definecolor{kw_ground}{RGB}{204,102,0}
 \definecolor{kw_orange}{RGB}{255, 128, 0}
+\definecolor{kw_blue}{RGB}{99, 178, 161}
+\definecolor{kw_red}{RGB}{255, 51, 51} %{211, 78, 63}
 
 \lstdefinelanguage{Idris} {
   morekeywords={->,=,:},
@@ -161,17 +164,17 @@
   {[1]
     ->,=,:
   },
-  emphstyle={[1]\color{w_orange}\textbf},
+  emphstyle={[1]\color{castanho_ulisses}\textbf},
   emph=
   {[2]
     Bool,Char,List,Vect,Nat,Type,Int,Maybe,String,Fin
   },
-  emphstyle={[2]\color{kw_ground}\textbf},
+  emphstyle={[2]\color{kw_orange}\textbf},
   emph=
   {[3]
     case,of,proof,with,data,record,where,import,in,module,if,then,else,total,\%default,?
   },
-  emphstyle={[3]\color{kw_green}\textbf},
+  emphstyle={[3]\color{kw_red}\textbf},
   % emph=
   % {[4]
   %   quot,rem,div,mod,elem,notElem,seq
@@ -179,9 +182,9 @@
   % emphstyle={[4]\color{castanho_ulisses}\textbf},
   emph=
   {[4]
-    False,Just,LT,Left,Nothing,Right,True,Show,Eq,Ord,Num
+    True,False,Just,Nothing,Refl,LTE
   },
-  emphstyle={[4]\color{castanho_ulisses}\textbf}
+  emphstyle={[4]\color{kw_green}\textbf}
 }
 \newcommand\inl{\lstinline}
 
