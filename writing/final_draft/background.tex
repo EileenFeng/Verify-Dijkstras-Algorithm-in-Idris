@@ -63,9 +63,9 @@ A function definition is provided on the line below the function type. In Idris,
 \end{lstlisting}
 
 \subsubsection*{Data Types}
-User defined data types are supported in Idris. To define a data type, we need to provide the name and type of the data type starting with the keyword \inl{data}, followed by the id of the data type and the type of the data type. On the next few lines we define the constructors for this data type. Below provides the definition of the natural number type \inl{Nat} in Idris. 
+User defined data types are supported in Idris. To define a data type, we need to provide the name and type of the data type starting with the keyword \inl{data}, followed by the id and the type of the data type. On the next few lines we define the constructors for this data type. Below provides the definition of the natural number type \inl{Nat} in Idris. 
 \begin{lstlisting}
-      -- natural number can be either zero, written as `Z', or successor of another natural number `n', written as `S n'
+      -- natural number can be either zero, written as `Z', or the successor of another natural number `n', written as `S n'
       data Nat : Type where
         Z : Nat
         S : (n : Nat) -> Nat 
@@ -81,7 +81,7 @@ Idris allows data types to be parameterized. The data type defined below shows t
 
 
 \subsubsection*{Dependent Types}
-Dependent types are types that depend on elements of other types\cite{Bove}. They allow programmers to specify certain properties of data types explicitly in their type signature. The following example provides a definition of a vector data type, which is indexed by the vector length \texttt{len} and parameterized over the element type \texttt{elem}.
+Dependent types are types that depend on elements of other types\cite{Bove}. They allow programmers to specify certain properties of data types explicitly in their type. The following example provides a definition of a vector data type, which is indexed by the vector length \texttt{len} and parameterized over the element type \texttt{elem}.
 \begin{lstlisting}
       -- declaration of Vect data type in Idris standard library
       data Vect : (len : Nat) -> (elem : Type) -> Type where
@@ -91,7 +91,7 @@ Dependent types are types that depend on elements of other types\cite{Bove}. The
                Vect (S len) elem
 \end{lstlisting}
 
-The type \inl{Vect len elem} is dependent on the value of type variables \texttt{len} and \texttt{elem}, which means a \inl{Vect} of length $3$ and $4$ are considered as different types. Dependent types allow programmers to obtain more confidence in a function's correctness by specifying its expected behaviors in its type. For instance, consider a function \texttt{concat} that concatenates two \inl{Vect}, whose type signature is presented below. 
+The type \inl{Vect len elem} is dependent on the value of type variables \texttt{len} and \texttt{elem}, which means two \inl{Vect}s of length 3 and 4 are considered as different types, and two \inl{Vect}s of same length but with element type \inl{Nat} and \inl{Char} are considered as different types. Dependent types allow programmers to obtain more confidence in a function's correctness by specifying its expected behaviors in its type. For instance, consider a function \texttt{concat} that concatenates two \inl{Vect}, whose type signature is presented below. 
 \begin{lstlisting}
       concat : Vect n elem -> Vect m elem -> resultType
 \end{lstlisting}

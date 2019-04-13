@@ -1,18 +1,13 @@
 \lstset{
-  language=Haskell, 
-  backgroundcolor=\color{white}
-  frame=single,                    
-  keepspaces=true,                 
-  keywordstyle=\color{blue},
-  basicstyle=\fontsize{9}{11}\selectfont\ttfamily,
-  breaklines=true, 
-  commentstyle=\color{orange}, 
+  language=Idris, 
+  morekeywords={->,=,:},
+  backgroundcolor=\color{white},
+  keywordstyle=\color{kw_orange},
   showtabs=false,     
   showspaces=false,                
   showstringspaces=false,             
-  tabsize=2
+  tabsize=2  
 }
-
 \subsection{Data Structures}
 Key structures of our implementation include \texttt{WeightOps}, \texttt{Distance}, \texttt{Graph}, and \texttt{Column}. Our implementation allows edge weight type to be user defined, with \texttt{WeightOps} specifying all the properties of \texttt{weight} that user needs to provide. Below presents the definition of \texttt{WeightOps}. 
 \newline

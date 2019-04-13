@@ -10,17 +10,17 @@ Our implementation and correctness proof are based on the following definitions 
 \\\\
 A path from node $v$ to $w$ is a finite alternating sequence of adjacent vertices of G, which does not contain any repeated edge or vertex. A path from $v$ to $w$ has the form: 
 \begin{center}
- $vv_0v_2....v_{n-1}w$ 
+ $vv_0v_1....v_{n-1}w$ 
 \end{center}
 where each adjacent nodes $v_{i-1}, v_i$ has an edge from $v_{i-1}$ to $v_i$ in G. We denote the set of paths from $v$ to $w$ as $path(v, w)$.
 \end{definition}
 \tab
 \begin{definition}\textbf{Prefix of Path}\\
-Given a path from node $v$ to $w$ : $path(v, w) = vv_0v_2....v_{n-1}w$, the prefix of this $v-w$ path is defined as a subsequence of $path(v, w)$ that starts with $v$ and ends with some node $w' \in path(v, w)$ ($w'$ is a vertex in the sequence $path(v, w)$). 
+Given a path from node $v$ to $w$ : $path(v, w) = vv_0v_1....v_{n-1}w$, the prefix of this $v-w$ path is defined as a subsequence of $path(v, w)$ that starts with $v$ and ends with some node $w' \in path(v, w)$ ($w'$ is a vertex in the sequence $path(v, w)$). 
 \end{definition}
 \tab
 \begin{definition}\textbf{Length of Path} \\
-The length of a path $p = vv_0v_2....v_{n-1}w$ is the sum of the weights of all edges in $p$. We write: 
+The length of a path $p = vv_0v_1....v_{n-1}w$ is the sum of the weights of all edges in $p$. We write: 
 \begin{center}
   $length(p) = \sum weight(v_{i-1}, v_i), \forall v_{i-1}, v_i \in p$ where $(v_{i-1}, v_i) \in G$. 
 \end{center} 

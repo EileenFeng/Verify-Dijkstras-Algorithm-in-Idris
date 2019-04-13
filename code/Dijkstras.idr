@@ -342,6 +342,15 @@ unexpReverse cl@(MKColumn g src (S len) unexp dist) v ve
 
 
 
+allExp : (g : Graph gsize weight ops) ->
+         (src : Node gsize) ->
+         (nodes : Vect gsize (Node gsize)) -> 
+         (dist : Vect gsize (Distance weight)) -> 
+         Not (CElem v (runDijkstras (MKColumn g src gsize nodes dist)))
+allExp g src nodes dist celem {gsize} with (runDijkstras (MKColumn g src gsize nodes dist)) proof isNil
+  | (MKColumn g src Z Nil _) = absurd $ noEmptyElem celem
+
+
 
 {- dist value of (getMin cl) does not change after runHelper: (nodeDistN (getMin cl) cl) = nodeDistN (getMin cl) (runHelper cl) -}
 
@@ -839,7 +848,7 @@ dijkstras_correctness : (gsize : Nat) ->
                         dEq ops (indexN (finToNat (getVal v)) (dijkstras gsize g src nadj) {p=nvLTE {gsize=gsize} (getVal v)}) (length psv) = True
 dijkstras_correctness Z g src _ _ _ _ = absurd $ NodeZAbsurd src
 dijkstras_correctness (S len) g src v psv spsv nadj {weight} {ops}
-  = (l5_sp {cl=runDijkstras col} (correctness col nadj lemma2_ih base_stm)) v ?exp psv spsv
+  = (l5_sp {cl=runDijkstras col} (correctness col nadj lemma2_ih base_stm)) v (allExp g src nodes dist) psv spsv
   where
     nodes : Vect (S len) (Node (S len))
     nodes = mknodes (S len) (S len) lteRefl (rewrite (minusRefl {a=S len}) in Nil)
