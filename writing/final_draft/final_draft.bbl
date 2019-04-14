@@ -84,4 +84,10 @@ Jean-Christophe Filliâtre.
   Shortest Path Algorithm}.
 \newblock \href{http://toccata.lri.fr/index.en.html}{Toccata}, 2007.
 
+\bibitem{Jean&Takei}
+Jean-Christophe~Filliâtre Yuto~Takei.
+\newblock \href{http://toccata.lri.fr/gallery/bellman_ford.en.html}{A proof of
+  Bellman-Ford algorithm}.
+\newblock \href{http://toccata.lri.fr/index.en.html}{Toccata}.
+
 \end{thebibliography}

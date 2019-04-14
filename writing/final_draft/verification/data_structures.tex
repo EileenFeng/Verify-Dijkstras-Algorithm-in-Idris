@@ -47,7 +47,7 @@ using (weight : type)
     		  (b : weight) -> 
     		  add a b = add b a
 \end{lstlisting}
-The type constructor of \texttt{WeightOps} takes in the userdefined edge weight type and returns a type, and the data contructor \texttt{MKWeight}, which takes in all the properties specified by the projection functions, builds the \texttt{WeightOps weight} type. As Dijkstra's algorithm requires non-negative edge weights, the user-defined edge weight type is required to fulfill triangle inequality, as specified by the \texttt{triangle\_ineq} function. 
+The type constructor of \texttt{WeightOps} takes in the user-defined edge weight type and returns a type, and the data constructor \texttt{MKWeight}, which takes in all the properties specified by the projection functions, builds the \texttt{WeightOps weight} type. As Dijkstra's algorithm requires non-negative edge weights, the user-defined edge weight type is required to fulfill triangle inequality, as specified by the \texttt{triangle\_ineq} function. 
 \\
 
 As we assume the input graph is a connected graph, the value of edge weight between two adjacent nodes are considered as not infinity, whereas Dijkstra's algorithm initializes the distance value from source node to all other nodes in the graph as infinity. Consider that the value of edge weight is not infinity, and Dijkstra's algorithm requires a representation of infinity value, we define a \texttt{Distance} type to represent the distance value between two nodes. \st{Distance} is parameterized over the user-defined \st{weight} type, and the value of \st{Distance weight} can be either infinity or sum of \st{weight}s. The definition of \st{Distance} data type is provided below. 
@@ -63,16 +63,16 @@ The data constructor \st{DInf} builds a value of \st{Distance weight} that repre
 We also defined data structures to represent graph and its main components, such as \texttt{Node, nodeset} and \texttt{Path}. Definition of each data types are specified below. 
 \\
 
-The \texttt{Node} type reprensents a node in the graph. As presented in the definition of \texttt{Node} below, the type constructor of \texttt{Node} takes in a \texttt{Nat} that specifies the size of the input graph (i.e., the number of nodes in the graph), and the data constructor \texttt{MKNode} takes in a \texttt{Fin n} type, which carries a natural number that is strictly smaller than \texttt{n}, and builds a node of type \texttt{Node n}. Such construction ensures that the natural number value carried by each node is strictly smaller than the size of the graph. As the value carried by each \texttt{Node} type is used to index distance value in the graph, this ensures that each indexing is in-bound. Below presents the definition of \texttt{Node} type. Any well-typed \texttt{Node n} is a valid node in a graph of size \texttt{n}, and any valid node in the graph must have a correcsponding \texttt{Node n} value. 
+The \texttt{Node} type represents a node in the graph. As presented in the definition of \texttt{Node} below, the type constructor of \texttt{Node} takes in a \texttt{Nat} that specifies the size of the input graph (i.e., the number of nodes in the graph), and the data constructor \texttt{MKNode} takes in a \texttt{Fin n} type, which carries a natural number that is strictly smaller than \texttt{n}, and builds a node of type \texttt{Node n}. Such construction ensures that the natural number value carried by each node is strictly smaller than the size of the graph. As the value carried by each \texttt{Node} type is used to index distance value in the graph, this ensures that each indexing is in-bound. Below presents the definition of \texttt{Node} type. Any well-typed \texttt{Node n} is a valid node in a graph of size \texttt{n}, and any valid node in the graph must have a corresponding \texttt{Node n} value. 
 
 \begin{lstlisting}
 		data Node : Nat -> Type where
 		  MKNode : Fin n -> Node n
 \end{lstlisting}
 
-We define a \texttt{nodeset} type to carry the set of pairs of adjacent node and corresponding edge weight for a specifi node. As the number of neighboring nodes is undecidable for each node in the input graph, \texttt{nodeset} is defined as a \texttt{List} rather than a \texttt{Vect}. 
+We define a \texttt{nodeset} type to carry the set of pairs of adjacent node and corresponding edge weight for a specific node. As the number of neighboring nodes is undecidable for each node in the input graph, \texttt{nodeset} is defined as a \texttt{List} rather than a \texttt{Vect}. 
 \\
-\texttt{Graph} is defined based on \texttt{Node} and \texttt{ndoeset}. The type of \texttt{Graph} carries a \texttt{Nat} that specifies the size of the graph, the user defined edge weight \texttt{weight}, and \texttt{WeightOps weight} that carries properties of the edge weight type. Data constructor \texttt{MKGraph} takes in the graph size, denotes as \texttt{gsize}, the type of edge weight \texttt{weight}, \texttt{WeightOps weight}, and a vector of \texttt{gsize} number of \texttt{nodeset}s, one for each node in the graph. As the definiton of \texttt{Node} type ensures that a node is valid if and only if it has a corresponding value of type \texttt{Node gsize}, it is not necessary for the \texttt{Graph} data type to carry a list of all nodes in the graph. Below are the definition of \texttt{nodeset} and \texttt{Graph} types. 
+\texttt{Graph} is defined based on \texttt{Node} and \texttt{nodeset}. The type of \texttt{Graph} carries a \texttt{Nat} that specifies the size of the graph, the user defined edge weight \texttt{weight}, and \texttt{WeightOps weight} that carries properties of the edge weight type. Data constructor \texttt{MKGraph} takes in the graph size, denotes as \texttt{gsize}, the type of edge weight \texttt{weight}, \texttt{WeightOps weight}, and a vector of \texttt{gsize} number of \texttt{nodeset}s, one for each node in the graph. As the definition of \texttt{Node} type ensures that a node is valid if and only if it has a corresponding value of type \texttt{Node gsize}, it is not necessary for the \texttt{Graph} data type to carry a list of all nodes in the graph. Below are the definition of \texttt{nodeset} and \texttt{Graph} types. 
 
 \begin{lstlisting}
 	nodeset : (gsize : Nat) -> (weight : Type) -> Type
@@ -124,7 +124,7 @@ We defined a \texttt{Column} type to represent one column of the matrix generate
 	             Column len g src
 
 \end{lstlisting}
-Such definition of \texttt{Column} data type provides enough information for us to calculate the current unexplored nodes with minimum distance value, and the updated distance values for all nodes for the next column. Given an input graph of size \texttt{gsize}, the first column in the matrix should have length \texttt{gsize} as all nodes are unexplored, and the last column of the matrix should contain an empty vector for unexlored nodes, as well as a vector of the minimum value from source to all nodes in the graph. 
+Such definition of \texttt{Column} data type provides enough information for us to calculate the current unexplored nodes with minimum distance value, and the updated distance values for all nodes for the next column. Given an input graph of size \texttt{gsize}, the first column in the matrix should have length \texttt{gsize} as all nodes are unexplored, and the last column of the matrix should contain an empty vector for unexplored nodes, as well as a vector of the minimum value from source to all nodes in the graph. 
 \\
 
 

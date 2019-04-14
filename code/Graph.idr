@@ -42,6 +42,10 @@ using (weight : Type)
               eq w1 w2 = True -> 
               eq w2 w3 = True -> 
               eq w1 w3 = True
+    gteEq : {a, b : weight} -> 
+            (gtew a b = True) -> 
+            (gtew b a = True) -> 
+            eq a b = True
     gteRefl : {a : weight} -> (gtew a a = True)
     gteReverse : {a, b : weight} -> (p : gtew a b = False) -> gtew b a = True
     gteComm : {a, b, c : weight} ->
@@ -52,6 +56,16 @@ using (weight : Type)
                   (c : weight) ->
                   (p1 : gtew a b = False) ->
                   gtew (add a c) (add b c) = False
+    gtePlus : {a, b : weight} -> 
+              (c : weight) -> 
+              gtew a b = True -> 
+              gtew (add c a) b = True
+    gtePlusEq : {w1, w2, w3 : weight} -> 
+                (dp : weight) -> 
+                (b : Bool) -> 
+                (gtew (add dp w2) w1 = b) -> 
+                (eq w2 w3 = True) -> 
+                gtew (add dp w3) w1 = b
     triangle_ineq : (a : weight) -> (b : weight) -> gtew (add a b) a = True
     gtewPlusFalse : (a, b : weight) -> gtew a (add b a) = False
     gtewEqTrans : {w1, w2, w3 : weight} -> (eq w1 w2 = True) -> (b : Bool) -> (gtew w2 w3 = b) -> gtew w1 w3 = b
@@ -285,7 +299,7 @@ dgteEq : {ops : WeightOps weight} ->
 dgteEq {d1=DInf} {d2=DInf} e1 e2 = Refl
 dgteEq {d1=DInf} {d2=DVal w2} e1 e2 = e2
 dgteEq {d1=DVal w1} {d2=DInf} e1 e2 = e1
-dgteEq {d1=DVal w1} {d2=DVal w2} e1 e2 = ?egteEq
+dgteEq {d1=DVal w1} {d2=DVal w2} e1 e2 {ops} = gteEq ops e1 e2
 
 
 
@@ -301,8 +315,7 @@ dgtePlus {d1=DInf} {d2=DVal w} DInf e = Refl
 dgtePlus {d1=DInf} {d2=DVal w} (DVal _) e = Refl
 dgtePlus {d1=DVal _} {d2= DInf} d3 e = absurd $ trueNotFalse (sym e)
 dgtePlus {d1=DVal v1} {d2=DVal v2} DInf e = Refl
-dgtePlus {d1=DVal v1} {d2=DVal v2} (DVal v3) e = ?dgtePlus_w
-
+dgtePlus {d1=DVal v1} {d2=DVal v2} (DVal v3) e {ops} = gtePlus ops v3 e
 
 
 
@@ -313,15 +326,34 @@ dgtePlusEq : {ops : WeightOps weight} ->
              (dgte ops (dplus ops dv_plus d2) d1= b) ->
              (eq : dEq ops d2 d3 = True) ->
              dgte ops (dplus ops dv_plus d3) d1 = b
+dgtePlusEq DInf True de e = Refl
 dgtePlusEq DInf False de e = absurd $ trueNotFalse de
-dgtePlusEq DInf True _ _ = Refl
-dgtePlusEq (DVal val) _ _ _ = ?dgtePlusEq_rhs_1
-{--- not yet used
-dgteEqPlus : {ops : WeightOps weight} ->
-             {d1, d2 : Distance weight} ->
-             (dv_plus : Distance weight) ->
-             (deq : dEq ops d1 d2 = True) ->
-             dgte ops (dplus ops dv_plus d2) d1 = True
+dgtePlusEq {d1=DInf} {d2=DInf} {d3=DInf} (DVal val) True de e = Refl
+dgtePlusEq {d1=DInf} {d2=DInf} {d3=DInf} (DVal val) False de e = de
+dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DInf} (DVal val) True de e = Refl
+dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DInf} (DVal val) False de e = de
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal val) True de e = Refl
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal val) False de e = sym e
+dgtePlusEq {d1=DInf} {d2=DInf} {d3=DVal d3} (DVal val) True de e = e
+dgtePlusEq {d1=DInf} {d2=DInf} {d3=DVal d3} (DVal val) False de e = Refl
+dgtePlusEq {d1=DVal d1} {d2=DVal d2} {d3=DInf} (DVal val) True de e = Refl
+dgtePlusEq {d1=DVal d1} {d2=DVal d2} {d3=DInf} (DVal val) False de e = sym e
+dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DVal d3} (DVal val) True de e = absurd $ trueNotFalse (sym e)
+dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DVal d3} (DVal val) False de e = absurd $ trueNotFalse de
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DVal d3} (DVal val) True de e = de
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DVal d3} (DVal val) False de e = Refl
+dgtePlusEq {d1=DVal d1} {d2=DVal d2} {d3=DVal d3} (DVal val) b de e {ops} = gtePlusEq ops val b de e 
+
+
+{-
+dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DInf} (DVal dp) True de e = ?dd5
+dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DInf} (DVal dp) False de e = ?dd6
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) True de e = ?dd7
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) False de e = ?dd71
+dgtePlusEq {d1=DInf} {d2=DInf} {d3=DVal d3} (DVal dp) True de e = ?dd12
+dgtePlusEq {d1=DInf} {d2=DInf} {d3=DVal d3} (DVal dp) False de e = ?dd13
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) True de e = ?dd14
+dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) False de e = ?dd15
 -}
 
 
@@ -750,8 +782,77 @@ natEqRefl {n=Z} = Refl
 natEqRefl {n=S n'} = natEqRefl {n=n'}
 
 
+
+
+natGteEq : {a, b : Nat} -> 
+           (e1 : gte a b = True) -> 
+           (e2 : gte b a = True) -> 
+           (a == b) = True
+natGteEq {a=Z} {b=Z} e1 e2 = Refl
+natGteEq {a=S a'} {b=Z} e1 e2 = e2
+natGteEq {a=Z} {b=S b'} e1 e2 = e1
+natGteEq {a=S a'} {b=S b'} e1 e2 = natGteEq {a=a'} {b=b'} e1 e2
+
+
+natEqComm : {n1, n2 : Nat} -> 
+            (n1 == n2 = True) -> 
+            (n2 == n1) = True
+natEqComm {n1=Z} {n2=Z} e = Refl
+natEqComm {n1=Z} {n2=S _} e = e
+natEqComm {n1=S _} {n2=Z} e = e
+natEqComm {n1=S x} {n2=S y} e = natEqComm {n1=x} {n2=y} e
+
+
+natEqTrans : {a, b, c : Nat} -> 
+             (a==b) = True -> 
+             (b==c) = True -> 
+             (a==c) = True
+natEqTrans {a=Z} {b=Z} {c=Z} e1 e2 = Refl
+natEqTrans {a=S a'} {b=Z} {c=Z} e1 e2 = e1
+natEqTrans {a=Z} {b=S b'} {c=Z} e1 e2 = Refl
+natEqTrans {a=Z} {b=Z} {c=S c'} e1 e2 = e2
+natEqTrans {a=S a'} {b=S b'} {c=Z} e1 e2 = e2
+natEqTrans {a=S a'} {b=Z} {c=S c'} e1 e2 = absurd $ trueNotFalse (sym e1)
+natEqTrans {a=Z} {b=S b'} {c=S c'} e1 e2 = e1
+natEqTrans {a=S a'} {b=S b'} {c=S c'} e1 e2 = natEqTrans {a=a'} {b=b'} {c=c'} e1 e2
+
+
+lte_succLeft : (a, b, c : Nat) -> 
+               lte b (plus c a) = True -> 
+               lte b (S (plus c a)) = True
+lte_succLeft Z Z Z e = Refl
+lte_succLeft (S a) Z Z e = Refl
+lte_succLeft Z (S b) Z e = absurd $ trueNotFalse (sym e)
+lte_succLeft (S a) (S b) Z e = lte_succLeft a b Z e
+lte_succLeft (S a) Z (S c) e = Refl
+lte_succLeft Z (S b) (S c) e = lte_succLeft Z b c e
+lte_succLeft Z Z (S c) e = Refl
+lte_succLeft (S a) (S b) (S c) e = lte_succLeft (S a) b c e
+
+
+natGtePlus : {a, b : Nat} -> 
+             (c : Nat) -> 
+             gte a b = True -> 
+             gte (plus c a) b = True
+natGtePlus Z e {a} = e
+natGtePlus (S c') e {a} {b} = lte_succLeft a b c' $ natGtePlus c' e
+{-
+--natGtePlus {a=Z} {b=Z} Z e = Refl
+natGtePlus {a=Z} {b=Z} (S c') e = Refl
+--natGtePlus {a=S a'} {b=Z} Z e = Refl
+natGtePlus {a=S a'} {b=Z} (S c') e = ?d4
+--natGtePlus {a=Z} {b=S b'} Z e = ?d5  
+natGtePlus {a=Z} {b=S b'} (S c') e = ?d6  
+--natGtePlus {a=S a'} {b=S b'} Z e = ?d7  
+natGtePlus {a=S a'} {b=S b'} (S c') e = ?d8
+      -}   
+
 natOps : WeightOps Nat
-natOps = MKWeight Z gte (==) plus natEqRefl ?eqComm ?eqTrans nat_gteRefl nat_gte_reverse nat_gte_comm nat_gteBothPlus nat_tri ?gtewPlusFalseN ?gtewEqTransN plusCommutative
+natOps = MKWeight Z gte (==) plus 
+                  natEqRefl natEqComm natEqTrans
+                  natGteEq nat_gteRefl nat_gte_reverse nat_gte_comm 
+                  nat_gteBothPlus natGtePlus ?gtePlusENs 
+                  nat_tri ?gtewPlusFalseN ?gtewEqTransN plusCommutative
 
 
 eg : Graph 4 Nat Graph.natOps

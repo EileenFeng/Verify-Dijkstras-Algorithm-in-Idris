@@ -679,7 +679,7 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
                                                                                                 (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw}
                                                                                                              {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl)))
         | No expU with (v == u) proof v_is_u
-          | True with (adj_getPrev adj_x_u)
+          | True  with (adj_getPrev adj_x_u)
             | x with (checkUnexplored x (runHelper cl)) proof x_exp
              | Yes unexpX =  dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
                                 $ dgtePlus (DVal $ get_weight (getNeighbors g x) u adj_x_u)
