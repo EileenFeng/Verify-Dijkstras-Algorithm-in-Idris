@@ -224,7 +224,7 @@ runDgteMin (MKColumn g src (S len) unexp dist) (MKNode nf) {gsize} {ops} {weight
 
 
 
-
+{-
 -- proof of `nodeDistN min cl = nodeDistN min (runHelper cl)
 distMinEq : (g : Graph gsize weight ops) ->
             (nodes : Vect m (Node gsize)) ->
@@ -236,11 +236,11 @@ distMinEq : (g : Graph gsize weight ops) ->
 distMinEq g Nil Nil mval {p} = absurd $ succNotLTEzero p
 distMinEq g (n :: ns) (d :: ds) Z {ops}
   with (dgte ops d (dplus ops (edgeW g n n) d)) proof dComp
-    | True = absurd $ contradict (sym dComp) (dgtePlusAbsurd d (edgeW g n n))
+    | True = ?ddd --absurd $ contradict (sym dComp) (dgtePlusAbsurd d (edgeW g n n))
     | False = dEqRefl
 distMinEq g (n :: ns) (d :: ds) (S mv) {p=LTESucc p'}
   = distMinEq g ns ds mv {p=p'}
-
+-}
 
 
 minDist_preserve : {g : Graph gsize weight ops} ->

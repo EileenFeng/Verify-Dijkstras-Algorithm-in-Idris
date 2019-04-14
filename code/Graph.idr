@@ -67,9 +67,9 @@ using (weight : Type)
                 (eq w2 w3 = True) -> 
                 gtew (add dp w3) w1 = b
     triangle_ineq : (a : weight) -> (b : weight) -> gtew (add a b) a = True
-    gtewPlusFalse : (a, b : weight) -> gtew a (add b a) = False
     gtewEqTrans : {w1, w2, w3 : weight} -> (eq w1 w2 = True) -> (b : Bool) -> (gtew w2 w3 = b) -> gtew w1 w3 = b
     addComm : (a : weight) -> (b : weight) -> add a b = add b a
+    --gtewPlusFalse : (a, b : weight) -> gtew a (add b a) = False
 
 
 -- any value added to infinity should be infinity
@@ -377,7 +377,7 @@ dgteReplace : {ops : WeightOps weight} ->
               dgte ops d2 d3 = b
 dgteReplace b neq deq = rewrite (sym deq) in neq 
  
-
+{-
 dgtePlusAbsurd : {ops : WeightOps weight} ->
                  (d1, d2 : Distance weight) ->
                  dgte ops d1 (dplus ops d2 d1) = False
@@ -387,7 +387,7 @@ dgtePlusAbsurd (DVal v1) (DVal v2) {ops}
   with (gtew ops v1 (add ops v2 v1)) proof notTrue
     | True = absurd $ contradict (sym notTrue) (gtewPlusFalse ops v1 v2)
     | False = Refl
-
+-}
 
 -- d1 <= DInf -> d1 + (DVal w) <= DInf
 dvalNotInf : {ops : WeightOps weight} ->
@@ -836,23 +836,48 @@ natGtePlus : {a, b : Nat} ->
              gte (plus c a) b = True
 natGtePlus Z e {a} = e
 natGtePlus (S c') e {a} {b} = lte_succLeft a b c' $ natGtePlus c' e
-{-
---natGtePlus {a=Z} {b=Z} Z e = Refl
-natGtePlus {a=Z} {b=Z} (S c') e = Refl
---natGtePlus {a=S a'} {b=Z} Z e = Refl
-natGtePlus {a=S a'} {b=Z} (S c') e = ?d4
---natGtePlus {a=Z} {b=S b'} Z e = ?d5  
-natGtePlus {a=Z} {b=S b'} (S c') e = ?d6  
---natGtePlus {a=S a'} {b=S b'} Z e = ?d7  
-natGtePlus {a=S a'} {b=S b'} (S c') e = ?d8
-      -}   
 
+
+natRefl : (a, b : Nat) -> 
+            (a == b) = True ->
+            a = b
+natRefl Z Z e = Refl
+natRefl (S a) Z e = absurd $ trueNotFalse (sym e)
+natRefl Z (S b) e = absurd $ trueNotFalse (sym e)
+natRefl (S a) (S b) e = cong $ natRefl a b e
+
+
+natGtePlusEq : {n1, n2, n3 : Nat} -> 
+               (np : Nat) -> 
+               (b : Bool) -> 
+               gte (plus np n2) n1 = b -> 
+               (n2 == n3) = True -> 
+               gte (plus np n3) n1 = b
+natGtePlusEq {n2} {n3} np b ge e = rewrite (sym $ natRefl n2 n3 e) in ge
+
+natGteEqTrans : {a, b, c : Nat} -> 
+                (a == b) = True ->
+                (bl : Bool) -> 
+                (gte b c = bl) -> 
+                gte a c = bl
+natGteEqTrans {a} {b} e bl ge = rewrite (natRefl a b e) in ge
+
+{-
+natGtePlusF : (a, b : Nat) -> 
+              gte a (plus b a) = False
+natGtePlusF Z Z = ?l
+natGtePlusF (S a) Z = ?nn
+natGtePlusF Z (S b) = ?nnb
+natGtePlusF (S a) (S b) = ?mmml
+-}
+                  
+                  
 natOps : WeightOps Nat
 natOps = MKWeight Z gte (==) plus 
                   natEqRefl natEqComm natEqTrans
                   natGteEq nat_gteRefl nat_gte_reverse nat_gte_comm 
-                  nat_gteBothPlus natGtePlus ?gtePlusENs 
-                  nat_tri ?gtewPlusFalseN ?gtewEqTransN plusCommutative
+                  nat_gteBothPlus natGtePlus natGtePlusEq 
+                  nat_tri natGteEqTrans plusCommutative
 
 
 eg : Graph 4 Nat Graph.natOps
