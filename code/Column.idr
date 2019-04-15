@@ -24,7 +24,7 @@ elem_insert_mid (There e) = There $ There e
 
 {-------------------- Column Definition -------------------------}
 
-data Column : Nat -> (Graph gsize weight ops) -> (Node gsize) -> Type where
+data Column : (len : Nat) -> (g : Graph gsize weight ops) -> (src : Node gsize) -> Type where
   MKColumn : (g : Graph gsize weight ops) ->
              (src : Node gsize) ->
              (len : Nat) ->

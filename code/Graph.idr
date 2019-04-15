@@ -415,8 +415,8 @@ dgte_false_notEq {d1= DVal v1} {d2=DVal v2} refl e = ?df3
 
 
 
-data Node : Nat -> Type where
-  MKNode : Fin n -> Node n
+data Node : (gsize : Nat) -> Type where
+  MKNode : (nv : Fin gsize) -> Node gsize
 
 
 implementation Uninhabited  (Node Z) where

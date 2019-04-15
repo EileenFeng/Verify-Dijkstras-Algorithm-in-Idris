@@ -238,7 +238,7 @@ Idris allows holes in a proof which stands for incomplete parts of a program, fo
     Holes: Example.check
 \end{lstlisting}
 
-The types of arguments of \inl{checkEven} is presented above the dash line in the terminal output, and the expected return type, which is the type of the \inl{check} hole, is presented below the dash line. The information provided by the terminal output shows that the type of \st{check} relies on the value of \texttt{(checkEven n)}, which indicates that matching on the value of \st{(checkEven n)} with \st{with} rule might provide more insights in writing this proof, as presented below. 
+The types of arguments of \inl{checkEven} is presented above the dash line in the terminal output, and the expected return type, which is the type of the \inl{check} hole, is presented below the dash line. The information provided by the terminal output shows that the value of \inl{(checkEven n)} might effect the type of \st{check}, which indicates that matching on the value of \st{(checkEven n)} with \st{with} rule might provide more insights in writing this proof, as presented below. 
 \begin{lstlisting}
     checkEvenPrf : (n : Nat) -> 
                    (checkEven n = True) -> 
