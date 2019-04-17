@@ -1,0 +1,47 @@
+\paragraph{Lemma 3 - \inl{l3_preserveDelta}}
+\tab\\\\
+In verifying Dijkstra's correctness, it is important to show that forall nodes \inl{v} in the input graph, once the distance value calculated for \inl{v} is equal to the minimum distance value from the source node to \inl{v}, then the distance value of \inl{v} does not change through the execution of the algorithm. This is proved by Lemma \ref{4.3} in the mathematical proof of Dijkstra's algorithm, and implemented by the function \inl{l3_preserveDelta} below (the proof of \inl{l3_preserveDelta} is provided in later paragraphs). 
+\begin{lstlisting}
+		l3_preserveDelta : {g : Graph gsize weight ops} ->
+		                   (cl : Column (S len) g src) ->
+		                   (l2_ih : neDInfPath cl) ->
+		                   (v : Node gsize) ->
+		                   (psv : Path src v g) ->
+		                   (spsv : shortestPath g psv) ->
+		                   (eq : dEq ops (nodeDistN v cl) (length psv) = True) ->
+		                   dEq ops (nodeDistN v (runHelper cl)) (length psv) = True
+\end{lstlisting}
+
+\inl{l3_preserveDelta} states that given a \inl{Column} named \inl{cl}, for any node \inl{v} in graph, if the distance value of \inl{v} stored in \inl{cl} is equal to the length of a shortest path (named as \inl{psv}) from source node \inl{src} to \inl{v} in \inl{g} (stated by the input \inl{eq : dEq ops (nodeDistN v cl) (length psv) = True}), then the distance value of \inl{v} stored in \inl{runHelper cl} is also equal to the length of \inl{psv}. Since the proof of Lemma 4.3 is based on Lemma 4.2 as we mentioned at the beginning of Section \ref{lemmas}, the proof of property \inl{neDInPath} on \inl{cl} is provided by the input \inl{l2_ih : neDInfPath cl}. 
+\\
+
+We implement the proof of \inl{l3_preservDelta} by contradiction, which requires a proof that shows the distance value stored for all node is non-increasing after each call of \inl{runHelper}. The function \inl{runDecre} provided below states this property. We provide a detailed discussion on the implementation of \inl{runDecre} as it presents how we approach the proofs of some key lemmas in our verification. Specifically, we break the statement that we want to prove into smaller ones by destructing the data structures involved in the statement, so that the implementation of functions that involve more complex data types can be built on functions that deal with simpler data types. The following explanation on the implementation of \inl{runDecre} illustrates this technique. 
+\begin{lstlisting}
+		runDecre : {g : Graph gsize weight ops} ->
+		           (cl : Column (S len) g src) ->
+		           (v : Node gsize) ->
+		           dgte ops (nodeDistN v cl) 
+		           			(nodeDistN v (runHelper cl)) = True
+		runDecre (MKColumn g src (S len) unexp dist) (MKNode nv) {gsize} {ops} {weight}
+		  = distDecre g min_node min_dist (mkNodes gsize) dist (finToNat nv) {p=nvLTE nv}
+		  where
+		   ...
+\end{lstlisting}
+
+The return type of the \inl{runDecre} function specifies that for all node \inl{v}, the distance value stored for \inl{v} in \inl{cl} is either decreasing, or maintains the same after each call of \inl{runHelper} on \inl{cl}. Since \inl{runDecre} involves the \inl{Column} data type, and the main field in \inl{Column} that concerns us here is the \inl{Vect} of distance values, the implementation of \inl{runDecre} is built on a function \inl{distDecre}, which states the same non-increasing property of distance values calculated, however involves the \inl{Vect} of distance values instead. The implementation of \inl{distDecre} is presented below. (explain finToNat)
+\begin{lstlisting}
+		distDecre : (g : Graph gsize weight ops) ->
+		            (mn : Node gsize) ->
+		            (min_dist : Distance weight) ->
+		            (nodes : Vect m (Node gsize)) ->
+		            (dist : Vect m (Distance weight)) ->
+		            (nv : Nat) ->
+		            {auto p : LT nv m} ->
+		            dgte ops (indexN nv dist) 
+		            		 (indexN nv (updateDist g mn min_dist nodes dist)) = True
+		...
+		distDecre g mn min_dist (n :: ns) (d :: ds) Z 
+			= calcDistEq g mn n min_dist d
+\end{lstlisting}
+
+Similarly, the property specified by \inl{distDecre} is again break down into a statement on the distance value of a specific node in the graph, as specified by the \inl{calcistEq} function.

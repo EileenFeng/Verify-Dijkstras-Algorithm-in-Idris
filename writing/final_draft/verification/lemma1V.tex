@@ -1,0 +1,64 @@
+\paragraph{Lemma 1 - \inl{l1_prefixSP}} \label{lemma1V}
+\tab\\\\
+Lemma 4.1 states that the prefix of a shortest path is also a shortest path. In section \ref{definitions}, we provide the following definition for the prefix of a path.
+\begin{definition}{Prefix of Path}\\
+Given a path from node $v$ to $w$ : $path(v, w) = vv_0v_1....v_{n-1}w$, the prefix of this $v-w$ path is defined as a subsequence of $path(v, w)$ that starts with $v$ and ends with some node $w' \in path(v, w)$ ($w'$ is a vertex in the sequence $path(v, w)$). 
+\end{definition}
+
+Specifically, a prefix of a path is a subsequence of this path, and has the same start node (i.e., the first node in a path) as the path. Based on the above mathematical definition of path prefix, and our \inl{Path} data type defined in section \ref{path}, we first define a \inl{append} function that concatenates two paths by appending one path to the beginning of the other path, and then implement the prefix of a path based on the \inl{append} function. The following presents the implementation of \inl{append} and \inl{pathPrefix}. 
+\begin{lstlisting}s
+      append : (p1 : Path s v g) ->
+               (p2 : Path v w g) ->
+               Path s w g
+
+      pathPrefix : (pprefix : Path s w g) ->
+                   (p : Path s v g) ->
+                   Type
+      pathPrefix pprefix p {w} {v} {g} 
+      	= (ppost : Path w v g ** append pprefix ppost = p)
+\end{lstlisting}
+ 
+The type of \inl{append} function specifies that, given a path \inl{p1} from node \inl{s} to \inl{v} in \inl{g}, and a path \inl{p2} from node \inl{v} to \inl{w} in \inl{g}, the result of appending \inl{p1} to the head of \inl{p2} is a path from node \inl{s} to \inl{w} in \inl{g}. Notice that the ending node \inl{v} in \inl{p1} is exactly the starting node of \inl{p2}, and the resulting path of appending \inl{p1} to \inl{p2} (i.e., return value of \inl{append p1 p2}) starts from the same node as \inl{p1}, and ends at the same node as \inl{p2}. Then according to our definition of prefix of a path above, the first input path \inl{p1} is actually a prefix of the return value of \inl{append p1 p2}. 
+\\
+
+The \inl{pathPrefix} function is a predicate stating that the first input path \inl{pprefix} is a prefix of the second input path \inl{p}. \inl{(v ** P)} is the syntax for dependent pairs, which states that the second element \inl{P} in the pair is dependent on the value of the first element \inl{v}. Dependent pairs are used to represent existential quantification in Idris. For instance, the dependent pair \inl{(n : Nat ** Vect n Nat)} states the existence of a natural number \inl{n}, such that \inl{n} is the length of the \inl{Vect} included as the second element of the pair. In the definition of \inl{pathPrefix}, as \inl{pprefix} is the prefix of \inl{p}, then there only exists one path (with type \inl{Path w v g}) such that the result of appending \inl{pprefix} to this path is \inl{p}. This is specified by the dependent pair \inl{(ppost : Path w v g ** append pprefix ppost = p)} in our definition, which quantified a specific path \inl{ppost} with type \inl{Path w v g} such that the result of \inl{append pprefix ppost} is \inl{p}, and hence the path \inl{pprefix} is a prefix of \inl{p}. 
+\\
+
+Given the definition of \inl{pathPrefix} above and definition of shortest path in section \ref{path}, the implementation of Lemma 4.1 is provided below. 
+\begin{lstlisting}
+  shorter_trans : {g : Graph gsize weight ops} ->
+                (p1 : Path s w g) ->
+                (p2 : Path s w g) ->
+                (p3 : Path w v g) ->
+                (p : dgte ops (length p1) (length p2) = False) ->
+                dgte ops (length $ append p1 p3) 
+                         (length $ append p2 p3) = False
+
+
+  l1_prefixSP : {g: Graph gsize weight ops} ->
+                {s, v, w : Node gsize} ->
+                {sp : Path s v g} ->
+                {sp_pre : Path s w g} ->
+                (shortestPath g sp) ->
+                (pathPrefix sp_pre sp) ->
+                (shortestPath g sp_pre)
+  l1_prefixSP spath (post ** appendRefl) lp_pre {ops} {sp_pre}
+    with (dgte ops (length lp_pre) (length sp_pre)) proof lpsp
+      | True = Refl
+      | False = absurd $ contradict (spath (append lp_pre post))
+                                    (rewrite (sym appendRefl) in 
+                                      (shorter_trans 
+                                        lp_pre sp_pre post (sym lpsp)))
+\end{lstlisting}
+
+The type of the \inl{l1_prefixSP} states that, given an input graph \inl{g}, nodes \inl{s, v, w}, a path \inl{sp} from \inl{s} to \inl{v} in \inl{g} (as specifies by the type \inl{Path s v g}), the prefix of \inl{sp} from \inl{s} to \inl{w} (named as \inl{sp_pre}), if \inl{sp} is a shortest path from \inl{s} to \inl{v}, as specifies by \inl{shortestPath g sp}, then the prefix \inl{sp_pre} of \inl{sp} is also a shortest path from \inl{s} to \inl{w} in \inl{g}. 
+\\
+
+The definition of \inl{shortestPath} allows us to bring into scope a variable \inl{lp_pre} with type \inl{Path s w g} that quantifies over any path from \inl{s} to \inl{w} in \inl{g}. We approach the proof of \inl{l1_prefixSP} by matching on the value of \inl{(dgte ops (length lp_pre) (length sp_pre))}, which compares the length of \inl{lp_pre} against the length of the prefix \inl{sp_pre} of \inl{sp}. 
+\\
+
+When \inl{(dgte ops (length lp_pre) (length sp_pre))} is matched to \inl{True}, this indicates that the length of any path from \inl{s} to \inl{w} is longer than or equal to the length of \inl{sp_pre}, then \inl{sp_pre} is a shortest path from \inl{s} to \inl{w} based on the definition of shortest path. 
+\\
+
+When \inl{(dgte ops (length lp_pre) (length sp_pre))} is matched to \inl{False}, this indicates that the length of \inl{lp_pre} is smaller than the length of \inl{sp_pre}, i.e., \inl{length(lp_pre) < length(sp_pre)}. Since \inl{sp_pre}, \inl{lp_pre} are both paths from \inl{s} in \inl{w} in \inl{g}, and appending \inl{sp_pre} to \inl{ppost} gives us the path \inl{sp} from \inl{s} to \inl{v} (\inl{sp_pre} is the prefix of \inl{sp}), then we can construct another path \inl{p' : Path s v g} from \inl{s} to \inl{v} by appending \inl{lp_pre} to \inl{ppost}, whose length is smaller than that of \inl{sp} as we conclude \inl{length(lp_pre) < length(sp_pre)} before. As indicated by the type of \inl{shorter_trans} provided above, \inl{(shorter_trans lp_pre sp_pre post (sym lpsp))} is a proof that shows, since we know \inl{length(lp_pre) < length(sp_pre)}, then the length of the path obtained by appending \inl{lp_pre} to \inl{ppost} (the length \inl{p'}), is smaller than the length of the path obtained by appending \inl{sp_pre} to \inl{ppost} (the length of \inl{p}). This contradicts with the statement that \inl{p} is a shortest path from \inl{s} to \inl{v} in \inl{g}(specified by \inl{shortestPath sp p}). Hence with prove by contradiction we can show that the case when \inl{(dgte ops (length lp_pre) (length sp_pre))} is matched to \inl{False} is impossible, i.e., the length of \inl{sp_pre} is smaller than or equal to the length of any other \inl{s} to \inl{w} path in \inl{g}, and that \inl{sp_pre} is a shortest path from \inl{s} to \inl{v} in \inl{g}. Proof of \inl{l1_prefixSP} is completed. 
+\\
