@@ -1,8 +1,8 @@
 %-----------------------------------------------------------------------------------------------
 % Dijkstra's lemma 4.2
 %-----------------------------------------------------------------------------------------------
-\begin{sublemma}
-After the $n^{th}$ iteration for $n \geq 1$, forall node $v \in explored_{n+1}$, if $dist_{n+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path, i.e, $path(s, v) \neq \emptyset$.  
+\begin{sublemma} \label{lemma4.2}
+Forall node $v \in g$, $n \geq 0$, if $dist_{n+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path, i.e, $path(s, v) \neq \emptyset$.  
 \end{sublemma}
 \begin{proof}
 We will prove \texttt{Lemma 4.2} by inducting on the number of iterations. 
@@ -12,7 +12,7 @@ Let P(n) be: After the $n^{th}$ iteration, $n \geq 1$, for all node $v \in g$, i
 \paragraph*{Base Case}: We shall show P(1) holds. 
 \\
 Based on the algorithm, initially $dist_1[s] = 0$ and for all node $v \in g, v \neq s, dist_1[v] = \infty$, then $s$ is the only node whose distance value is not infinity. Based on the definition of path, the path from the source node $s$ to itself is $s$, $path(s, s) = \{s\}$. Hence P(1) holds. 
-\paragraph*{Inductive Hypothesis}: Suppose $\forall i, 1 \leq i \leq k$, P(i) holds. That is, after the $i^{th}$ iteration, $1 \leq i \leq k$, for all nodes $v \in g$, if $dist_{i+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path. 
+\paragraph*{Inductive Hypothesis}: Suppose $\forall i, 1 \leq i \leq k$, P(i) holds. That is, for all nodes $v \in g$, if $dist_{i+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some $s-v$ path. 
 
 \paragraph*{Inductive Step}: We shall show P(k+1) holds.
 \\

@@ -1,19 +1,4 @@
-\lstset{
-  language=Haskell, 
-  backgroundcolor=\color{white}
-  frame=single,                    
-  keepspaces=true,                 
-  keywordstyle=\color{blue},
-  basicstyle=\fontsize{8}{11}\selectfont\ttfamily,
-  breaklines=true, 
-  commentstyle=\color{orange}, 
-  showtabs=false,     
-  showspaces=false,                
-  showstringspaces=false,             
-  tabsize=2
-}
-
-\subsection{Verification of Correctness}
+\subsubsection{Verification of Correctness}
 The implementation of lemma proofs in the previous section shows that if certain properties, such as those specified by the function \texttt{l5\_stms}, holds for the current column \texttt{cl}, then they must hold for the new column generated based on \texttt{cl}. With the proofs of the lemmas, we are able to define the below recursive function, \texttt{correctness}, which specifies that given a column \texttt{cl} relating to an input graph \texttt{g} and source node \texttt{src}, if all properties stated by \texttt{neDInfPath} and \texttt{l5\_stms} hold for \texttt{cl} (specified by \texttt{l2\_ih} and \texttt{l5\_ih} inputs), then the properties should also hold after calling \texttt{runDijkstras} on \texttt{cl}. We updates the inputs to the next recursive call by applying lemmas to \texttt{l2\_ih} and \texttt{l5\_ih}, which is indeed equivalent to the inductive steps in our theoretical proofs of Dijkstra's algorithm provided back in Section 4. 
 \\
 \begin{lstlisting}

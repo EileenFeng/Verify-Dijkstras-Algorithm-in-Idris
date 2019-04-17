@@ -50,6 +50,7 @@
 % Additional settings
 %---------------------------------------------------------------------------------
 
+% adding extra level of sections
 
 %---------------------------------------------------------------------------------
 % Define your margins
@@ -143,12 +144,12 @@
 \definecolor{vgreen}{RGB}{123, 135, 21}
 \definecolor{kw_ground}{RGB}{204,102,0}
 \definecolor{kw_orange}{RGB}{255, 128, 0}
-\definecolor{kw_blue}{RGB}{99, 178, 161}
+\definecolor{kw_blue}{RGB}{0,102,204}
 \definecolor{kw_red}{RGB}{255, 51, 51} %{211, 78, 63}
 
 \lstdefinelanguage{Idris} {
-  morekeywords={->,=,:},
-  basicstyle=\fontsize{10}{12}\selectfont\ttfamily,
+  %morekeywords={->,=,:},
+  basicstyle=\fontsize{10}{11}\selectfont\ttfamily,
   sensitive=true,
   morecomment=[l][\color{blue}]{--},
   morecomment=[s][\color{blue}]{\{-}{-\}},
@@ -164,7 +165,7 @@
   {[1]
     ->,=,:
   },
-  emphstyle={[1]\color{castanho_ulisses}\textbf},
+  emphstyle={[1]\color{kw_red}\textbf},
   emph=
   {[2]
     Bool,Char,List,Vect,Nat,Type,Int,Maybe,String,Fin
@@ -182,9 +183,14 @@
   % emphstyle={[4]\color{castanho_ulisses}\textbf},
   emph=
   {[4]
-    True,False,Just,Nothing,Refl,LTE
+    True,False,Just,Nothing,Refl,LTE,FZ,FS,Z,S
   },
   emphstyle={[4]\color{kw_green}\textbf}
+  % emph=
+  % {[5]
+  %   Graph, Column, Node, nodeset, WeightOps
+  % },
+  % emphstyle={[5]\color{kw_blue}\textbf}
 }
 \newcommand\inl{\lstinline}
 
@@ -226,7 +232,7 @@
 \tab\\
 \vspace{1.5cm}
 \LARGE
-\text{\uppercase{Verification of Shortest Path Algorithms}}\\
+\text{\uppercase{Verification of Dijkstra's Algorithm}}\\
 \text{\uppercase{ in Idris}}
 
 \Large
@@ -317,8 +323,9 @@ Advisor: Richard A. Eisenberg
 \section{Background}
 \import{./}{background}
 
-\section{Overview of Algorithms Implementations and Proofs of Correctness}
-\subsection{Dijkstra's Algorithm}
+\section{Overview of Dijkstra's Implementation and Proof of Correctness}
+This section provides an overview of our Dijkstra's implementation and mathematical proof of correctness. Section \ref{definitions} provides definitions of key concepts used in our work, and Section \ref{lemmas} presents the lemmas of our proof. The lemma statements and the proofs on Lemma \ref{lemma4.1} and Lemma \ref{lemma4.3} are 
+
 \import{dijkstras_highlevel/}{data_structure}
 
 \import{dijkstras_highlevel/}{definitions}
@@ -332,11 +339,9 @@ Advisor: Richard A. Eisenberg
 %---------------------------------------------------------------------------------
 
 \section{Concrete Implementation of Dijkstra's Verification}
-Our verification program consists three parts: data structures, implementation of Dijkstra's algorithm, and verification of the implementation. We implemented Dijkstra's algorithm with a matrix representation, where each column of the matrix represents one iteration of the algorithm and carries the source node, current list of unexplored nodes, and distance values of all nodes calculated by the algorithm. New column is then calculated based on the existing columns, and the last column calculated is the output, which contains the minimum distance values from source to all nodes in the graph. Implementation details are provided in the following sections. 
 \import{verification/}{data_structures.tex}
 \import{verification/}{implementation.tex}
-\import{verification/}{lemmas.tex}
-\import{verification/}{correctness.tex}
+\import{verification/}{verification.tex}
 
 
 %----------------------------------------------------------------------------------------

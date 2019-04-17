@@ -403,6 +403,14 @@ indexClEq : {g : Graph gsize weight ops} ->
             nodeDistN u cl = nodeDistN v cl
 indexClEq cl v u eq = rewrite eq in Refl
 
+
+{-
+nDInfIsSrc : {g : Graph gsize wieght ops} ->
+             {v, src : Node gsize} ->
+             (ne : dgte ops (indexN (finToNat (getVal v)) (mkdists gsize src ops) {p=nvLTE $ getVal v}) DInf = False) ->
+             v = src
+-}
+
 {-
 index_mkNodesEq : {gsize : Nat} ->
                   (w : Node gsize) ->

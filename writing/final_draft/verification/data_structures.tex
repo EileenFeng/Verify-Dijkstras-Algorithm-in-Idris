@@ -8,8 +8,11 @@
   showstringspaces=false,             
   tabsize=2  
 }
-\subsection{Data Structures}
-Our implementation of Dijkstra's algorithm allows user-defined edge weight type, with a \inl{WeightOps} data type specifying the operations and properties of the edge weight type that user needs to provide. Below presents part of the definition of \inl{WeightOps}. 
+\subsection{Data Structures} \label{code_structs}
+\subsubsection{The \inl{WeightOps} data type}
+Our implementation of Dijkstra's algorithm allows user-defined edge weight type, with a \inl{WeightOps} data type specifying the operations and properties of the edge weight type that user needs to provide. \inl{WeightOps} is similar to an interface for the user-defined weight type, except that it also includes properties of the weight type besides the operators. 
+
+Below presents part of the definition of \inl{WeightOps}. 
 \begin{lstlisting}
       using (weight : type)
         record WeightOps weight where
@@ -24,17 +27,18 @@ Our implementation of Dijkstra's algorithm allows user-defined edge weight type,
           add : weight -> weight -> weight
           ...
           triangle_ineq : (a : weight) -> 
-                  (b : weight) -> gtew (add a b) a = True
+                          (b : weight) -> 
+                          gtew (add a b) a = True
           ...
           addComm : (a : weight) -> 
-                (b : weight) -> 
-                add a b = add b a
+                    (b : weight) -> 
+                    add a b = add b a
 \end{lstlisting}
 
 \inl{WeightOps} is defined as a record data type, which allows programmers to collect several values (referred as record's fields) together. \inl{WeightOps} is parameterized over the user-defined edge weight type \inl{weight}. The \inl{MKWeight} constructor takes in all the fields and build a \inl{WeightOps weight} type. The field name can be used to access the field value. For instance given a value \inl{ops} of \inl{WeightOps weight} type, \inl{add ops} will gives the addition operator for the \inl{weight} data type. 
 \\
 
-The \inl{zero} field stands for the zero value for the \inl{weight} type, and \inl{gtew, eq, add} are basic operators for \inl{weight}. The \inl{triangle_ineq} field in \inl{WeightOps} ensures that the value of \inl{weight} data type can only be non-negative. Given any two values \inl{a, b} of type \inl{weight}, \inl{triangle_ineq} specifies that the sum of \inl{a, b} is greater than or equal to either of them, which guarantees that both \inl{a, b} have non-negative values. The remaining fields in \inl{WeightOps} are required for Dijkstra's implementation and verification. 
+The \inl{zero} field stands for the zero value for the \inl{weight} type, and \inl{gtew, eq, add} are basic operators for \inl{weight}. The \inl{triangle_ineq} field in \inl{WeightOps} ensures that the value of \inl{weight} data type can only be non-negative. Given any two values \inl{a, b} of type \inl{weight}, \inl{triangle_ineq} specifies that the sum of \inl{a, b} is greater than or equal to either of them, which guarantees that both \inl{a, b} have non-negative values. The remaining fields in \inl{WeightOps} are required for Dijkstra's implementation and verification, for instance the \inl{addComm} property (which states commutativity for the \inl{add} operator) is later applied in one of the helper functions in proving Lemma \ref{lemma4.1} in Section \ref{lemma1V}.
 \\
 
 As we assume the input graph is a connected graph, the value of edge weight between two adjacent nodes are considered as not infinity, whereas Dijkstra's algorithm initializes the distance value from source node to all other nodes in the graph as infinity. Based on this consideration, we define a \texttt{Distance} type to represent the distance value between two nodes. \st{Distance} is parameterized over the user-defined \st{weight} type, and the value of \st{Distance weight} is either infinity, or sum of \st{weight}s. The definition of \st{Distance} data type is provided below. 
@@ -47,6 +51,7 @@ As we assume the input graph is a connected graph, the value of edge weight betw
 The data constructor \st{DInf} builds a value of \st{Distance weight} that represents infinity distance, and \st{DVal} carries a value \st{val} of type \st{weight}, which is the sum of one or more \st{weight}s. Arithmetic operators for the \inl{Distance weight} type is defined based on operators of \inl{weight}.
 \\
 
+\subsubsection{Data Types for \inl{Node}, \inl{nodeset}, and \inl{Graph}} \label{graph}
 The size of a graph is defined as the number of nodes in the graph, and all nodes in a graph is enumerated by natural numbers starting from zero. For instance given a graph of size 3, each node in the graph is represented by a natural number in the range from zero to two, with three nodes in total. Given a graph \inl{G} of size \inl{gsize}, the \inl{Node} type is indexed by graph size \inl{gsize} and carries a value that is strictly less than \inl{gsize}. A \inl{nodeset} is defined as a \inl{List} of pairs of adjacent nodes and corresponding edge weights for each node in the graph, and the definition of \inl{Graph} data type contains a vector of \inl{nodeset}s for all nodes in the graph. The definition of \inl{Node}, \inl{nodeset} and \inl{Graph} data structure are presented below. 
 \begin{lstlisting}
       -- definition of Node
@@ -72,9 +77,20 @@ The \inl{Node gsize} type is indexed by a \inl{Nat}, \inl{gsize}, and stands for
 Such construction ensures that, given a graph \inl{G} of type \inl{`Graph gsize weight ops'} (graph size is \inl{gsize} and edge weight type is \inl{weight}), any well-typed \inl{`Node gsize'} value is a valid node in \inl{G}, and the that there are only \inl{gsize} possible values of the type \inl{`Node gsize'} as restricted by the \inl{`Fin gsize'} type, which ensures that a graph of size \inl{gsize} indeed has \inl{gsize} nodes. In addition, since the elements of vector \inl{edges} in \inl{G} has type \inl{`nodeset gsize weight'}, all \inl{nodeset}s in \inl{G} can only contain valid nodes. More importantly, as our implementation uses the value carried by each \inl{Node} to index its \inl{nodeset} in the graph, for each node with type \inl{`Node gsize'} in \inl{G}, the value with type \inl{`Fin gsize'} carried by this node is guaranteed to be a bounded index for the vector \inl{edges} in \inl{G} (as \inl{edges} has length \inl{gsize}). 
 \\
 
-A path in a graph is defined as a sequence of non-repeating nodes, where each two adjacent nodes have an edge in this graph. A path can contain only one node, as specified by the \inl{Unit} data constructor below, or multiple nodes, as the \inl{Cons} data constructor allows a new path to be constructed from an existing path. Specifically, given a path from node \inl{s} to \inl{v}, if \inl{n} is an adjacent to \inl{v} (\inl{adj g v n} denotes that there is an edge from \inl{v} to \inl{n} in the graph \inl{g}), then we can obtain a new path from \inl{s} to \inl{n} by appending the node \inl{n} to the end of the existing \inl{s}-to-\inl{v} path. 
-
+Based on the above construction, a node \inl{m} is considered as adjacent to a node \inl{n} in a graph \inl{g} if \inl{m} is in the \inl{nodeset} of \inl{n}. The definition of adjancent nodes is provided below. 
 \begin{lstlisting}
+      adj : (g : Graph gsize weight ops) ->
+            (n, m : Node gsize) -> 
+            Type
+      adj g n m = (inNodeset m (getNeighbors g n) = True)
+\end{lstlisting}
+
+The \inl{getNeighbors} function takes in a graph \inl{g} and a node \inl{n}, and gets the \inl{nodeset} of \inl{n} in \inl{g}, and the \inl{inNodeset} function takes in a node and a \inl{nodeset}, and returns true fi the input node is in the input nodeset, returns false otherwise. The definition of \inl{adj} above states that \inl{m} is adjacent to \inl{n} in \inl{g} if we can find \inl{m} in the \inl{nodeset} of \inl{n} in \inl{g}. 
+\\
+
+\subsubsection{\inl{Path} and shortest \inl{Path}} \label{path}
+A path in a graph is defined as a sequence of non-repeating nodes, where each two adjacent nodes have an edge in this graph. A path can contain only one node, as specified by the \inl{Unit} data constructor below, or multiple nodes, as the \inl{Cons} data constructor allows a new path to be constructed from an existing path. Specifically, given a path from node \inl{s} to \inl{v}, if \inl{n} is an adjacent to \inl{v} (\inl{adj g v n} specifies that there is an edge from \inl{v} to \inl{n} in the graph \inl{g}), then we can obtain a new path from \inl{s} to \inl{n} by appending the node \inl{n} to the end of the existing \inl{s}-to-\inl{v} path. 
+\begin{lstlisting} 
       data Path : Node gsize ->
                   Node gsize ->
                   Graph gsize weight ops -> Type where
@@ -87,7 +103,18 @@ A path in a graph is defined as a sequence of non-repeating nodes, where each tw
                Path s n g
 \end{lstlisting}
 
-The length of a path is defined as the sum of the weights of all edges in the graph. A shortest path from node \texttt{s} to \texttt{v} is then defined as a path whose length is smaller than or equal to any other \texttt{s}-to-\texttt{v} paths in the graph, as presented below. 
+To implement a shortest path in a graph, recall in section \ref{definitions}, we define the length of a path as the sum of the weights of all edges in the path, and define a shortest path as follows:
+\\
+\tab Denote $\Delta(s, v)$ as a shortest path from $s$ to $v$, and $\delta(v)$ as the length of $\Delta(s, v)$. $\Delta(s, v)$ must fulfills: 
+\begin{center}
+$\Delta(s, v) \in path(s, v)$ 
+\\
+and 
+\\
+$\forall p' \in path(s, v)$, $length(\Delta(s, v)) = \delta(v) \leq length(p')$
+\end{center}
+
+The above definition specifies that given a shortest path $\Delta(s, v)$, the length of $\Delta(s, v)$ is smaller than or equal to the length of any other $s-to-v$ path in the graph. We then provide the following implementation of shortest path based on the above definition. 
 
 \begin{lstlisting}
       shortestPath : (g : Graph gsize weight ops) ->
@@ -98,10 +125,11 @@ The length of a path is defined as the sum of the weights of all edges in the gr
           dgte ops (length lp) (length sp) = True
 \end{lstlisting}
 
-\inl{shortesPath} is a type synonym that defines a shortest path. It takes in a graph \inl{g}, and a path \inl{sp} from node \inl{s} to inl{v} in \inl{g}. The type returned by \inl{shortestPath} specifies that, given any path \inl{lp} from \inl{s} to \inl{v} in \inl{g}, the length of \inl{lp} must be greater than or equal to the length of \inl{sp}. \inl{dgte} is the greater than or equal to operator for \inl{Distance} data type. 
+The statement stated by the return type of \inl{shortestPath} is highly similar to our mathematical definition of shortest path above. Specifically, given a graph \inl{g}, and a path \inl{sp} from node \inl{s} to inl{v} in \inl{g}, the return type of \inl{shortestPath} specifies that, given any path \inl{lp} from \inl{s} to \inl{v} in \inl{g}, the length of \inl{lp} must be greater than or equal to the length of \inl{sp}. \inl{dgte} is the greater than or equal to operator for \inl{Distance} data type. 
 \\
 
-As we mentioned back in Section 2, our implementation viewed Dijkstra's algorithm as generating a matrix, where each column in the matrix represents one state of the algorithm, we define a \texttt{Column} data type for this purpose. The definition of \texttt{Column} type is provided below. 
+\subsubsection{The \inl{Column} data type} \label{column}
+As we mentioned back in section \ref{pseudo}, our implementation viewed Dijkstra's algorithm as generating a matrix, where each column in the matrix represents one state of the algorithm, we define a \texttt{Column} data type for this purpose. The definition of \texttt{Column} type is provided below. 
 
 \begin{lstlisting}
       data Column : (len : Nat) -> (g : Graph gsize weight ops) -> (src : Node gsize) -> Type where

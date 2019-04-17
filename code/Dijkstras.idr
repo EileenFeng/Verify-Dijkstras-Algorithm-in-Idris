@@ -59,11 +59,11 @@ ndist (MKNode nv) dist = looseIndex nv dist DInf
 
 {- working version 1 hard to prove with recursion -}
 calcDist : (g : Graph gsize weight ops) ->
-             (min_node : Node gsize) ->
-             (cur : Node gsize) ->
-             (min_dist : Distance weight) ->
-             (cur_dist : Distance weight) ->
-             Distance weight
+           (min_node : Node gsize) ->
+           (cur : Node gsize) ->
+           (min_dist : Distance weight) ->
+           (cur_dist : Distance weight) ->
+           Distance weight
 calcDist g min_node cur min_dist cur_dist
   = min ops cur_dist (dplus ops (edgeW g min_node cur) min_dist)
 
@@ -75,11 +75,11 @@ calcDist g min_node cur min_dist cur_dist
 
 
 updateDist :  (g : Graph gsize weight ops) ->
-               (min_node : Node gsize) ->
-               (min_dist : Distance weight) ->
-               (nodes : Vect m (Node gsize)) ->
-               (dist : Vect m (Distance weight)) ->
-               Vect m (Distance weight)
+              (min_node : Node gsize) ->
+              (min_dist : Distance weight) ->
+              (nodes : Vect m (Node gsize)) ->
+              (dist : Vect m (Distance weight)) ->
+              Vect m (Distance weight)
 updateDist g min_node min_dist Nil Nil = Nil
 updateDist g min_node min_dist (x :: xs) (d :: ds)
   = (calcDist g min_node x min_dist d) :: (updateDist g min_node min_dist xs ds)
@@ -131,11 +131,11 @@ dijkstras gsize g src nadj {weight} {ops} = cdist $ runDijkstras cl
 -- helper proofs of Dijkstras
 {- proof of calcDist -}
 calcDistEq : (g : Graph gsize weight ops) ->
-               (min_node : Node gsize) ->
-               (cur : Node gsize) ->
-               (min_dist : Distance weight) ->
-               (cur_dist : Distance weight) ->
-               dgte ops cur_dist (calcDist g min_node cur min_dist cur_dist) = True
+             (min_node : Node gsize) ->
+             (cur : Node gsize) ->
+             (min_dist : Distance weight) ->
+             (cur_dist : Distance weight) ->
+             dgte ops cur_dist (calcDist g min_node cur min_dist cur_dist) = True
 calcDistEq g min_node cur min_dist cur_dist {ops}
   with (dgte ops cur_dist (dplus ops (edgeW g min_node cur) min_dist)) proof sdist
     | True = sym sdist
@@ -260,13 +260,15 @@ minDist_preserve (MKColumn g src (S len) unexp dist) {gsize} {weight} {ops}
 
 
 
-
+{-
 updateDistEq : {g : Graph gsize weight ops} ->
                (cl : Column (S len) g src) ->
                (v : Node gsize) ->
                nodeDistN v (runHelper cl) = min ops (nodeDistN v cl)
                                                     (dplus ops (edgeW g (getMin cl) v)
                                                                (nodeDistN (getMin cl) cl))
+-}
+
 
 
 updateDistEqT : {g : Graph gsize weight ops} ->
@@ -396,7 +398,7 @@ neDInfPath : {g : Graph gsize weight ops} ->
              Type
 neDInfPath cl {g} {src} {ops} {gsize}
   = (v : Node gsize) ->
-    dgte ops (nodeDistN v cl) DInf = False ->
+    (ne : dgte ops (nodeDistN v cl) DInf = False) ->
     (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
 
 {-
@@ -439,6 +441,9 @@ l2_existPath cl l2_ih w wclNotDInf {g} {ops}
                                                     (dgteReplace False wclNotDInf (updateDistEqT cl w $ sym cur_lt_sum)))) proof minPath
                              --(rewrite (updateDistEqT cl w $ sym cur_lt_sum) in wclNotDInf))
         | (psmin ** notInf) = ?l2
+        {-with (inNodeset w (getNeighbors g (getMin cl))) proof isAdj
+            | True = ?l2t
+            | False = ?l2f -}
     | False = rewrite (updateDistEqF cl w $ sym cur_lt_sum) in (l2_ih w (rewrite (sym (updateDistEqF cl w $ sym cur_lt_sum)) in wclNotDInf))
 
 
@@ -475,7 +480,7 @@ distIsDelta cl {g} {gsize} {ops} {src}
 -}
 
 
--- (ihD v psv psv_sp) gives `dEq ops (nodeDistN v cl) (length psv) = True` ([E1])
+-- (l2_ih v psv psv_sp) gives `dEq ops (nodeDistN v cl) (length psv) = True` ([E1])
 -- (pathlenNotDInf (nodeDIstN v cl) psv (ihD v psv psv_sp)) gives `dgte ops (nodeDistN v cl) DInf = False`
 -- (runDecre cl v) gives `dgte ops (nodeDistN v cl) (nodeDistN (runHelper cl)) = True` ([R])
 -- dgteDInfTrans (nodeDistN v cl) (nodeDistN v (runHelper vl)) (pathlenNotDInf (nodeDistN v cl) psv (ihD v psv psv_sp)) (runDecre cl v))
@@ -669,7 +674,7 @@ l5_stm3 : {g : Graph gsize weight ops} ->
           (st1 : lessDInf (runHelper cl)) ->
           (st2 : distv_min (runHelper cl)) ->
           unexpDelta (runHelper cl)
-l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src=w} (Unit _ _) spsw = ?l53Impossible
+l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src=w} (Unit g w) spsw = ?l53Impossible
 l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src} (Cons (Unit g src) w adj_src_w) spsw = ?l52Base
 l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons psx u adj_x_u) w adj_uw) spsw {g} {ops}
   with (getMin cl == v) proof min_is_v
@@ -681,7 +686,7 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
         | No expU with (v == u) proof v_is_u
           | True  with (adj_getPrev adj_x_u)
             | x with (checkUnexplored x (runHelper cl)) proof x_exp
-             | Yes unexpX =  dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
+              | Yes unexpX =  dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
                                 $ dgtePlus (DVal $ get_weight (getNeighbors g x) u adj_x_u)
                                            (l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v x expVR unexpX psx
                                                    (l1_prefixSP {sp= Cons psx u adj_x_u} {sp_pre = psx}
@@ -689,10 +694,10 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
                                                                   {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl))
                                                      ((adj_to_path adj_x_u) ** Refl)))
 
-             | No expX with (u == x) proof u_is_x
-               | True = absurd $ contradict (adj_sameNode (nodeEq {a=u} {b=x} $ sym u_is_x) adj_x_u) (nadj x)
-               | False with (l2_existPath cl l2_ih v (st1 v expVR))
-                     | (lpsv ** rclvEq) = rewrite (sym $ indexClEq (runHelper cl) v u (nodeEq {a=v} {b=u} $ sym v_is_u)) in
+              | No expX with (u == x) proof u_is_x
+                | True = absurd $ contradict (adj_sameNode (nodeEq {a=u} {b=x} $ sym u_is_x) adj_x_u) (nadj x)
+                | False with (l2_existPath cl l2_ih v (st1 v expVR))
+                  | (lpsv ** rclvEq) = rewrite (sym $ indexClEq (runHelper cl) v u (nodeEq {a=v} {b=u} $ sym v_is_u)) in
                                                   (dgtePlus {d1=dplus ops (DVal (get_weight (getNeighbors g x) u adj_x_u)) (length psx)}
                                                    {d2=nodeDistN u (runHelper cl)}
                                                    (DVal $ get_weight (getNeighbors g u) w adj_uw)
@@ -721,8 +726,6 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
                                                                                                    (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw}
                                                                                                                 {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl))
                                                                                                                                                 ((adj_to_path adj_x_u) ** Refl))))))
-
-
           | False = dgteComm (dgteComm {d1=dplus ops (DVal $ get_weight (getNeighbors g u) w adj_uw) (length (Cons psx u adj_x_u))}
                              {d2=nodeDistN w cl}
                              {d3=nodeDistN v cl}
@@ -764,7 +767,7 @@ l5_stm4 : {g : Graph gsize weight ops} ->
           (st2 : distv_min (runHelper cl)) ->
           (st3 : unexpDelta (runHelper cl)) ->
           expDistIsDelta (runHelper cl)
-l5_stm4 cl nadj l2_ih l5_ih st1 st2 st3 v expVR {src=v} (Unit _ _) spsv = ?l5_unit
+l5_stm4 cl nadj l2_ih l5_ih st1 st2 st3 v expVR {src=v} (Unit g v) spsv = ?l5_unit
 l5_stm4 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 st3 v expVR (Cons psw v adj_wv) spsv {g} {ops} {src}
   with (getMin cl == v) proof min_is_v
     | True with (l2_existPath cl l2_ih v (st1 v expVR))
@@ -857,7 +860,7 @@ dijkstras_correctness (S len) g src v psv spsv nadj {weight} {ops}
     col : Column (S len) g src
     col = (MKColumn g src (S len) nodes dist)
     lemma2_ih : neDInfPath col
-    lemma2_ih v notInf = ?lemma2
+    lemma2_ih v notInf = ?lemma2--((rewrite (nDInfIsSrc notInf) in (Unit src g)) ** (DVal $ zero ops))
     base_stm : l5_stms col
     base_stm = ?base
 

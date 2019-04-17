@@ -1,4 +1,4 @@
-\subsubsection{Data Structures}
+\subsection{Data Structures}
 Dijkstra's algorithm requires non-negative edge weights and valid input graph, and the data structures in our implementation are designed to ensure these properties of input values. An overview of data structures in our implementation is presented below, and a detailed description is provided under Section 5. 
 \\
 
@@ -7,7 +7,7 @@ Denote \texttt{gsize} as the size of graph, i.e. the number of vertices in a gra
 
 The type of edge weight is user-defined in our implementation. Specifically, we define a \texttt{WeightOps} data type, which carries a user-specified type for the edge weight, along with operators and properties proofs for this type, which includes arithmetic operators, proof of non-negative value, and proof of plus associativity. As all edge weight are non-negative, and we assume a connected input graph, all edge weight should be non-negative and not equal infinity, whereas Dijkstra's algorithm initialize the distance value of all nodes in the graph (except the source node) as infinity. Based on this consideration we defined a \inl{Distance} data type in addition to the user-defined edge weight type. \inl{Distance} is parameterized over the user-defined weight type and can have value of either infinity, or the sum of edge weights. 
 
-% \subsubsection{Assumptions}
+% \subsection{Assumptions}
 % Our implementation is based on the following assumptions. 
 % \begin{enumerate}
 %   \item Weight of edges are positive

@@ -7,9 +7,6 @@ The increasing importance of Dijkstra's algorithm in many real-world application
 Klasen et. al. verifies Dijkstra's algorithm with the KeY system \cite{Klasen}, an interactive theorem prover for Java. Concrete implementations of Dijkstra's algorithm with different variants are provided, and all of them are written in Java. Similarly to the work by Mange and Kuhn, the verification process in the work by Klasen involves describing the behavior of each function with preconditions, postconditions and modifies clause. Loop invariants are specified to support the verification. A function is then verified as correct by the KeY system, with respect to its behavior specifications, if the postconditions specified hold after execution. A similar implementation is provided by Filliâtre, a senior researcher from the National Center for Scientific Research(CNRS), which verifies Dijkstra's implementation with Why3, a deductive program verification platform that relies on external theorem provers \cite{Jean}\cite{why3}. 
 \\
 
-The only work found concerning verification of Bellman-Ford algorithm is by Filliâtre and Takei, who verified the Bellman-Ford algorithm with Why3, and the concrete implementation of the verification program is provided \cite{Jean&Takei} \cite{why3}. 
-\\
-
 All works presented above are largely dependent on theorem proving systems, however our work relies on a significantly smaller trusted code base. Most proofs in our work will be implemented from scratches, and considerable amount of details on verification is presented explicitly. This reduces the chance of introducing errors into our verification program due to bugs in the proof management systems, and additionally, provides an example of how program verification can be achieved with a general-purpose programming language, and that the implementation is highly similar to that of any other programs. 
 
 

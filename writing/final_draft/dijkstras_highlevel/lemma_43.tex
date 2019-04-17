@@ -1,8 +1,8 @@
 %-----------------------------------------------------------------------------------------------
 % Dijkstra's lemma 4.3
 %-----------------------------------------------------------------------------------------------
-\begin{sublemma}
-For any node $v \in g$, if after the $i^{th}$ iteration, $dist_{i+1}[v] = \delta(v)$, then for each proceeding $j^{th}$ iteration, $j > i$, $dist_{j+1}[v] = dist_{i+1}[v] = \delta(v)$. 
+\begin{sublemma} \label{lemma4.3}
+For any node $v \in g$, if $dist_{i+1}[v] = \delta(v)$, then $\forall j > i$, $dist_{j+1}[v] = dist_{i+1}[v] = \delta(v)$. 
 \end{sublemma}
 \begin{proof}
 We will prove \texttt{Lemma 4.3} by induction on the number iterations after the $i^{th}$ iteration. 
@@ -29,7 +29,7 @@ If $u_{i+1}$ does not have an edge to $v$, then $dist_{i+2}[v] = dist_{i+1}[v] =
 Hence in either cases, $dist_{i+2}[v] = dist_{i+1}[v] = \delta(v)$. P(1) holds. 
 
 
-\paragraph*{Inductive Hypothesis}: Suppose P(k) holds, that is, if after the $i^{th}$ iteration, $dist_{i+1}[v] = \delta(v)$, then for the $(i+k)^{th}$ iteration, $n \geq 1$, $dist_{i+k+1}[v] = dist_{i+1}[v] = \delta(v)$. 
+\paragraph*{Inductive Hypothesis}: Suppose P(k) holds, that is, for $i > 0$, if $dist_{i+1}[v] = \delta(v)$, then for the $(i+k)^{th}$ iteration, $k \geq 1$, $dist_{i+k+1}[v] = dist_{i+1}[v] = \delta(v)$. 
 
 
 \paragraph*{Inductive Step}: We shall show P(k+1) holds. 
