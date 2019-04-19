@@ -1,4 +1,7 @@
-# verified_functional_algorithms_idris
+### Limitations and Running Instructions
+
+To run the program, please have Idris downloaded, and enter `idris Dijkstras.idr` to run the program. 
+
 This file includes a summary of all the holes in the program, and a short analysis of the possible cause of restrictions in approaching each hole.
 
 - Number of holes: 13
