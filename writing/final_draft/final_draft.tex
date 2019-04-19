@@ -41,6 +41,7 @@
 \setcounter{secnumdepth}{4}
 
 \graphicspath{ {images/} }
+\usepackage{float}
 
 \newtheorem*{theorem}{Theorem}
 \newtheorem*{lemma}{Lemma}
@@ -133,6 +134,11 @@
 %---------------------------------------------------------------------------------
 % Define what’s in your document
 %---------------------------------------------------------------------------------
+\newenvironment{poliabstract}[1]
+   {\renewcommand{\abstractname}{#1}\begin{abstract}}
+   {\end{abstract}}
+
+
 \usepackage{xcolor}% http://ctan.org/pkg/xcolor
 \definecolor{gray_ulisses}{gray}{0.7}
 \definecolor{castanho_ulisses}{rgb}{0.71,0.33,0.14}
@@ -193,6 +199,7 @@
   % emphstyle={[5]\color{kw_blue}\textbf}
 }
 \newcommand\inl{\lstinline}
+
 
 
 
@@ -265,12 +272,8 @@ Advisor: Richard A. Eisenberg
 (To be finished...)
 
 \pagebreak
-\begin{center}
-\large
-\textbf{Abstract}
-\end{center}
+\import{./}{abstract}
 \pagebreak
-%\end{center}
 
 \end{titlepage}
 
@@ -324,7 +327,7 @@ Advisor: Richard A. Eisenberg
 \import{./}{background}
 
 \section{Overview of Dijkstra's Implementation and Proof of Correctness}
-This section provides an overview of our Dijkstra's implementation and mathematical proof of correctness. Section \ref{definitions} provides definitions of key concepts used in our work, and Section \ref{lemmas} presents the lemmas of our proof. The lemma statements and the proofs on Lemma \ref{lemma4.1} and Lemma \ref{lemma4.3} are 
+This section provides an overview of our Dijkstra's implementation and mathematical proof of correctness. Section \ref{definitions} provides definitions of key concepts used in our work, and Section \ref{lemmasM} presents the lemmas of our proof. The lemma statements and the proofs on Lemma \ref{lemma4.1} and Lemma \ref{lemma4.3} are 
 
 \import{dijkstras_highlevel/}{data_structure}
 
@@ -347,9 +350,7 @@ This section provides an overview of our Dijkstra's implementation and mathemati
 %----------------------------------------------------------------------------------------
 % Discussion
 %----------------------------------------------------------------------------------------
-
-\section{Discussion}
-
+\import{./}{discussion.tex}
 
 
 %----------------------------------------------------------------------------------------
@@ -362,7 +363,7 @@ This section provides an overview of our Dijkstra's implementation and mathemati
 % Conclusion
 %----------------------------------------------------------------------------------------
 
-\section{Conclusion}
+\import{./}{conclusion}
 
 %----------------------------------------------------------------------------------------
 % Bibliography
@@ -374,32 +375,14 @@ This section provides an overview of our Dijkstra's implementation and mathemati
 \medskip
 \bibliographystyle{unsrt} % Defines your bibliography style
 \bibliography{literature} % Add the filename of your bibliography
-% [1] V. Klasen, "Verifying dijkstra's algorithm with key," in Diploma Thesis, Universitat Koblenz-Landau, 2010.%\url{https://kola.opus.hbz-nrw.de/opus45-kola/frontdoor/deliver/index/docId/420/file/DA_KLASEN.pdf}
-% \newline
-% [2] Bove, Ana, and Peter Dybjer. “Dependent Types at Work.” Language Engineering and Rigorous Software Development Lecture Notes in Computer Science, 2009, pp. 57–99., \url{doi:10.1007/978-3-642-03153-3_2}. %\url{http://www.cse.chalmers.se/~peterd/papers/DependentTypesAtWork.pdf}
-% \newline
-% [3] R. Mange and J. Kuhn, "Verifying dijkstra algorithm in Jahob," 2007, student project, EPFL.%\url{https://lara.epfl.ch/w/_media/dijkstra.pdf} 
-% \newline
-% [4] Filliâtre, Jean-Christophe. “Toccata.” Dijkstra's Shortest Path Algorithm, \url{toccata.lri.fr/gallery/dijkstra.en.html}.%\url{http://toccata.lri.fr/gallery/dijkstra.en.html}
-% \newline
-% [5] “Why3.” Why3, May 2015, \url{why3.lri.fr/#provers}. %\url{http://why3.lri.fr/#provers}
-% \newline
-% %[6] \url{http://lara.epfl.ch/w/jahob_system}
-% [6] E. W. Dijkstra. A note on two problems in connexion with graphs. Numerische Mathematik, 1:269–271, 1959.
-% \newline 
-% [7] Richard E. Bellman. On a routing problem. Quarterly of Applied Mathematics, 16:87–90, 1958.
-% \newline
-% [8] A. Shimbel. Structure in communication nets. Polytechnic Press of the Poly- technic Institute of Brooklyn, page 199–203, 1955.
-% \newline
-% [9] Dijkstra (1970) \href{http://www.cs.utexas.edu/users/EWD/ewd02xx/EWD249.PDF}{"Notes On Structured Programming"} (EWD249), Section 3 ("On The Reliability of Mechanisms"), corollary at the end.
 % For citing, please see this sheet: http://merkel.texture.rocks/Latex/natbib.php
 
-%----------------------------------------------------------------------------------------
-% Appendix
-%----------------------------------------------------------------------------------------
-\newpage % Includes a new page
-\section*{Appendix} % Stars disable section numbers
-% \appendix % Uncomment if you want to add an "automatic" appendix
+% %----------------------------------------------------------------------------------------
+% % Appendix
+% %----------------------------------------------------------------------------------------
+% \newpage % Includes a new page
+% \section*{Appendix} % Stars disable section numbers
+% % \appendix % Uncomment if you want to add an "automatic" appendix
 \pagenumbering{Roman} % Changes page numbering to Roman page numbers
 
 
