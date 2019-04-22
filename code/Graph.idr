@@ -95,22 +95,6 @@ dEqRefl : {ops : WeightOps weight} ->
 dEqRefl {d=DInf} = Refl
 dEqRefl {d=DVal w} {ops} = eqRefl ops
 
-{-
-dEqTransTrue : {ops : WeightOps weight} ->
-               {d1, d2, d3 : Distance weight} ->
-               (dEq ops d1 d2 = True) ->
-               (dEq ops d2 d3 = True) ->
-               dEq ops d1 d3 = True
-
-
-
-dEqTransTF : {ops : WeightOps weight} ->
-             {d1, d2, d3 : Distance weight} ->
-             (dEq ops d1 d2 = False) ->
-             (dEq ops d2 d3 = True) ->
-             dEq ops d1 d3 = False
--}
-
 
 
 dEqComm : {ops : WeightOps weight} ->
@@ -176,13 +160,6 @@ dplusDInf {d=DInf} = Refl
 dplusDInf {d=DVal _} = Refl
 
 
-{-
-dgteDInfReduce : {ops : WeightOps weight} ->
-                 {d1, d2 : Distance weight} ->
-                 (dgte ops (dplus ops d1 d2) DInf = False) ->
-                 dgte ops d2 DInf = False
--}
-
 
 dgteZeroInf : {ops : WeightOps weight} ->
               dgte ops (DVal (zero ops)) DInf = False
@@ -221,14 +198,6 @@ dgteComm {d1=DVal _} {d2=DInf} r1 r2 = absurd $ trueNotFalse (sym r1)
 dgteComm {d1=DVal _} {d2=DVal _} {d3=DInf} r1 r2 = absurd $ trueNotFalse (sym r2)
 dgteComm {ops} {d1=DVal v1} {d2=DVal v2} {d3=DVal v3} r1 r2 = gteComm ops r1 r2
 
-
-{-
-dgteAscTF : {ops : WeightOps weight} ->
-            {d1, d2, d3 : Distance weight} ->
-            dgte ops d2 d1 = False ->
-            dgte ops d2 d3 = True ->
-            dgte ops d3 d1 = False
--}
 
 
 
@@ -277,16 +246,6 @@ dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3=DInf} eq True refl = absurd $ trueNotF
 dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3=DInf} eq False refl = Refl
 dgteEqTrans {d1=DVal w1} {d2=DVal w2} {d3=DVal w3} deq b refl {ops} = gtewEqTrans ops deq b refl
 
-
-
-{-
--- d1 <= d2, d1 >= d3 -> d3 <= d2
-dgteTrans : {ops : WeightOps weight} ->
-            {d1, d2, d3 : Distance weight} ->
-            (dgte1 : dgte ops d1 d2 = False) ->
-            (dgte2 : dgte ops d1 d3 = True) ->
-            dgte ops d3 d2 = False
--}
 
 
 
@@ -345,17 +304,6 @@ dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DVal d3} (DVal val) False de e = Refl
 dgtePlusEq {d1=DVal d1} {d2=DVal d2} {d3=DVal d3} (DVal val) b de e {ops} = gtePlusEq ops val b de e
 
 
-{-
-dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DInf} (DVal dp) True de e = ?dd5
-dgtePlusEq {d1=DVal d1} {d2=DInf} {d3=DInf} (DVal dp) False de e = ?dd6
-dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) True de e = ?dd7
-dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) False de e = ?dd71
-dgtePlusEq {d1=DInf} {d2=DInf} {d3=DVal d3} (DVal dp) True de e = ?dd12
-dgtePlusEq {d1=DInf} {d2=DInf} {d3=DVal d3} (DVal dp) False de e = ?dd13
-dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) True de e = ?dd14
-dgtePlusEq {d1=DInf} {d2=DVal d2} {d3=DInf} (DVal dp) False de e = ?dd15
--}
-
 
 
 dgtePlusDInf: {ops : WeightOps weight} ->
@@ -377,17 +325,7 @@ dgteReplace : {ops : WeightOps weight} ->
               dgte ops d2 d3 = b
 dgteReplace b neq deq = rewrite (sym deq) in neq
 
-{-
-dgtePlusAbsurd : {ops : WeightOps weight} ->
-                 (d1, d2 : Distance weight) ->
-                 dgte ops d1 (dplus ops d2 d1) = False
-dgtePlusAbsurd (DVal d1) DInf = Refl
-dgtePlusAbsurd DInf d2 = ?dpa1
-dgtePlusAbsurd (DVal v1) (DVal v2) {ops}
-  with (gtew ops v1 (add ops v2 v1)) proof notTrue
-    | True = absurd $ contradict (sym notTrue) (gtewPlusFalse ops v1 v2)
-    | False = Refl
--}
+
 
 -- d1 <= DInf -> d1 + (DVal w) <= DInf
 dvalNotInf : {ops : WeightOps weight} ->
@@ -399,19 +337,6 @@ dvalNotInf {d1=DInf} refl = absurd $ trueNotFalse refl
 dvalNotInf {d1=DVal v1} {w} refl = Refl
 
 
-
-
-
-{-
-dInfRefl : dgte ops DInf DInf = True
-dInfRefl = Refl
-
-dgte_false_notEq : dgte ops d1 d2 = False -> Not (d1 = d2)
-dgte_false_notEq {d1=DInf} {d2=DInf} refl e = ?df2 --absurd $ trueNotFalse refl
-dgte_false_notEq {d1=DInf} {d2} {ops} refl e = ?df1 --rewrite (rewrite (sym e) in refl) in dInfRefl
-dgte_false_notEq {d2=DInf} refl e = ?df2
-dgte_false_notEq {d1= DVal v1} {d2=DVal v2} refl e = ?df3
--}
 
 
 

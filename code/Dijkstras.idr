@@ -36,10 +36,6 @@ min ops m n = case (dgte ops m n) of
                    False => m
 
 
--- minRefl : {ops : WeightOps weight} ->
---           {m : Distance weight} ->
---           min ops m m = m
-
 
 minReflDInf : {ops : WeightOps weight} ->
               {m : Distance weight} ->
@@ -67,11 +63,7 @@ calcDist : (g : Graph gsize weight ops) ->
 calcDist g min_node cur min_dist cur_dist
   = min ops cur_dist (dplus ops (edgeW g min_node cur) min_dist)
 
-{-
-  = case (min_node == cur) of
-         True => cur_dist
-         False => min ops cur_dist (dplus ops min_dist (edgeW g min_node cur))
--}
+
 
 
 updateDist :  (g : Graph gsize weight ops) ->
@@ -140,12 +132,6 @@ calcDistEq g min_node cur min_dist cur_dist {ops}
   with (dgte ops cur_dist (dplus ops (edgeW g min_node cur) min_dist)) proof sdist
     | True = sym sdist
     | False = dgteRefl
-{-
-  with (min_node == cur) proof min_is_cur
-    | True = dgteRefl
-    | False with (dgte ops cur_dist (dplus ops min_dist (edgeW g min_node cur))) proof sdist
-                 | True = sym sdist
-                 | False = dgteRefl -}
 
 
 
@@ -326,13 +312,6 @@ expV_VNotMin cl@(MKColumn g src (S len) unexp dist) v expVR notMin expv
   = deleteNElemRev (getMin cl) v unexp (minCElem cl) expVR notMin expv
 
 
-{-
-{- there always exists a node with not infinity distance in unexplored (if not Nil)-}
-unexpV_not_DInf : {g : Graph gsize weight ops} ->
-                  (cl : Column (S len) g src) ->
-                  (src_ninf : dgte ops (nodeDistN src cl) DInf = False) ->
-                  dgte ops (nodeDistN (getMin cl) cl) DInf = False
--}
 
 unexpReverse : {g : Graph gsize weight ops} ->
                (cl : Column (S len) g src) ->
@@ -401,26 +380,6 @@ neDInfPath cl {g} {src} {ops} {gsize}
     (ne : dgte ops (nodeDistN v cl) DInf = False) ->
     (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
 
-{-
-l2_distHelper : (g : Graph gsize weight ops) ->
-                (min_node : Node gsize) ->
-                (min_dist : Distance weight) ->
-                (nodes : Vect m (Node gsize)) ->
-                (dist : Vect m (Distance weight)) ->
-                (nv : Nat) ->
-                {auto p : LT nv m} ->
-                ((dgte ops (indexN nv dist) DInf) = False -> (psv : Path src (index nv nodes) g ** dEq ops (indexN nv dist) (length psv) = True)) ->
-                (npsv : Path src (indexN nv nodes) g ** dEq ops (indexN nv (updateDist g min_node min_dist nodes dist)) (length npsv) = True)
-
-l2_distHelper g min_node min_dist Nil Nil nv l2_ih {p} = absurd $ succNotLTEzero p
-l2_distHelper g min_node min_dist (n :: ns) (d :: ds) FZ l2_ih {ops}
-  with (dgte ops d (dplus ops (edgeW g min_node n) min_dist)) of
-    | True = ?l2ht
-    | False = ?l2hf
-l2_distHelper g min_node min_dist (n :: ns) (d :: ds) (FS f) l2_ih {p=LTESucc p'} = ?l2h3
--}
-
-
 
 
 l2_existPath : {g : Graph gsize weight ops} ->
@@ -446,22 +405,6 @@ l2_existPath cl l2_ih w wclNotDInf {g} {ops}
             | False = ?l2f -}
     | False = rewrite (updateDistEqF cl w $ sym cur_lt_sum) in (l2_ih w (rewrite (sym (updateDistEqF cl w $ sym cur_lt_sum)) in wclNotDInf))
 
-
-{- = l2_distHelper g min_node min_dist (mkNodes gsize) dist wv (l2_ih (MKNode wv)) {p=nvLTE wv}
-  where
-    min_node : Node gsize
-    min_node = getMinNode unexp ops dist
-    min_dist : Distance weight
-    min_dist = indexN (finToNat $ getVal min_node) dist {p=nvLTE $ getVal min_node}
-  -}
-
-
-
-{-
-{ops}
-  with (dgte ops (nodeDistN v cl) DInf) proof vcl_not_inf
-    | True = ?l2t
-    | False = ?l2f-}
 
 
 {-----------------------------------------------------------------------------------------------------
@@ -504,17 +447,6 @@ l3_preserveDelta cl l2_ih v psv psv_sp eq {g} {ops} {src}
     | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm eq) True (runDecre cl v))
 
 
-
-{-
-l3_preserveDelta : {g : Graph gsize weight ops} ->
-                   (cl : Column (S len) g src) ->
-                   (l2_ih : neDInfPath cl) ->
-                   (l3_ih : distIsDelta cl) ->
-                   distIsDelta (runHelper cl)
-l3_preserveDelta cl l2_ih l3_ih v psv psv_sp {g} {ops} {src}
-  with (l2_existPath cl l2_ih v (dgteDInfTrans {ops=ops} (nodeDistN v cl) (nodeDistN v (runHelper cl)) (pathlenNotDInf (nodeDistN v cl) psv (l3_ih v psv psv_sp)) (runDecre cl v)))
-    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) (dgteEqTrans (dEqComm $ l3_ih v psv psv_sp) True (runDecre cl v))
--}
 
 {-
 {---------------------------------------------------------------------------------------------
@@ -675,7 +607,7 @@ l5_stm3 : {g : Graph gsize weight ops} ->
           (st2 : distv_min (runHelper cl)) ->
           unexpDelta (runHelper cl)
 l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src=w} (Unit g w) spsw = ?l53Impossible
-l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src} (Cons (Unit g src) w adj_src_w) spsw = ?l52Base
+l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src} (Cons (Unit g src) w adj_src_w) spsw = ?l53Base
 l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons psx u adj_x_u) w adj_uw) spsw {g} {ops}
   with (getMin cl == v) proof min_is_v
     | True with (checkUnexplored u (runHelper cl)) proof u_exp
@@ -684,7 +616,7 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
                                                                                                 (l1_prefixSP {sp=Cons (Cons psx u adj_x_u) w adj_uw}
                                                                                                              {sp_pre = (Cons psx u adj_x_u)} spsw ((adj_to_path adj_uw) ** Refl)))
         | No expU with (v == u) proof v_is_u
-          | True  with (adj_getPrev adj_x_u)
+          | True with (adj_getPrev adj_x_u)
             | x with (checkUnexplored x (runHelper cl)) proof x_exp
               | Yes unexpX =  dgtePlus (DVal $ get_weight (getNeighbors g u) w adj_uw)
                                 $ dgtePlus (DVal $ get_weight (getNeighbors g x) u adj_x_u)
@@ -699,7 +631,7 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
                 | False with (l2_existPath cl l2_ih v (st1 v expVR))
                   | (lpsv ** rclvEq) = rewrite (sym $ indexClEq (runHelper cl) v u (nodeEq {a=v} {b=u} $ sym v_is_u)) in
                                                   (dgtePlus {d1=dplus ops (DVal (get_weight (getNeighbors g x) u adj_x_u)) (length psx)}
-                                                   {d2=nodeDistN u (runHelper cl)}
+                                                            {d2=nodeDistN u (runHelper cl)}
                                                    (DVal $ get_weight (getNeighbors g u) w adj_uw)
                                                    (dgtePlusEq {d1=nodeDistN u (runHelper cl)}
                                                                {d2=nodeDistN x (runHelper cl)}
@@ -751,11 +683,6 @@ l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR (Cons (Cons
 
 
 
-{-
-  with (getMin cl == w) proof min_is_w
-    | True = ?l3t
-    | False = dgteAscTF (ih3 v w (expV_VNotMin cl w expW (nodeNotEq {a=getMin cl} {b=w} $ sym min_is_w)) psw sp_psw adj_wv) (runDecre cl v)
--}
 
 
 l5_stm4 : {g : Graph gsize weight ops} ->
@@ -779,23 +706,25 @@ l5_stm4 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 st3 v expVR (Cons psw v adj_w
           | No expW with (v == w) proof v_is_w
             | True  = absurd $ contradict (adj_sameNode (nodeEq {a=v} {b=w} $ sym v_is_w) adj_wv) (nadj w)
             | False = dgteEq (dgteEqTrans rclvEq True (spsv lpsv))
-                                              (dgtePlusEq {d1=nodeDistN v (runHelper cl)}
-                                                          {d2=nodeDistN w (runHelper cl)}
-                                                          {d3=length psw}
-                                                          (DVal $ get_weight (getNeighbors g w) v adj_wv)
-                                                          True
-                                                          (rewrite (sym $ edgeWEq g w v adj_wv) in (st2 v w expW psw (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl))))
-                                                          (l3_preserveDelta cl l2_ih w psw
-                                                            (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl))
-                                                            (ih4 w (expV_VNotMin cl w expW (nodeNotEqTrans (nodeEq {a=getMin cl} {b=v} $ sym min_is_v) (nodeNotEq {a=v} {b=w} $ sym v_is_w)))
-                                                                    psw
-                                                                    (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl)))))
+                             (dgtePlusEq {d1=nodeDistN v (runHelper cl)}
+                                         {d2=nodeDistN w (runHelper cl)}
+                                         {d3=length psw}
+                                         (DVal $ get_weight (getNeighbors g w) v adj_wv)
+                                         True
+                                         (rewrite (sym $ edgeWEq g w v adj_wv) in (st2 v w expW psw (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl))))
+                                         (l3_preserveDelta cl l2_ih w psw
+                                           (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl))
+                                           (ih4 w (expV_VNotMin cl w expW (nodeNotEqTrans (nodeEq {a=getMin cl} {b=v} $ sym min_is_v) (nodeNotEq {a=v} {b=w} $ sym v_is_w)))
+                                           psw
+                                           (l1_prefixSP {sp=Cons psw v adj_wv} {sp_pre = psw} spsv ((adj_to_path adj_wv) ** Refl)))))
 
-    | False with (l2_existPath cl l2_ih v (st1 v expVR))
+    | False = l3_preserveDelta cl l2_ih v (Cons psw v adj_wv)  spsv $ ih4 v (expV_VNotMin cl v expVR (nodeNotEq {a=getMin cl} {b=v} $ sym min_is_v)) (Cons psw v adj_wv) spsv
+    
+    {- with (l2_existPath cl l2_ih v (st1 v expVR))
       | (path_sv ** rclvEq) = dgteEq (dgteEqTrans rclvEq True (spsv path_sv))
                                      (dgteEqTrans
                                        (dEqComm $ ih4 v (expV_VNotMin cl v expVR (nodeNotEq {a=getMin cl} {b=v} $ sym min_is_v)) (Cons psw v adj_wv) spsv)
-                                       True (runDecre cl v))
+                                       True (runDecre cl v)) -}
 
 
 
@@ -813,16 +742,7 @@ l5_spath cl nadj l2_ih l5_ih
      l5_stm4 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih)
                                  (l5_stm2 cl l2_ih l5_ih)
                                  (l5_stm3 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih)))
-{-(pf1, pf2, pf3)
-  where
-    pf1 p = ?pf1
-
-    pf2 p = ?pf2
-
-    pf3 p = ?pf3 ... (pf1 p) ... (pf2 p) ...
--}
-
-
+                                 
 
 
 
@@ -865,43 +785,9 @@ dijkstras_correctness (S len) g src v psv spsv nadj {weight} {ops}
     base_stm = ?base
 
 
-{-
-correctness : {g : Graph gsize weight ops} ->
-              (cl : Column gsize g src) ->
-              (v : Node gsize) ->
-              (psv : Path s v g) ->
-              (spsv : shortestPath g psv) ->
-              dEq ops (length psv) (nodeDist v (runDijkstras cl)) = True
-correctness {gsize=Z} _ v _ _ = absurd $ NodeZAbsurd v
--- base case here
-correctness {gsize =(S (S gs))} cl v psv spsv
-  -}
-
-{-correctness {gsize = S len} cl v psv spsv
-  = apply lemma 5 to (correctness {gsize = len} cl' v psv spsv)-}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-{-
-{- if `dist_v` is smaller than DInf, then `dist_v` is equal to the length of some path-}
-distNotInfIsPathLen : {g : Graph gsize weight ops} ->
-                      (cl : Column len g src) ->
-                      (v : Node gsize) ->
-                      (ne : dgte ops (nodeDistN v cl) DInf = False) ->
-                      (psv : Path src v g ** dEq ops (nodeDistN v cl) (length psv) = True)
-distNotInfIsPathLen cl v ne = ?dpath
--}
 
 
 

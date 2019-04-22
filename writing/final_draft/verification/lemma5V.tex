@@ -1,2 +1,285 @@
-\paragraph{Lemma 5 - \inl{l5_spath}}
+\paragraph{Lemma 5 - \inl{l5_spath}} \label{lemma5V}
 \tab\\\\
+The structure of the implementation of \inl{l5_spath} for proving Lemma \ref{lemma4.5} is similar to \inl{l2_existPath} in Section \ref{lemma2V}. In our verification program, we first define functions that specify the \inl{Column} properties stated by Lemma 4.5 (properties are included in Section \ref{lemma4.5}), and prove that if all of the properties hold for a \inl{Column} \inl{cl}, then the properties preserve after calling \inl{runHelper} on \inl{cl}. Similar to the structure of lemmas, the properties are also defined in order, that the preservation proofs of properties defined later depend on properties defined earlier. As the preservation proofs for all properties are quite complicated and involve large amount of details, in the following we only provide the types of the function that implements the proof, and summaries how we approach the proof. Explanation on the definition and preservation proof for each property are provided in the order that they are defined, hence the preservation proof in the later sections are depends on the proofs introduced earlier. 
+\\
+
+The proof for the base case of statement 2 to statement 4 require extra information to be provided, for instance the for the \inl{Vect} of distance values in the first \inl{Column} initialized by the \inl{dijkstra} function, the only node whose distance value is not \inl{DInf} is the source node. These information are given by the initialization of Dijkstra's algorithm, however as the current definitions of functions(\inl{mkdists} and \inl{mknodes}) that calculate the initial values are difficult to work with, the proof on the base cases are still incomplete. This issue does not largely affect the validity of our implementation of Lemma 4.5 below, as it can be resolved by providing better definitions for \inl{mkdists} and \inl{mknodes}. 
+\\
+
+As mentioned in Section \ref{lemmas}, in the verification program we merge Lemma \ref{lemma4.4} into Lemma 4.5 as one of its statement, then the implementation of Lemma 4.5 involves four statements (i.e. \inl{Column} properties). To provide a more clear, structured type for the preservation proof for Lemma 4.5, we define the \inl{l5_stms} function below that collects all statements together with a tuple. 
+\begin{lstlisting}
+			l5_stms : {g : Graph gsize weight ops} ->
+			          (cl : Column len g src) ->
+			          Type
+			l5_stms cl = (lessDInf cl, 
+							distv_min cl, 
+								unexpDelta cl, 
+									expDistIsDelta cl)
+\end{lstlisting}
+
+Given a \inl{Column} \inl{cl}, the function \inl{l5_stms} is a predicate stating that collects four function, \inl{lessDInf, distv_min, unexpDelta, expDistIsDelta}, in the form of a tuple, where each of them state one \inl{Column} property. The elements in the tuple are listed in the same order as they are defined, hence the preservation proof for \inl{expDistIsDelta} is built on the proof for the previous three properties, and the proof that shows the preservation of \inl{unexpDelta} is again built on the preservation proof on the previous two ... etc. The following provides more detail on the definition and the corresponding preservation proof for each function mentioned above. 
+\\ 
+
+The function \inl{lessDInf} is defined for the first property, which states that the distance value calculated for any explored node is less than \inl{DInf}(infinity distance value).
+% -- statement 1: for any node v that is explored, distn+1[v] < DInf
+\begin{lstlisting}
+			lessDInf : {g : Graph gsize weight ops} ->
+			           (cl : Column len g src) ->
+			           Type
+			lessDInf cl {gsize} {ops}
+			  = (v : Node gsize) ->
+			    (expV : explored v cl) ->
+			    dgte ops (nodeDistN v cl) DInf = False
+\end{lstlisting}
+
+Given a \inl{Column} \inl{cl} corresponds to the graph \inl{g}, \inl{lessDInf} states that for any node \inl{v} in \inl{g}, if \inl{v} is explored (stated by \inl{expV}), then the distance value for \inl{v} stored in \inl{cl}(indexed by the \inl{nodeDistN} function) is smaller than \inl{DInf}. The \inl{l5_stm1} function below provides the preservation proof for the \inl{lessDInf} property. 
+\begin{lstlisting}
+		{-  the implementation of l5_stm1 is not included here 
+				and a summary of our proof is provided in the angle brackets instead
+		-}
+		l5_stm1 : {g : Graph gsize weight ops} ->
+		          (cl : Column (S len) g src) ->
+		          (l5_ih : l5_stms cl) ->
+		          lessDInf (runHelper cl)
+		l5_stm1 cl (ih1, ih2, ih3, ih4) v expVR {ops} {src} 
+			with (getMin cl == v) proof min_is_v
+			  | True = ?l51t_hole
+			  | False = <apply l5_ih assumption>
+         
+\end{lstlisting}
+
+As mentioned at the beginning of this section, the preservation proof for each property assumes that all properties specified by \inl{l5_stms} hold for the current \inl{Column}, and shows how each property preserves after calling \inl{runHelper}. Given an input \inl{Column cl}, \inl{l5_ih} states that all properties in \inl{l5_stms}, including \inl{lessDInf}, hold for \inl{cl}, and based on this assumption, the function \inl{l5_stm1} states that the \inl{lessDInf} property preserves after calling \inl{runHelper} on \inl{cl}.
+\\
+
+Similar to the proof of Lemma 4.2 in Section \ref{lemma2V}, the definition of \inl{lessDInf} allows us to bring the node \inl{v} and \inl{expV : explored v (runHelper cl)} into scope. Notice that \inl{expV} states that \inl{v} is an explored node with respect to \inl{runHelper cl} rather than \inl{cl}. The implementation of \inl{l5_stm1} is approached by checking whether \inl{v} equal to \inl{`getMin cl'}, i.e., the current node being explored (mentioned in Section \ref{second_layer}). If \inl{v} is not \inl{`getMin cl'}, then \inl{v} must also be an explored node in \inl{cl}, then the proof can be completed by applying the assumption \inl{l5_ih}. In the case when \inl{v} is equal to \inl{`getMin cl'}, the proof requires an assumption that the graph is a connected graph, such that there must have a \inl{src-to-v} path in the graph. The proof under this case is still incomplete as the assumption of connected graph is not yet passed in to the \inl{l5_stm1} as an input parameter(although it is assumed through our verification process), however with more time granted, this proof can be completed by adding a parameter that states the connected graph assumption. 
+\\
+
+The second statement is specified by the \inl{distv_min} function presented below. 
+		% {- 
+		% 	statement 2 : For 1 <= n, 1 <= i <= n, for any node v in g, 
+		% 				  for all node w in exploredn+1, 
+		% 			 	  distn+1[v] <= distn[w] + weight(w, v))
+		% -}
+\begin{lstlisting}
+			distv_min : {g : Graph gsize weight ops} ->
+			            (cl : Column len g src) ->
+			            Type
+			distv_min cl {g} {gsize} {src}
+			  = (v, w : Node gsize) ->
+			    (exp_w : explored w cl) ->
+			    (psw : Path src w g) ->
+			    (spsw : shortestPath g psw) ->
+			    dgte ops (dplus ops (edgeW g w v) (nodeDistN w cl))
+			    		 (nodeDistN v cl) = True
+
+\end{lstlisting} 
+
+Given a \inl{Column} \inl{cl}, \inl{distv_min} states that for an explored node \inl{w} (specified by \inl{exp_w}), for any node \inl{v} in \inl{g}, the sum of the distance of \inl{w} stored in \inl{cl} and \inl{weight(w, v)} (notation introduced in Section \ref{pseudo}) is greater than or equal to the distance value of \inl{v} stored in \inl{cl}. We also introduce a shortest \inl{src-to-w} path \inl{psw} (\inl{spsw} states that \inl{psw} is a shortest path) as it is required for the \inl{l5_stm2} function below that implements the preservation proof for \inl{distv_min}. 
+\begin{lstlisting}
+		{-  the implementation of l5_stm2 is not included here 
+				and a summary of our proof is provided in the angle brackets instead
+		-}
+		l5_stm2 : {g : Graph gsize weight ops} ->
+		          (cl : Column (S len) g src) ->
+		          (l2_ih : neDInfPath cl) ->
+		          (l5_ih : l5_stms cl) ->
+		          distv_min (runHelper cl)
+		l5_stm2 cl l2_ih (ih1, ih2, ih3, ih4) v w expW psw spsw {ops} {g}
+		  with (getMin cl == w) proof min_is_w
+		    | True = <apply `runDgteMin' and `minDist_preserve'>
+		    | False = <apply l5_ih>
+\end{lstlisting}
+
+Given a \inl{Column cl}, the input \inl{l2_ih} provides the assumption that property \inl{neDInfPath} holds for \inl{cl}, which is required by the implementation of our proof. Passing in assumption of properties stated by Lemma 4.2 is valid as in our verification program, the proof of lemmas defined later depend on the previous lemmas defined. Input \inl{l5_ih} provides the assumption that \inl{l5_stms} holds for \inl{cl}. The return type of \inl{l5_stm2} states that the sum of the distance of \inl{w} stored in \inl{`runHelper cl'} and \inl{weight(w, v)} is greater than or equal to the distance value of \inl{v} stored in \inl{`runHelper cl'}. 
+\\
+
+The implementation of \inl{l5_stm2} is again approached by checking whether the explored node \inl{w} is equal to \inl{`getMin cl'}. When \inl{w} is not equal to \inl{`getMin cl'}, the proof can be completed by applying the assumption \inl{l5_ih} and Lemma 4.3 \inl{l3_preserveDelta} (Section \ref{lemma3V} (which requires the input \inl{l2_ih}). 
+\\
+
+When \inl{w} is equal to \inl{`getMin cl'}, since our Dijkstra's implementation chooses the minimum value between the sum of \inl{`getMin cl'} and \inl{weight(getMin cl, v)} and the distance value of \inl{v} stored in \inl{cl} (specifically, by calling the \inl{calcDist} function mentioned in Section \ref{third_layer}), we implement a helper proof named \inl{runDgteMin} that states this property of our implementation. The type of \inl{runDgteMin} is provided below. 
+\begin{lstlisting}
+	runDgteMin : {g : Graph gsize weight ops} ->
+	             (cl : Column (S len) g src) ->
+	             (v : Node gsize) ->
+	             dgte ops (dplus ops (edgeW g (getMin cl) v) 
+	             				(nodeDistN (getMin cl) cl))
+	                      (nodeDistN v (runHelper cl)) = True
+\end{lstlisting}
+
+Specifically, \inl{runDgteMin} specifies that for all node \inl{v} in the graph, the sum of \inl{weight(getMin cl, v)} and the distance value of \inl{`getMin cl'} stored in \inl{cl}(specified by \inl{`nodeDistN (getMin cl) cl'}), is larger than or equal to the distance value of \inl{v} stored in \inl{runHelper}. We eliminate the details on the implementation of \inl{runDgteMin} as it is highly similar to that of \inl{runDecre} in Section \ref{lemma3V}. 
+\\
+
+Based on \inl{runDgteMin} we know that sum of \inl{`nodeDistN (getMin cl) cl'} and \inl{weight(getMin cl, v)} is larger than or equal to \inl{`nodeDistN v (runHelper cl)'}. Recall what we want to prove is that the property \inl{distv_min} holds for the \inl{Column} calculated by \inl{`runHelper cl'}, hence under this case when \inl{w} is equal to \inl{`getMin cl'}, what we want to show is that the sum of \inl{`nodeDistN (getMin cl) (runHelper cl)'}(instead of \inl{cl}) and \inl{weight(getMin cl, v)} is larger than or equal to \inl{`nodeDistN v (runHelper cl)'}. This can be resolved with a proof (named \inl{minDist_preserve}) that shows the distance value of \inl{`getMin cl'} stored in \inl{cl} and \inl{'runHelper cl'} is the same. The type of \inl{minDist_preserve} is presented below. 
+\begin{lstlisting}
+		minDist_preserve : {g : Graph gsize weight ops} ->
+		                   (cl : Column (S len) g src) ->
+		                   dEq ops (nodeDistN (getMin cl) cl) 
+		                   		(nodeDistN (getMin cl) (runHelper cl)) = True
+\end{lstlisting}
+
+The function \inl{dEq} is an operator that checks whether two distance values are equal. The return type of \inl{minDist_preserve} specifies that the distance value of \inl{`getMin cl'} remains unchanged after calling \inl{runHelper} on \inl{cl}. Although this proof is not yet complete due to the unclear type error in applying the \inl{inNodeset} function (explained in Section \ref{discussion}), from a theoretical prospective this is a valid statement, as when updating the distance value for \inl{`getMin cl'}, since a node cannot be in the \inl{nodeset} of itself, hence \inl{calcDist} compares the value of \inl{`nodeDistN (getMin cl) cl'} with the sum of \inl{weight(getMin cl, getMin cl)} and \inl{`nodeDistN (getMin cl) cl'}, the value of \inl{weight(getMin cl, getMin cl)} would be \inl{DInf}, and the updated distance for \inl{`getMin cl'} is still \inl{'nodeDistN (getMin cl) cl'}, which is exactly what stated by the \inl{minDist_preserve} function above. The proof on \inl{l5_stm2} under the case when \inl{w} is \inl{`getMin cl'} can be implemented by combining the functions \inl{runDgteMin} and \inl{minDist_preserve}. 
+\\
+
+The third statement is defined by the \inl{unexpDelta} function below. 
+\begin{lstlisting}
+			unexpDelta : {g : Graph gsize weight ops} ->
+			             (cl : Column len g src) ->
+			             Type
+			unexpDelta cl {g} {gsize} {ops} {src}
+			  = (v, w : Node gsize) ->
+			    (expV : explored v cl) ->
+			    (unexpW : unexplored w cl) ->
+			    (psw : Path src w g) ->
+			    (sp : shortestPath g psw) ->
+			    dgte ops (length psw) (nodeDistN v cl) = True
+\end{lstlisting}
+
+Given a \inl{Column} \inl{cl} corresponds to the graph \inl{g}, for two nodes \inl{v, w} in the graph \inl{g}, where \inl{v} is explored and \inl{w} is unexplored (stated by \inl{expV} and \inl{unexpW} respectively), \inl{unexpDelta} states that the length of a shortest path from \inl{src} to \inl{w} in \inl{g}(\inl{psw} denotes the shortest path) is greater than or equal to the distance value of \inl{v} stored in \inl{cl}. The function \inl{l5_stm3} functions proves the preservation of the \inl{unexpDelta} property. 
+\begin{lstlisting}
+{-  the implementation of l5_stm3 is not included here 
+		and a summary of our proof is provided in the angle brackets instead
+-}
+l5_stm3 : {g : Graph gsize weight ops} ->
+          (cl : Column (S len) g src) ->
+          (nadj : ((n : Node gsize) -> 
+          			inNodeset n (getNeighbors g n) = False)) ->
+          (l2_ih : neDInfPath cl) ->
+          (l5_ih : l5_stms cl) ->
+          (st1 : lessDInf (runHelper cl)) ->
+          (st2 : distv_min (runHelper cl)) ->
+          unexpDelta (runHelper cl)
+-- case1 : w = src, and w is unexplored, then no nodes are explored
+l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR 
+	{src=w} (Unit g w) spsw = ?l53Impossible
+-- case2 : shortest src-to-w edge is a path with one edge
+l5_stm3 cl nadj l2_ih l5_ih st1 st2 v w expVR unexpWR {src} 
+	(Cons (Unit g src) w adj_src_w) spsw = ?l53Base
+-- case3 : shortest src-to-w edge is a path with more than one edge
+l5_stm3 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 v w expVR unexpWR 
+	(Cons (Cons psx u adj_x_u) w adj_uw) spsw {g} {ops}
+	  -- check if v is equal to (getMin cl)
+	  with (getMin cl == v) proof min_is_v
+	  	-- case[a]: if true, check if u is explored 
+	    | True with (checkUnexplored u (runHelper cl)) proof u_exp
+	    	-- case[b]
+	        | Yes unexpU = <recursively apply l5_stm3 on v and u>
+	        -- check if v is equal to u
+	        | No expU with (v == u) proof v_is_u 
+	          -- case[c]
+	          | True with (adj_getPrev adj_x_u)
+	            | x with (checkUnexplored x (runHelper cl)) proof x_exp
+	              | Yes unexpX = <recursively apply l5_stm3 to v and x>
+	              | No expX with (u == x) proof u_is_x
+	                | True = <apply nadj>
+	                | False with (l2_existPath cl l2_ih v (st1 v expVR))
+	                  | (lpsv ** rclvEq) = <apply st2 and l3_preserveDelta>
+	          -- case[d]
+	          | False = <apply ih2, ih5, minCl, and runDecre> 
+	    | False = <apply l5_ih>
+\end{lstlisting}
+
+Notice that the previous two statements, \inl{st1} and \inl{st2}, are passed in as parameters for the implementation of \inl{l5_stm3}. This is valid as we mentioned at the beginning of this section, the proof of statements defined later is built on the statements defined earlier. The proof for the first two cases are incomplete due to time limit and the issue concerning functions \inl{mkdists} and \inl{mknodes} mentioned above. 
+\\
+
+In the third case, the shortest path from \inl{src} to \inl{w} contains more than one edges. Specifically, the shortest \inl{src-to-w} path (denote as \inl{psw}) is constructed from a \inl{src-to-u} path (denote as \inl{psu}), which is again constructed from a \inl{src-to-x} path named \inl{psx}. In other words, \inl{x, u} denotes the two nodes right before \inl{w} in the path \inl{psw}. Notice that \inl{psw} denotes an arbitrary shortest \inl{src-to-w} path, hence \inl{x, u} are arbitrary nodes that denote the two nodes right before \inl{w} in any shortest \inl{src-to-w} path rather than one specific shortest path. As the proof for this case is very complicated and involves lots of details, we only provide the skeleton of our proof by listing all the intermediate values that we have matched on in the implementation of this proof. The summary of the proof under each cases is specified in angle brackets. We first bring all the premises of \inl{unexpDelta} into scope. Similar to the proof of previous statement, we check whether \inl{v} is equal to \inl{`getMin cl'}. When \inl{v} is not equal to \inl{`getMin cl'}, and since \inl{v} is already explored, then \inl{v} must also be an explored node in \inl{cl}, hence we can apply the \inl{l5_ih} assumption to complete the proof. 
+\\
+
+When \inl{v} is equal to \inl{`getMin cl'}(case [a]), we check whether the node \inl{u} right before \inl{w} is explored or not (\inl{x} is the node right before \inl{u}). When \inl{u} is unexplored(case[b]), then we can recursively apply \inl{l5_stm3} on \inl{v} and \inl{u} to complete the proof. When \inl{u} is explored, we check if \inl{v} is equal to \inl{u}, i.e., checking whether the node right before \inl{w} in the path \inl{psw} is equal to \inl{v}. 
+\\
+
+If \inl{u} is not equal to \inl{v}(case[d]), then we apply \inl{ih2} and \inl{ih4}(from \inl{l5_ih}) on the node \inl{u} to show that the sum of \inl{weight(u, w)} and the length of \inl{psu} (shortest \inl{src-to-u} path) is greater than or equal to the distance value of \inl{w} in \inl{cl}. Since \inl{v} was the unexplored node with minimum distance value, than the distance value of \inl{v} in \inl{cl} is smaller than the distance value of \inl{w} in \inl{cl}(specified by a \inl{minCl} function implemented), hence the distance of \inl{v} in \inl{cl} is smaller than or equal to the sum of \inl{weight(u, w)} and the length of \inl{psu}. As \inl{u} is the node right before \inl{w} in \inl{psw}, then the distance of \inl{v} in \inl{cl} is smaller than or equal to the the length of \inl{psw}. Combine this with the function \inl{runDecre} that states \inl{nodeDistN v cl} is greater than or equal to \inl{nodeDistN v (runHelper cl)}, then we complete the proof that the length of \inl{psw} is greater than or equal to \inl{nodeDistN v (runHelper cl)}. 
+\\
+
+If \inl{u} is equal to \inl{v}(case[c]), then we follow the same pattern and check whether the node \inl{x} right before \inl{u} is explored or not. When \inl{x} is unexplored, we recursive apply \inl{l5_stm3} on \inl{x} and \inl{v}. Otherwise we check if \inl{u} is equal to \inl{x}. The case when \inl{u} is equal to \inl{x} is restricted by \inl{nadj} as \inl{x} cannot be adjacent to \inl{u}. 
+\\
+
+When \inl{u} is not equal to \inl{x}, we apply \inl{st2} and \inl{l3_preserveDelta} (Section \ref{lemma3V}) to show that the sum of \inl{weight(x, u)} and length of path \inl{psx} is greater than or equal to the distance of \inl{u} in \inl{`runHelper cl'}, hence the result of adding \inl{weight(u, w)} to the sum of \inl{weight(x, u)} and length of path \inl{psx}, which is exactly the length \inl{psw}, is greater than or equal to the distance of \inl{u} in \inl{`runHelper cl'}. As under this case \inl{u} is equal to \inl{v}, the proof of \inl{l5_stm3} is complete. 
+\\
+
+The function \inl{expDistIsDelta} below specifies the last statement in Lemma 4.5. 
+\begin{lstlisting}
+		expDistIsDelta : {g : Graph gsize weight ops} ->
+		                 (cl : Column len g src) ->
+		                 Type
+		expDistIsDelta cl {g} {gsize} {ops} {src}
+		  = (v : Node gsize) ->
+		    (exp : explored v cl) ->
+		    (psv : Path src v g) ->
+		    (sp : shortestPath g psv) ->
+		    dEq ops (nodeDistN v cl) (length psv) = True
+\end{lstlisting}
+
+For all node \inl{v} that is explored in the \inl{Column cl} (specified by \inl{exp}), \inl{expDistIsDelta} states that the distance value of \inl{v} stored in \inl{cl} is equal to the length of a shortest \inl{src-to-v} path(named as \inl{psv}). In other words, \inl{expDistIsDelta} states that the distance value of an explored node \inl{v} stored in \inl{cl} is indeed the minimum distance value from \inl{src} to \inl{v}. The function \inl{l5_stm4} below implements the preservation proof for \inl{expDistIsDelta}.
+\begin{lstlisting}
+l5_stm4 : {g : Graph gsize weight ops} ->
+          (cl : Column (S len) g src) ->
+          (nadj : ((n : Node gsize) -> inNodeset n (getNeighbors g n) = False)) ->
+          (l2_ih : neDInfPath cl) ->
+          (l5_ih : l5_stms cl) ->
+          (st1 : lessDInf (runHelper cl)) ->
+          (st2 : distv_min (runHelper cl)) ->
+          (st3 : unexpDelta (runHelper cl)) ->
+          expDistIsDelta (runHelper cl)
+-- case1 : when v is src
+l5_stm4 cl nadj l2_ih l5_ih st1 st2 st3 v expVR {src=v} (Unit g v) spsv = ?l5_unit
+-- case1 : when v is not src
+l5_stm4 cl nadj l2_ih (ih1, ih2, ih3, ih4) st1 st2 st3 v expVR (Cons psw v adj_wv) spsv {g} {ops} {src}
+  with (getMin cl == v) proof min_is_v
+  	-- case[a]
+    | True with (l2_existPath cl l2_ih v (st1 v expVR))
+      | (lpsv ** rclvEq) with (adj_getPrev adj_wv)
+        | w with (checkUnexplored w (runHelper cl)) proof w_exp
+          -- case[c]
+          | Yes unexpW = <combine st3 and the rclvEq proof> 
+          -- case[d]
+          | No expW with (v == w) proof v_is_w
+            | True  = <apply nadj>
+            -- case[e]
+            | False = <apply dgteEq on rclvEq and 
+            				the proof obtained by applying l3_preserveDelta and ih4 to u>
+    -- case[b]
+    | False = <apply ih4 and l3_preserveDelta>
+\end{lstlisting}
+
+The functions \inl{st1, st2, st3} specify that the previous three statements hold for \inl{`runHelper cl'} respectively, and are passed in as input parameters as they are required for the implementation of \inl{l5_stm4}.
+\\
+
+In the base case when \inl{v} is the source node \inl{src}, the proof is not yet complete, again due to the issue concerning \inl{mkdists} and \inl{mknodes}, and can be resolved by providing a better definitions for both functions. In the case when \inl{v} is not the source node, we check whether \inl{v} is equal to \inl{`getMin cl'}. If \inl{v} is not equal to \inl{'getMin cl'}(case[b]), then \inl{v} must be an explored node in \inl{cl}, hence we can combine the assumption \inl{ih4} and Lemma 4.3 \inl{l3_preserveDelta} to show that \inl{`nodeDist v (runHelper cl)'} is also equal to \inl{`nodeDist v cl'}, which is equal to the length of shortest \inl{src-to-v} path. 
+\\
+
+In case[a] when \inl{v} is equal to \inl{`getMin cl'}, we first apply Lemma 4.2 \inl{l2_existPath} and \inl{st1}(which states that the \inl{distv_min} property holds for \inl{`runHelper cl'}) to show that the distance of \inl{v} stored in \inl{`runHelper cl'} is the length of some \inl{src-to-v} path named \inl{lpsv} (\inl{rclvEq} specifies this equality). We then bring the node \inl{w} right before \inl{v} in the shortest \inl{src-to-v} path (denote as \inl{psv}, which equals to \inl{(Cons psw v adj_wv)} in the implementation above) into scope, hence the length of \inl{psv} is equal to the sum of \inl{weight(w, v)} and length of \inl{psw}. 
+\\
+
+We then check whether \inl{w} is explored or not. When \inl{w} is unexplored(case[c]), then based on \inl{st3} we know that the length of \inl{psw} is greater than or equal to the distance of \inl{v} in \inl{`runHelper cl'}, hence the length of \inl{psv} must be greater than or equal to the distance of \inl{v} in \inl{`runHelper cl'}(marked [S2]). However the statement of shortest path \inl{spsv} states that the length of \inl{psv} is smaller than or equal to the length of \inl{lpsv}, which is equal to the distance of \inl{v} in \inl{`runHelper cl'}([S4]). By applying the function \inl{dgteEq}(which states that for two distance values d1, d2, if d1 >= d2 and d2 >= d1, then d1 = d2) on [S3] and [S4], we prove that the distance of \inl{v} in \inl{`runHelper cl'} is equal to the length of \inl{psv}.
+\\
+
+When \inl{w} is explored (case[d], we check whether \inl{v} is equal to \inl{w}, i.e., check whether the node right before \inl{v} in the shortest path \inl{psv} is \inl{v}. As we restrict a node from being a neighbor of itself, then the case when \inl{v} is equal to \inl{w} is marked as absurd by applying the \inl{nadj} function. 
+\\
+
+In case[e] \inl{v} is not \inl{w}, as \inl{w} is explored, we apply \inl{st2} on node \inl{v} and \inl{w} (which specifies that the \inl{distv_min} property holds for \inl{`runHelper cl'}) to obtain a proof that the sum of \inl{weight(w, v)} and distance of \inl{w} in \inl{`runHelper cl'} is greater than or equal to the distance value of \inl{v} in \inl{`runHelper cl'}. Then by applying \inl{ih4} and \inl{l3_preserveDelta} on the node \inl{w}, we know that the distance of \inl{w} in \inl{`runHelper cl'} is equal to the length of \inl{psw}. Hence the sum of \inl{weight(w, v)} and length of \inl{psw}, which is exactly the length of \inl{psv}, is greater than or equal to the distance value of \inl{v} in \inl{`runHelper cl'}[S5]. However by the shortest path property \inl{spsv}, the length of \inl{lpsv}, which is equal to distance value of \inl{v} in \inl{`runHelper cl'}, is larger than or equal to the length of \inl{psv} [S6]. Hence by applying the function \inl{dgteEq} on [S5] and [S6] we know that the distance value of \inl{v} in \inl{`runHelper cl'} is equal to the length of \inl{psv}. Proof of \inl{l5_stm4} is complete. 
+\\
+
+Lastly, we define the following \inl{l5_spath} function that proves the preservation of \inl{l5_stms} properties after calling \inl{runHelper}. 
+\begin{lstlisting}
+l5_spath : {g : Graph gsize weight ops} ->
+           (cl : Column (S len) g src) ->
+           (nadj : ((n : Node gsize) -> 
+           				inNodeset n (getNeighbors g n) = False)) ->
+           (l2_ih : neDInfPath cl) ->
+           (l5_ih : l5_stms cl) ->
+           l5_stms (runHelper cl)
+l5_spath cl nadj l2_ih l5_ih
+  = (l5_stm1 cl l5_ih,
+     l5_stm2 cl l2_ih l5_ih,
+     l5_stm3 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih),
+     l5_stm4 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih)
+                                 (l5_stm2 cl l2_ih l5_ih)
+                                 (l5_stm3 cl nadj l2_ih l5_ih (l5_stm1 cl l5_ih) (l5_stm2 cl l2_ih l5_ih)))
+\end{lstlisting}
+
+Function \inl{l5_spath} states that the properties specified by \inl{l5_ih} preserve after calling \inl{runHelper}. Based on the preservation proof of each statement above, the implementation of \inl{l5_spath} is quite straightforward and is constructed by applying each preservation proof (function \inl{l5_stm1} to \inl{l5_stm4}) to the input assumption \inl{l5_ih}.  
+\\
+
+Although the above explanation only provides a summary or skeleton of our proof on Lemma 4.5, by comparing with the mathematical proof of Lemma 4.5 in Section \ref{lemma4.5}, we notice that the general structure and the reasoning process of the mathematical proof are highly similar to the Idris implementations discussed above. During this verification process, our mathematical proof of Dijkstra's correctness serves as the basis for structuring and implementing most of our lemma proofs, including the implementation of \inl{l5_spath} discussed above. This suggests the significance of providing a structured and detailed mathematical proof for a program, which lists out and proves all implicit assumptions, before start implementing the verification program. 
+\\
+

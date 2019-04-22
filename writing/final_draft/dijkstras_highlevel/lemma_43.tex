@@ -14,12 +14,7 @@ Let P(n) be: For any node $v \in g$, if after the $i^{th}$ iteration, $dist_{i+1
 During the $(i+1)^{th}$ iteration, suppose $u_{i+1}$ is the node being explored, then $dist_{i+2}[v]$ is calculated as: 
 \\\\
 \tab\[
-        dist_{i+2}[v] = \left.
-       \begin{cases} 
-          min(dist_{i+1}[v], dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v)), & (u_{i+1}, v)) \in g \\ 
-          dist_{i+1}[v] & otherwise 
-        \end{cases}
-        \right\}
+        dist_{i+2}[v] = min(dist_{i+1}[v], dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v))
       \]
 \\\\
 If $(u_{i+1}, v)) \in g $, then if $dist_{i+1}[u_{i+1}]$ is the length of some $s-u_{i+1}$ path, then $(dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v))$ is the length of some $s-v$ path. Since $dist_{i+1}[v] = \delta(v)$, then based on the definition of shortest path, $dist_{i+1}[v] \leq dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v)$, and hence $dist_{i+2}[v] = dist_{i+1}[v] = \delta(v)$. 

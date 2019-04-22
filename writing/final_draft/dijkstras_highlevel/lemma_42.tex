@@ -19,12 +19,7 @@ Based on the algorithm, initially $dist_1[s] = 0$ and for all node $v \in g, v \
 For node $u_{k+1}$ being explored during the $(k+1)^{th}$ iteration, based on the algorithm, $dist_{k+1}[u_{k+1}]$ is calculated as: 
 \\\\
 \tab\[
-        dist_{k+2}[u_{k+1}] = \left.
-       \begin{cases} 
-          min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + weight(u_{k+1},u_{k+1})), & (u_{k+1},u_{k+1}) \in g \\ 
-          dist_{k+1}[u_{k+1}] & otherwise 
-        \end{cases}
-        \right\}
+        dist_{k+2}[u_{k+1}] = min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + weight(u_{k+1},u_{k+1}))
       \]
 \\\\
 Since the distance value from $u_{k+1}$ to itself is $0$, then $dist_{k+2}[u_{k+1}] = dist_{k+1}[u_{k+1}]$, and that $dist_{k+2}[u_{k+1}]$ and $dist_{k+1}[u_{k+1}]$ are the length of the same $s-u_{k+1}$ path if there exists one. 

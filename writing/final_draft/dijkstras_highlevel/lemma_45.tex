@@ -52,17 +52,20 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\
   Since $g$ is a connected graph, then $s$ must have a path to $u_{k+1}$. Since $u_{k+1}$ is the node currently being explored, then we know there must exists a $s-u_{k+1}$ path, denote as $p(s, u_{k+1})$, such any node proceeding $u_{k+1}$ in $p(s, u_{k+1})$ are explored before $u_{k+1}$, i.e., in $explored_{k+1}$. 
   \\
-  Denote the node right before $u_{k+1}$ in $p(s, u_{k+1})$ as $u'$, $u' \in explored_{k+1}$. Suppose $u'$ is explored during the $i^{th}$ iteration, $i < k+1$. The induction hypothesis implies that $dist_{i+1}[u'] < \infty$. Since $dist_{i+1}[u'] = min(dist_i[u'], dist_i[u'] + weight(u', u')) = min(dist_i[u'], dist_i[u'] + 0) = dist_i[u']$, then $ dist_i[u'] < \infty$. \texttt{Lemma 4.4} implies $dist_{k+2}[u_{k+1}] \leq dist_i[u'] + weight(u', u_{k+1}]$, then it follows that $dist_{k+1}[u_{k+1}] < \infty$. (L1) holds for $u_{k+1}$. 
+  Denote the node right before $u_{k+1}$ in $p(s, u_{k+1})$ as $u'$, $u' \in explored_{k+1}$. Suppose $u'$ is explored during the $i^{th}$ iteration, $i < k+1$. The induction hypothesis implies that $dist_{i+1}[u'] < \infty$. Since $dist_{i+1}[u'] = min(dist_i[u'], dist_i[u'] + weight(u', u')) = min(dist_i[u'], dist_i[u'] + \infty) = dist_i[u']$, then $ dist_i[u'] < \infty$. \texttt{Lemma 4.4} implies $dist_{k+2}[u_{k+1}] \leq dist_i[u'] + weight(u', u_{k+1}]$, then it follows that $dist_{k+1}[u_{k+1}] < \infty$. (L1) holds for $u_{k+1}$. 
   \\
   \item (L2) $dist_{k+2}[u_{k+1}] \leq \delta(v')$, $\forall v' \in unexplored_{k+2}$
   \\\\
   We will prove (L2) by contradiction. Suppose there exists $w \in unexplored_{k+2}$, such that $dist_{k+2}[u_{k+1}] > \delta(w)$([E4.5.1]). 
   \\
-  Consider the shortest path $\Delta(s, w)$ from $s$ to $w$, $\delta(w) = length(\Delta(s, w))$. Since $w \notin explored_{k+2}$, then there must exists some node in $\Delta(s, w)$ that are not in $explored_{k+2}$. Suppose the first node along $\Delta(s, w)$ that is not in the $explored_{k+2}$ list is $w_2$, and the node right before $w_2$ in the $s$ to $w_2$ subpath is $w_1$, thus $w_1 \in explored_{k+2}$. The image below illustrates this construction: 
-  \\
-  \begin{center}
-  \includegraphics[scale = 0.55]{pic.png}
-  \end{center}
+  Consider the shortest path $\Delta(s, w)$ from $s$ to $w$, $\delta(w) = length(\Delta(s, w))$. Since $w \notin explored_{k+2}$, then there must exists some node in $\Delta(s, w)$ that are not in $explored_{k+2}$. Suppose the first node along $\Delta(s, w)$ that is not in the $explored_{k+2}$ list is $w_2$, and the node right before $w_2$ in the $s$ to $w_2$ subpath is $w_1$, thus $w_1 \in explored_{k+2}$. Figure \ref{figure1} below illustrates this construction. 
+  
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.55]{./figure/pic_proof.png}
+    \caption{Lemma 4.5 Proof Construction}
+    \label{figure1}
+  \end{figure}
   \tab\\
   Denote the subpath from $s$ to $w_1$ in $\Delta(s, w)$ as $p(s, w_1)$, subpath from $s$ to $w_2$ in $\Delta(s, w)$ as $p(s, w_2)$, and subpath $w_2$ to $w$ as $p(w_2, w)$. Based on \texttt{Definition 2.2 Prefix of Path}, $p(s, w_1)$ is a prefix of $\Delta(s, w)$. Since $p(s, w_1)$ is the prefix of the shortest $s-w$ path, then based on \texttt{Lemma 3.1}, $p(s, w_1)$ is the shortest path from $s$ to $w_1$, $\Delta(s, w_1) = p(s, w_1)$, $length(p(s, w_1)) = \delta(w_1)$. 
   \\
@@ -107,7 +110,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   The induction hypothesis implies $dist_{j+1}[w_3] = \delta(w_3)$. For $dist_{j+1}[w_3]$ we have: 
   \begin{align*}
     dist_{j+1}[w_3] &= min(dist_j[w_3], dist_j[w_3] + weight(w_3, w_3)) \\
-                   &= min(dist_j[w_3], dist_j[w_3] + 0) \\
+                   &= min(dist_j[w_3], dist_j[w_3] + \infty) \\
                    &= dist_j[w_3]
   \end{align*}
   Hence $dist_j[w_3] = \delta(w_3)$, combine with [E4.5.7], we have: 
@@ -122,7 +125,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   Since $w_1 \in explored_{k+2}$ and $w_1 \neq u_{k+1}$, $w_1$ is explored before the $(k+1)^{th}$ iteration. i.e., $w_1 \in explored_{k+1}$. Suppose $w_1$ is being explored during the $i^{th}$ iteration, $i < k+1$, then based on the algorithm, the value of $dist_{i+1}[w_1]$ is calculated as: 
   \begin{align*}
         dist_{i+1}[w_1] &= min(dist_{i}[w_1], dist_{i}[w_1] + weight(w_1,w_1)) \\
-                        &= min(dist_{i}[w_1], dist_{i}[w_1] + 0)\\
+                        &= min(dist_{i}[w_1], dist_{i}[w_1] + \infty)\\
                         &= min(dist_{i}[w_1], dist_{i}[w_1])\\
                         &= dist_{i}[w_1]
   \end{align*}
@@ -142,7 +145,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   Based on our assumption, at the beginning of the $(k+1)^{th}$ generation, $u_{k+1}, w_2 \notin explored_{k+1}$ and $u_{k+1}$ is selected by the algorithm, then we must have $dist_{k+1}[w_2] \geq dist_{k+1}[u_{k+1}]$. For $dist_{k+2}[u_{k+1}]$ we have: 
   \begin{align*}
   dist_{k+2}[u_{k+1}] &= min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + weight(u_{k+1}, u_{k+1})) \\
-                      &= min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + 0) \\
+                      &= min(dist_{k+1}[u_{k+1}], dist_{k+1}[u_{k+1}] + \infty) \\
                       &= dist_{k+1}[u_{k+1}] 
   \end{align*}
   Hence $dist_{k+1}[w_2] \geq dist_{k+2}[u_{k+1}]$. Combine with [E4.5.4], [E4.5.3] we have: 
@@ -183,7 +186,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   The induction hypothesis implies $dist_{i+1}[v'] = \delta(v')$, and for $dist_{i+1}[v']$ we have: 
   \begin{align*}
     dist_{i+1}[v'] &= min(dist_i[v'], dist_i[v'] + weight(v', v')) \\
-                   &= min(dist_i[v'], dist_i[v'] + 0) \\
+                   &= min(dist_i[v'], dist_i[v'] + \infty) \\
                    &= dist_i[v']
   \end{align*}
   Hence $dist_i[v'] = \delta(v')$. Combining [E4.5.11], we have: 
