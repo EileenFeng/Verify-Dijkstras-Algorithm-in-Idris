@@ -1,5 +1,5 @@
 \subsubsection{Verification of Correctness}
-The lemma proofs implementation discussed in the previous section provides us a function \inl{l5_spath}, which states that if the \inl{Column} properties specified by the functions \inl{neDInfPath} (in Section \ref{lemma2V}) and \inl{l5_stms}(in Section \ref{lemma5V}) hold for a \inl{Column} \inl{cl}, then the properties perserve after calling \inl{runHelper} on \inl{cl}. Based on \inl{l5_spath} we define the below function \inl{correctness}, which states that if the first \inl{Column} named \inl{cl} generated in the \inl{dijkstras} function in our Dijkstra's implementation (Section \ref{first_layer}), fulfills the properties stated by \inl{neDInfPath} and \inl{l5_spath}, then the properties reserve after callign \inl{runDijkstras} on \inl{cl}. The function \inl{correctness} is defined by recursively applying the lemmas \inl{l2_existPath} and \inl{l5_spath}, as presented below. 
+The lemma proofs implementation discussed in the previous section provides us a function \inl{l5_spath} which states that if the \inl{Column} properties specified by the functions \inl{neDInfPath} (in Section \ref{lemma2V}) and \inl{l5_stms}(in Section \ref{lemma5V}) hold for a \inl{Column} \inl{cl}, then the properties perserve after calling \inl{runHelper} on \inl{cl}. Based on \inl{l5_spath} we define the below function \inl{correctness}, which states that if the first \inl{Column} named \inl{cl} generated in the \inl{dijkstras} function in our Dijkstra's implementation (Section \ref{first_layer}), fulfills the properties stated by \inl{neDInfPath} and \inl{l5_spath}, then the properties reserve after callign \inl{runDijkstras} on \inl{cl}. The function \inl{correctness} is defined by recursively applying the lemmas \inl{l2_existPath} and \inl{l5_spath}, as presented below. 
 \\
 \begin{lstlisting}
 correctness : {g : Graph gsize weight ops} ->
@@ -35,12 +35,14 @@ dijkstras_correctness : (gsize : Nat) ->
                         				(dijkstras gsize g src nadj) 
                         				{p=nvLTE {gsize=gsize} (getVal v)}) 
                         		(length psv) = True
-    ... 
+ 
+
 dijkstras_correctness (S len) g src v psv spsv nadj {weight} {ops}
   = (l5_sp {cl=runDijkstras col} 
-            (correctness col nadj lemma2_ih base_stm)) 
-      v 
-      (allExp g src nodes dist) psv spsv
+           (correctness col nadj lemma2_ih base_stm)) 
+           v 
+           (allExp g src nodes dist) psv spsv
+   ...
 \end{lstlisting}
 
 

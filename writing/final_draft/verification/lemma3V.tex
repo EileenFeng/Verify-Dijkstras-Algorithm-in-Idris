@@ -1,6 +1,6 @@
 \paragraph{Lemma 3 - \inl{l3_preserveDelta}} \label{lemma3V}
 \tab\\\\
-In verifying Dijkstra's correctness, it is important to show that forall nodes \inl{v} in the input graph, once the distance value calculated for \inl{v} is equal to the minimum distance value from the source node to \inl{v}, then the distance value of \inl{v} does not change through the execution of the algorithm. This is proved by Lemma \ref{4.3} in the mathematical proof of Dijkstra's algorithm, and implemented by the function \inl{l3_preserveDelta} below (the proof of \inl{l3_preserveDelta} is provided in later paragraphs). 
+In verifying Dijkstra's correctness, it is important to show that forall nodes \inl{v} in the input graph, once the distance value calculated for \inl{v} is equal to the minimum distance value from the source node to \inl{v}, then the distance value of \inl{v} does not change through the execution of the algorithm. This is proved by Lemma \ref{lemma4.3} in the mathematical proof of Dijkstra's algorithm, and implemented by the function \inl{l3_preserveDelta} below (the proof of \inl{l3_preserveDelta} is provided in later paragraphs). 
 \begin{lstlisting}
 	l3_preserveDelta : {g : Graph gsize weight ops} ->
 	                   (cl : Column (S len) g src) ->
@@ -8,11 +8,12 @@ In verifying Dijkstra's correctness, it is important to show that forall nodes \
 	                   (v : Node gsize) ->
 	                   (psv : Path src v g) ->
 	                   (psv_sv : shortestPath g psv) ->
-	                   (eq : dEq ops (nodeDistN v cl) (length psv) = True) ->
+	                   (eq : dEq ops (nodeDistN v cl) 
+	                   				 (length psv) = True) ->
 	                   dEq ops (nodeDistN v (runHelper cl)) (length psv) = True
 \end{lstlisting}
 
-\inl{l3_preserveDelta} states that given a \inl{Column} named \inl{cl}, for any node \inl{v} in graph, given a shortest path named \inl{psv} from \inl{src} to \inl{v} (specified by \inl{psv_sv}), if the distance value of \inl{v} stored in \inl{cl} is equal to the length of \inl{psv}(stated by the input \inl{eq : dEq ops (nodeDistN v cl) (length psv) = True}), then the distance value of \inl{v} stored in \inl{runHelper cl} is also equal to the length of \inl{psv}. Since the proof of Lemma 4.3 is based on Lemma 4.2 as we mentioned at the beginning of Section \ref{lemmas}, the proof of property \inl{neDInPath} on \inl{cl} is provided by the input \inl{l2_ih : neDInfPath cl}. 
+\inl{l3_preserveDelta} states that given a \inl{Column} named \inl{cl}, for any node \inl{v} in graph, given a shortest path named \inl{psv} from \inl{src} to \inl{v} (specified by \inl{psv_sv}), if the distance value of \inl{v} stored in \inl{cl} is equal to the length of \inl{psv}(stated by the input \inl{eq : dEq ops (nodeDistN v cl) (length psv) = True}), then the distance value of \inl{v} stored in \inl{runHelper cl} is also equal to the length of \inl{psv}. Since the proof of Lemma \ref{lemma4.3} is based on Lemma \ref{lemma4.2} as we mentioned at the beginning of Section \ref{lemmas}, the proof of property \inl{neDInPath} on \inl{cl} is provided by the input \inl{l2_ih : neDInfPath cl}. 
 \\
 
 We prove \inl{l3_preserveDelta} by showing that the distance of a node \inl{v} stored in a \inl{Column} is non-increasing (either decrease or remain the same) each time after calling \inl{runHelper}. If the current distance stored in \inl{Column} for \inl{v} is equal to the minimum distance value, than there cannot exist a smaller distance value for \inl{v}, hence the distance stored for \inl{v} remains unchanged each time after calling \inl{runHelper}.
@@ -43,8 +44,8 @@ As the function \inl{runHelper} calls \inl{updateDist} for updating the distance
 	            (nv : Nat) ->
 	            {auto p : LT nv m} ->
 	            dgte ops (indexN nv dist) 
-	            		 (indexN nv (updateDist g mn min_dist nodes dist)) 
-	            		 = True
+	            		 (indexN nv 
+	            		 	(updateDist g mn min_dist nodes dist)) = True
 	distDecre g mn _ Nil Nil nv {p} = absurd $ succNotLTEzero p
 	distDecre g mn min_dist (n :: ns) (d :: ds) Z 
 		= calcDistEq g mn n min_dist d
@@ -55,7 +56,7 @@ As the function \inl{runHelper} calls \inl{updateDist} for updating the distance
 Inputs of \inl{distDecre} include the current node with minimum distance, named as \inl{mn}, and its distance value \inl{min_dist}; \inl{nodes} and \inl{dist} denotes a \inl{Vect} of nodes in the graph and a \inl{Vect} of the corresponding distance values for these nodes respectively. As \inl{distDecre} recurs on both \inl{nodes} and \inl{dist}, both \inl{Vect}s have the same length \inl{m} but the value of \inl{m} changes during each recursive step. 
 \\
 
-The \inl{nv} argument is the index of the node \inl{v}(from the \inl{runDecre} function) in \inl{nodes} and its corresponding distance value in \inl{dist}, with respect to the current recursive step. Specifically, as we define the \inl{distDecre} function to recur on \inl{nodes}, \inl{dist}, and \inl{nv} simultaneously, the length of \inl{nodes} and \inl{dist}, and the value of \inl{nv} decreases by one during each recursive step until one of them reaches \inl{Z}, which is the base case. For instance if the the value of \inl{nv} is `S Z' during the current recursion, then in the next recursion the value passed in for \inl{nv} should `Z', however as \inl{distDecre} recurs on the tails of \inl{nodes} and \inl{dist}, \inl{nv} denotes the locations of the same node in \inl{nodes} and its corresponding distance value in \inl{dist} during every recursive step. Lastly, the implicit parameter \inl{p} is a proof stating that the current index \inl{nv} is smaller than the length of \inl{Vect}s \inl{m}, which ensures safe indexing. The return type of \inl{distDecre} specifies that the distance of node indexed by \inl{nv} stored in \inl{dist} is non-decreasing after calling \inl{updateDist} on \inl{dist}. 
+The \inl{nv} argument is the index of the node \inl{v}(from the \inl{runDecre} function) in \inl{nodes} and its corresponding distance value in \inl{dist}, with respect to the current recursive step. Specifically, as we define the \inl{distDecre} function to recur on \inl{nodes}, \inl{dist}, and \inl{nv} simultaneously, the length of \inl{nodes} and \inl{dist}, and the value of \inl{nv} decreases by one during each recursive step until one of them reaches \inl{Z}, which is the base case. For instance if the the value of \inl{nv} is \inl{`S Z'} during the current recursion, then in the next recursion the value passed in for \inl{nv} should be \inl{Z}, however as \inl{distDecre} recurs on the tails of \inl{nodes} and \inl{dist}, \inl{nv} denotes the locations of the same node in \inl{nodes} and its corresponding distance value in \inl{dist} during every recursive step. Lastly, the implicit parameter \inl{p} is a proof stating that the current index \inl{nv} is smaller than the length of \inl{Vect}s \inl{m}, which ensures safe indexing. The return type of \inl{distDecre} specifies that the distance of node indexed by \inl{nv} stored in \inl{dist} is non-decreasing after calling \inl{updateDist} on \inl{dist}. 
 \\
 
 Similar to the structure of \inl{runDecre}, the \inl{distDecre} function is again built on a \inl{calcDistEq} function, which concerns the distance value for one specific node rather than a \inl{Vect} of distance values. The definition of \inl{calcDistEq} is provided below. 
@@ -85,7 +86,8 @@ Based on the \inl{runDecre} function defined above, we offer the following imple
 	                   (v : Node gsize) ->
 	                   (psv : Path src v g) ->
 	                   (psv_sp : shortestPath g psv) ->
-	                   (eq : dEq ops (nodeDistN v cl) (length psv) = True) ->
+	                   (eq : dEq ops (nodeDistN v cl) 
+	                   				 (length psv) = True) ->
 	                   dEq ops (nodeDistN v (runHelper cl)) (length psv) = True
 	l3_preserveDelta cl l2_ih v psv psv_sp eq {g} {ops} {src}
 	  with (l2_existPath cl l2_ih v 
@@ -94,11 +96,12 @@ Based on the \inl{runDecre} function defined above, we offer the following imple
 	  				(nodeDistN v (runHelper cl)) 
 	  				(pathlenNotDInf (nodeDistN v cl) psv eq) 
 	  				(runDecre cl v)))
-	    | (lpath ** runclv_lp) = dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath)) 
-	    								(dgteEqTrans (dEqComm eq) True (runDecre cl v))
+	    | (lpath ** runclv_lp) 
+	    	= dgteEq (dgteEqTrans runclv_lp True (psv_sp lpath))
+	    					(dgteEqTrans (dEqComm eq) True (runDecre cl v))
 \end{lstlisting}
 
-Given that \inl{neDInfPath} holds for \inl{cl} (specified by input argument \inl{l2_ih}), we first apply Lemma 4.2 \inl{l2_existPath} to show that the distance value of \inl{v} after running \inl{runHelper}, i.e., \inl{`nodeDistN v (runHelper cl)'} is the length of some \inl{src-to-v} path. In order to apply \inl{l2_existPath}, we need to show that the value of \inl{`nodeDistN v (runHelper cl)'} is smaller than \inl{DInf} (infinity distance value). \inl{dgteDInfTrans} is a proof stating that, given two distance values \inl{d1, d2}, if \inl{d1} is smaller than \inl{DInf}, and \inl{d2} is smaller than \inl{d1}, then \inl{d2} is also smaller than \inl{DInf}. When applying \inl{dgteDInfTrans} in the implementation of \inl{l3_preserveDelta} above, \inl{`nodeDistN v cl'} corresponds to \inl{d1} and \inl{`nodeDistN v (runHelper cl)'} corresponds to \inl{d2}. The \inl{pathlenNotDInf} function states that the length of any path is smaller than \inl{DInf}. Since we know \inl{`nodeDistN v cl'} is the length of a path \inl{psv} (specified by input argument \inl{eq}), then \inl{`nodeDistN v cl'} is smaller than \inl{DInf}. \inl{`runDecre cl v'} states that the value of \inl{`nodeDistN v (runHelper cl)'} is smaller than or equal to \inl{`nodeDistN v cl'}. By applying \inl{dgteDInfTrans} to all of these information above, we obtained the dependent pair \inl{(lpath ** runclv_lp)}, where \inl{lpath} is a \inl{src-to-v} path, and \inl{runclv_lp} is a proof that the value of \inl{`nodeDistN v (runHelper cl)'} is the length of \inl{lpath}. 
+Given that \inl{neDInfPath} holds for \inl{cl} (specified by input argument \inl{l2_ih}), we first apply Lemma \ref{lemma4.2} \inl{l2_existPath} to show that the distance value of \inl{v} after running \inl{runHelper}, i.e., \inl{`nodeDistN v (runHelper cl)'} is the length of some \inl{src-to-v} path. In order to apply \inl{l2_existPath}, we need to show that the value of \inl{`nodeDistN v (runHelper cl)'} is smaller than \inl{DInf} (infinity distance value). \inl{dgteDInfTrans} is a proof stating that, given two distance values \inl{d1, d2}, if \inl{d1} is smaller than \inl{DInf}, and \inl{d2} is smaller than \inl{d1}, then \inl{d2} is also smaller than \inl{DInf}. When applying \inl{dgteDInfTrans} in the implementation of \inl{l3_preserveDelta} above, \inl{`nodeDistN v cl'} corresponds to \inl{d1} and \inl{`nodeDistN v (runHelper cl)'} corresponds to \inl{d2}. The \inl{pathlenNotDInf} function states that the length of any path is smaller than \inl{DInf}. Since we know \inl{`nodeDistN v cl'} is the length of a path \inl{psv} (specified by input argument \inl{eq}), then \inl{`nodeDistN v cl'} is smaller than \inl{DInf}. \inl{`runDecre cl v'} states that the value of \inl{`nodeDistN v (runHelper cl)'} is smaller than or equal to \inl{`nodeDistN v cl'}. By applying \inl{dgteDInfTrans} to all of these information above, we obtained the dependent pair \inl{(lpath ** runclv_lp)}, where \inl{lpath} is a \inl{src-to-v} path, and \inl{runclv_lp} is a proof that the value of \inl{`nodeDistN v (runHelper cl)'} is the length of \inl{lpath}. 
 \\
 
 The \inl{dgteEq} function states that for two distance values \inl{d1, d2}, if \inl{d1} is greater than or equal to \inl{d2} and \inl{d2} is greater than or equal to \inl{d1}, then \inl{d1} must equal to \inl{d2}. The \inl{dgteEqTrans} function states that, given three distance values \inl{d1, d2, d3}, if \inl{d1} equals to \inl{d2}, and \inl{d2} is smaller(or greater) than \inl{d3}, then \inl{d1} is smaller(or greater) than \inl{d3}. By applying \inl{dgteEqTrans} to \inl{runclv_lp} and \inl{`psv_sp lpath'} (which states that the length of \inl{lpath} is smaller than the length of \inl{psv}), we know that the value of \inl{`nodeDistN v (runHelper cl)'} is greater than or equal to \inl{`length psv'}(mark as [S1]). However applying \inl{dgteEqTrans} to \inl{eq} and {`runDecre cl v'} we obtained that the \inl{`nodeDistN v (runHelper cl)'} should be smaller than the length of \inl{psv}(mark as [S2]). Hence by applying \inl{dgteEq} to [S1] and [S2], we know that \inl{`nodeDistN v (runHelper cl)'} is equal to the length of \inl{psv}. The implementation of \inl{l3_preserveDelta} proof is complete. 

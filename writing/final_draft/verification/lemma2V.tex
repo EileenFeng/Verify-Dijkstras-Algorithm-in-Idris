@@ -1,6 +1,6 @@
 \paragraph{Lemma 2 - \inl{l2_existPath}} \label{lemma2V}
 \tab\\\\
-In our mathematical proof of Dijkstra's correctness, Lemma \ref{lemma4.2} states that given an input graph \inl{g}, for all nodes \inl{v} in \inl{g}, if $dist_{n+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some \inl{s-to-v} path in \inl{g}. As mentioned at the beginning of this section, in our verification program, we state Lemma 4.2 as a \inl{Column} property and prove these properties preserve after calling \inl{runHelper}. The function \inl{neDInfPath} provided below specifies the \inl{Column} property stated by Lemma 4.2.
+In our mathematical proof of Dijkstra's correctness, Lemma \ref{lemma4.2} states that given an input graph \inl{g}, for all nodes \inl{v} in \inl{g}, if $dist_{n+1}[v] \neq \infty$, then $dist_{n+1}[v]$ is the length of some \inl{s-to-v} path in \inl{g}. As mentioned at the beginning of this section, in our verification program, we state Lemma 4.2 as a \inl{Column} property and prove these properties preserve after calling \inl{runHelper}. The function \inl{neDInfPath} provided below specifies the \inl{Column} property stated by Lemma \ref{lemma4.2}.
 \begin{lstlisting}
 		neDInfPath : {g : Graph gsize weight ops} ->
 		             (cl : Column len g src) ->

@@ -1,6 +1,6 @@
 \paragraph{Lemma 1 - \inl{l1_prefixSP}} \label{lemma1V}
 \tab\\\\
-Lemma 4.1 states that the prefix of a shortest path is also a shortest path. In section \ref{definitions}, we provide the following definition for the prefix of a path.
+Lemma \ref{lemma4.1} states that the prefix of a shortest path is also a shortest path. In section \ref{definitions}, we provide the following definition for the prefix of a path.
 \begin{definition}{Prefix of Path}\\
 Given a path from node $v$ to $w$ : $path(v, w) = vv_0v_1....v_{n-1}w$, the prefix of this $v-w$ path is defined as a subsequence of $path(v, w)$ that starts with $v$ and ends with some node $w' \in path(v, w)$ ($w'$ is a vertex in the sequence $path(v, w)$). 
 \end{definition}
@@ -24,7 +24,7 @@ The type of \inl{append} function specifies that, given a path \inl{p1} from nod
 The \inl{pathPrefix} function is a predicate stating that the first input path \inl{pprefix} is a prefix of the second input path \inl{p}. \inl{(v ** P)} is the syntax for dependent pairs, which states that the second element \inl{P} in the pair is dependent on the value of the first element \inl{v}. Dependent pairs are used to represent existential quantification in Idris. For instance, the dependent pair \inl{(n : Nat ** Vect n Nat)} states the existence of a natural number \inl{n}, such that \inl{n} is the length of the \inl{Vect} included as the second element of the pair. In the definition of \inl{pathPrefix}, as \inl{pprefix} is the prefix of \inl{p}, then there only exists one path (with type \inl{Path w v g}) such that the result of appending \inl{pprefix} to this path is \inl{p}. This is specified by the dependent pair \inl{(ppost : Path w v g ** append pprefix ppost = p)} in our definition, which quantified a specific path \inl{ppost} with type \inl{Path w v g} such that the result of \inl{append pprefix ppost} is \inl{p}, and hence the path \inl{pprefix} is a prefix of \inl{p}. 
 \\
 
-Given the definition of \inl{pathPrefix} above and definition of shortest path in section \ref{path}, the implementation of Lemma 4.1 is provided below. 
+Given the definition of \inl{pathPrefix} above and definition of shortest path in section \ref{path}, the implementation of Lemma \ref{lemma4.1} is provided below. 
 \begin{lstlisting}
   shorter_trans : {g : Graph gsize weight ops} ->
                 (p1 : Path s w g) ->

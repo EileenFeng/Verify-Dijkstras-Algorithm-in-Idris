@@ -11,7 +11,7 @@ Assume $g$ is a connected graph. Forall node $v \in explored_{n+1}$:
 \end{sublemma}
 
 \begin{proof}
-We will prove \texttt{Lemma 4.5} by inducting on the number of iterations. 
+We will prove Lemma \ref{lemma4.5} by inducting on the number of iterations. 
 \\\\
 Let P(n) be: For a connected graph $g$, for $n \geq 1$, forall node $w \in explored_{n+1}$: (L1) $dist_{n+1}[w] < \infty$; (L2) $dist_{n+1}[w] \leq \delta(w')$, $\forall w' \in unexplored_{n+1}$; (L3) $dist_{n+1}[w] = \delta(w)$. 
 
@@ -31,7 +31,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\\\
   Consider each node $q \in (explored_{k+1} \cap explored_{k+2}) = explored_{k+1}$, $q$ must be explored before the $(k+1)^{th}$ iteration. Suppose $q$ is explored during the $i^{th}$ iteration for some $i < k+1$, then based on our induction hypothesis, $dist_{i+1}[q] = \delta(q)$, and $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{i+1}$. 
   \\\\
-  \texttt{Proof of (L3)}: Since for each node $q \in explored_{k+1}$, the induction hypothesis implies that $dist_{k+1}[q] = \delta(q)$, then \texttt{Lemma 3.3} imples that $dist_{k+2}[q] = dist_{k+1}[q] = \delta(q)$. (L3) holds for $explored_{k+1}$.
+  \texttt{Proof of (L3)}: Since for each node $q \in explored_{k+1}$, the induction hypothesis implies that $dist_{k+1}[q] = \delta(q)$, then Lemma \ref{lemma4.3} imples that $dist_{k+2}[q] = dist_{k+1}[q] = \delta(q)$. (L3) holds for $explored_{k+1}$.
   \\\\
   \texttt{Proof of (L2)}: Based on the algorithm, for each iteration, the algorithm explores exactly one node and never revisits any explored nodes. For each node $q \in explored_{k+1}$ mentioned above, since $q$ is explored before the $(k+1)^{th}$ iteration, then $unexplored_{k+1} \subseteq unexplored_{i+1}$. Since $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{i+1}$, and $unexplored_{i+1}$ includes all node in $unexplored_{k+1}$, then $\delta(q) \leq \delta(q'), \forall q' \in unexplored_{k+1}$. Since proof of (L3) above shows that $dist_{k+2}[q] = \delta(q)$, then $dist_{k+2}[q] \leq \delta(q'), \forall q' \in unexplored_{k+1}$. (L2) holds for $explored_{k+1}$. 
   \\\\
@@ -52,7 +52,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\
   Since $g$ is a connected graph, then $s$ must have a path to $u_{k+1}$. Since $u_{k+1}$ is the node currently being explored, then we know there must exists a $s-u_{k+1}$ path, denote as $p(s, u_{k+1})$, such any node proceeding $u_{k+1}$ in $p(s, u_{k+1})$ are explored before $u_{k+1}$, i.e., in $explored_{k+1}$. 
   \\
-  Denote the node right before $u_{k+1}$ in $p(s, u_{k+1})$ as $u'$, $u' \in explored_{k+1}$. Suppose $u'$ is explored during the $i^{th}$ iteration, $i < k+1$. The induction hypothesis implies that $dist_{i+1}[u'] < \infty$. Since $dist_{i+1}[u'] = min(dist_i[u'], dist_i[u'] + weight(u', u')) = min(dist_i[u'], dist_i[u'] + \infty) = dist_i[u']$, then $ dist_i[u'] < \infty$. \texttt{Lemma 4.4} implies $dist_{k+2}[u_{k+1}] \leq dist_i[u'] + weight(u', u_{k+1}]$, then it follows that $dist_{k+1}[u_{k+1}] < \infty$. (L1) holds for $u_{k+1}$. 
+  Denote the node right before $u_{k+1}$ in $p(s, u_{k+1})$ as $u'$, $u' \in explored_{k+1}$. Suppose $u'$ is explored during the $i^{th}$ iteration, $i < k+1$. The induction hypothesis implies that $dist_{i+1}[u'] < \infty$. Since $dist_{i+1}[u'] = min(dist_i[u'], dist_i[u'] + weight(u', u')) = min(dist_i[u'], dist_i[u'] + \infty) = dist_i[u']$, then $ dist_i[u'] < \infty$. Lemma \ref{lemma4.4} implies $dist_{k+2}[u_{k+1}] \leq dist_i[u'] + weight(u', u_{k+1}]$, then it follows that $dist_{k+1}[u_{k+1}] < \infty$. (L1) holds for $u_{k+1}$. 
   \\
   \item (L2) $dist_{k+2}[u_{k+1}] \leq \delta(v')$, $\forall v' \in unexplored_{k+2}$
   \\\\
@@ -63,13 +63,13 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.55]{./figure/pic_proof.png}
-    \caption{Lemma 4.5 Proof Construction}
+    \caption{Lemma \ref{lemma4.5} Proof Construction}
     \label{figure1}
   \end{figure}
   \tab\\
-  Denote the subpath from $s$ to $w_1$ in $\Delta(s, w)$ as $p(s, w_1)$, subpath from $s$ to $w_2$ in $\Delta(s, w)$ as $p(s, w_2)$, and subpath $w_2$ to $w$ as $p(w_2, w)$. Based on \texttt{Definition 2.2 Prefix of Path}, $p(s, w_1)$ is a prefix of $\Delta(s, w)$. Since $p(s, w_1)$ is the prefix of the shortest $s-w$ path, then based on \texttt{Lemma 3.1}, $p(s, w_1)$ is the shortest path from $s$ to $w_1$, $\Delta(s, w_1) = p(s, w_1)$, $length(p(s, w_1)) = \delta(w_1)$. 
+  Denote the subpath from $s$ to $w_1$ in $\Delta(s, w)$ as $p(s, w_1)$, subpath from $s$ to $w_2$ in $\Delta(s, w)$ as $p(s, w_2)$, and subpath $w_2$ to $w$ as $p(w_2, w)$. Based on definitions in Section \ref{definitions}, $p(s, w_1)$ is a prefix of $\Delta(s, w)$. Since $p(s, w_1)$ is the prefix of the shortest $s-w$ path, then based on Lemma \ref{lemma4.1}, $p(s, w_1)$ is the shortest path from $s$ to $w_1$, $\Delta(s, w_1) = p(s, w_1)$, $length(p(s, w_1)) = \delta(w_1)$. 
   \\
-  Similarly, since $p(s, w_2) = p(s, w_1) + (w_1, w_2)$, then $p(s, w_2)$ is a prefix of $\Delta(s, w)$, and hence \texttt{Lemma 3.1} implies that $p(s, w_2)$ is the shortest path from $s$ to $w_2$. Then we have: 
+  Similarly, since $p(s, w_2) = p(s, w_1) + (w_1, w_2)$, then $p(s, w_2)$ is a prefix of $\Delta(s, w)$, and hence Lemma \ref{lemma4.1} implies that $p(s, w_2)$ is the shortest path from $s$ to $w_2$. Then we have: 
   \begin{align*} 
       \Delta(s, w_2) &= p(s, w_2) = p(s, w_1) + (w_1, w_2) \\
       \delta(w_2) &= length(\Delta(s, w_2)) \\
@@ -93,7 +93,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\
   Since $\delta(w_2) = \delta(w_1) + weight(w_1, w_2) \leq \delta(w)$ and all edge weights are non-negative, then $\delta(w_1) \leq \delta(w)$. When $w_1 = u_{k+1}$, we have $\delta(u_{k+1}) \leq \delta(w)$. Since $dist_{k+2}[u_{k+1}] > \delta(w)$ and $\delta(u_{k+1}) \leq \delta(w)$, we have $\delta(u_{k+1}) < dist_{k+2}[u_{k+1}]$.
   \\
-  Suppose the node right before $u_{k+1}$ in $\Delta(s, u_{k+1})$ is $w_3$. We know $length(\Delta(s, u_{k+1})) = length(p(s, w_3)) + weight(w_3, u_{k+1}))$, where $p(s, w_3)$ is the prefix of $\Delta(s, u_{k+1})$. Based on \texttt{Lemma 3.1}, we know $length(p(s, w_3)) = \delta(w_3)$. Hence: 
+  Suppose the node right before $u_{k+1}$ in $\Delta(s, u_{k+1})$ is $w_3$. We know $length(\Delta(s, u_{k+1})) = length(p(s, w_3)) + weight(w_3, u_{k+1}))$, where $p(s, w_3)$ is the prefix of $\Delta(s, u_{k+1})$. Based on Lemma \ref{lemma4.1}, we know $length(p(s, w_3)) = \delta(w_3)$. Hence: 
   \begin{align*}
     \delta(u_{k+1}) &= length(p(s, w_3)) + weight(w_3, u_{k+1})) \\
                     &= \delta(w_3) + weight(w_3, u_{k+1}) \\
@@ -103,7 +103,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \begin{align*}
     dist_{k+2}[u_{k+1}] > \delta(w_3) + weight(w_3, u_{k+1}) ([E4.5.6])
   \end{align*}
-  Based on the construction, $w_2$ is the first node along $\Delta(s,w)$, $w_1$ is right before $w_2$ in the path, $w_3$ is right before $w_1 = u_{k+1}$ in the path, then $w_3 \in explored_{k+2}$. Assume $w_3$ is explored during the $j^{th}$ iteration. Then based on \texttt{Lemma 4.4}, we have: 
+  Based on the construction, $w_2$ is the first node along $\Delta(s,w)$, $w_1$ is right before $w_2$ in the path, $w_3$ is right before $w_1 = u_{k+1}$ in the path, then $w_3 \in explored_{k+2}$. Assume $w_3$ is explored during the $j^{th}$ iteration. Then based on Lemma \ref{lemma4.4}, we have: 
   \begin{align*}
     dist_{k+2}[u_{k+1}] \leq dist_j[w_3] + weight(w_3, u_{k+1}) ([E4.5.7])
   \end{align*}
@@ -117,7 +117,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \begin{align*}
     dist_{k+2}[u_{k+1}] \leq \delta(w_3) + weight(w_3, u_{k+1}) ([E4.5.8])
   \end{align*}
-  The equation [E4.5.8] contradicts with equation[E4.5.6]. Hence by the principle of prove by contradiction, (L2) holds when $w_1 = u_{k+1}$. 
+  The equation [E4.5.8] contradicts with equation[E4.5.6]. Hence (L2) holds when $w_1 = u_{k+1}$. 
   \\\\
 
   \textbf{Case 2}: $w_1 \neq u_{k+1}$
@@ -136,9 +136,9 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
      dist_{i+1}[w_2] &= min(dist_i[w_2], dist_i[w_1] + weight(w_1,w_2)) \\
                      &= min(dist_i[w_2], \delta(w_1) + weight(w_1, w_2))
   \end{align*}
-  Based on [E4.5.2] we know that $\delta(w_2) =  \delta(w_1) + weight(w_1, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2))$. If $dist_i[w_2] = \infty$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. If $dist_i[w_2] \neq \infty$, then based on \texttt{Lemma 3.2}, $dist_i[w_2]$ is the length of some $s-w_2$ path. Since $\delta(w_2) \leq length(p), \forall p \in path(s, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. Hence in either cases, we conclude that $dist_{i+1}[w_2] = \delta(w_2)$. 
+  Based on [E4.5.2] we know that $\delta(w_2) =  \delta(w_1) + weight(w_1, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2))$. If $dist_i[w_2] = \infty$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. If $dist_i[w_2] \neq \infty$, then based on Lemma \ref{lemma4.2}, $dist_i[w_2]$ is the length of some $s-w_2$ path. Since $\delta(w_2) \leq length(p), \forall p \in path(s, w_2)$, then $dist_{i+1}[w_2] = min(dist_i[w_2], \delta(w_2)) = \delta(w_2)$. Hence in either cases, we conclude that $dist_{i+1}[w_2] = \delta(w_2)$. 
   \\
-  Since $dist_{i+1}[w_2] = \delta(w_2)$ and $i < k+1$, then based on \texttt{Lemma 3.3}, we have:
+  Since $dist_{i+1}[w_2] = \delta(w_2)$ and $i < k+1$, then based on Lemma \ref{lemma4.3}, we have:
   \begin{align*}
   dist_{k+1}[w_2] = dist_{i+1} = \delta(w_2) ([E4.5.4])
   \end{align*}
@@ -150,7 +150,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \end{align*}
   Hence $dist_{k+1}[w_2] \geq dist_{k+2}[u_{k+1}]$. Combine with [E4.5.4], [E4.5.3] we have: 
   \begin{align*}
-    dist_{k+1}[w_2] &\geq dist_{k+2}[u_{k+1}] (\\
+    dist_{k+1}[w_2] &\geq dist_{k+2}[u_{k+1}] \\
     dist_{k+1}[w_2] &= dist_{i+1} = \delta(w_2) (from [E4.5.4]) \\
     \delta(w) &\geq \delta(w_2) = \delta(w_1) + weight(w_1, w_2)(from [E4.5.3])
   \end{align*}
@@ -162,7 +162,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\\\
   We will prove this by contradiction. 
   \\
-  Since (L1) proves $dist_{k+2}[u_{k+1}] \neq \infty$, then \texttt{Lemma 3.2} implies that $dist_{k+2}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path, denote as $p$. Suppose there is a $s-u_{k+1}$ path $p'$ that's shorter than $p$, i.e, $dist_{k+2}[u_{k+1}] > length(p')$([E4.5.9]). Suppose the node right before $u_{k+1}$ in $p'$ is $v'$. Then we know: 
+  Since (L1) proves $dist_{k+2}[u_{k+1}] \neq \infty$, then Lemma \ref{lemma4.2} implies that $dist_{k+2}[u_{k+1}]$ is the length of some $s-u_{k+1}$ path, denote as $p$. Suppose there is a $s-u_{k+1}$ path $p'$ that's shorter than $p$, i.e, $dist_{k+2}[u_{k+1}] > length(p')$([E4.5.9]). Suppose the node right before $u_{k+1}$ in $p'$ is $v'$. Then we know: 
   \begin{align*}
   length(p') &= length(p(s, v')) + weight(v', u_{k+1}) \\
   length(p') &< dist_{k+2}[u_{k+1}]
@@ -179,7 +179,7 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\\\
   \textbf{Case(1): $v' \in explored_{k+2}$}
   \\
-  Suppose $v'$ is explored during the $i^{th}$ iteration. Then \texttt{Lemma 4.4} implies: 
+  Suppose $v'$ is explored during the $i^{th}$ iteration. Then Lemma \ref{lemma4.4} implies: 
   \begin{align*}
     dist_{k+2}[u_{k+1}] \leq dist_i[v'] + weight(v', u_{k+1}) ([E4.5.11])
   \end{align*}
@@ -199,10 +199,10 @@ Suppose $u_{k+1}$ is the node added into $explored$ during the $(k+1)^{th}$ iter
   \\
   Since $length(p') = length(p(s, v')) + weight(v', u_{k+1})$, $p(s, v)$ is the prefix of $p'$ from $s$ to $v'$, then based on the definition of shortest path, $length(p(s, v')) \leq \delta(v')$, and thus $\delta(v') + weight(v', u_{k+1}) \leq length(p(s, v')) + weight(v', u_{k+1}) = length(p')$. Since all edge weights are non-negative, then $\delta(v') \leq length(p')$.
   \\
-  Since $v' \notin explored_{k+2}$, i.e., $v' \in unexplored_{k+2}$, based on proof of (L2), $dist_{k+2}[u_{k+1}] \leq \delta(v')$. Since $dist_{k+2}[u_{k+1}] \leq \delta(v')$ and $\delta(v') \leq length(p')$, then $dist_{k+2}[u_{k+1}] \leq length(p')$, which contradicts with our assumption ([E4.5.9]). Hence by the principle of prove by contradiction, (L3) holds when $v' \notin explored_{k+2}$. 
+  Since $v' \notin explored_{k+2}$, i.e., $v' \in unexplored_{k+2}$, based on proof of (L2), $dist_{k+2}[u_{k+1}] \leq \delta(v')$. Since $dist_{k+2}[u_{k+1}] \leq \delta(v')$ and $\delta(v') \leq length(p')$, then $dist_{k+2}[u_{k+1}] \leq length(p')$, which contradicts with our assumption ([E4.5.9]). Hence (L3) holds when $v' \notin explored_{k+2}$. 
   \\
   Since we have proved (L3) for both cases, then (L3) holds for P(K+1). 
   \end{enumerate}
 \end{itemize}
-Since we have proved (L1)(L2)(L3) forall nodes in $explored_{k+1}$ after the $(k+1)^{th}$ iteration, P(k+1) holds. Then by the principle of prove by induction, \texttt{Lemma 4.5} holds. 
+Since we have proved (L1)(L2)(L3) forall nodes in $explored_{k+1}$ after the $(k+1)^{th}$ iteration, P(k+1) holds. Thus Lemma \ref{lemma4.5} holds. 
 \end{proof}

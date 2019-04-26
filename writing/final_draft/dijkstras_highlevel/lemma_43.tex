@@ -5,7 +5,7 @@
 For any node $v \in g$, if $dist_{i+1}[v] = \delta(v)$, then $\forall j > i$, $dist_{j+1}[v] = dist_{i+1}[v] = \delta(v)$. 
 \end{sublemma}
 \begin{proof}
-We will prove \texttt{Lemma 4.3} by induction on the number iterations after the $i^{th}$ iteration. 
+We will prove Lemma \ref{lemma4.3} by induction on the number iterations after the $i^{th}$ iteration. 
 \\
 Let P(n) be: For any node $v \in g$, if after the $i^{th}$ iteration, $dist_{i+1}[v] = \delta(v)$, then for the $(i+n)^{th}$ iteration, $n \geq 1$, $dist_{i+n+1}[v] = dist_{i+1}[v] = \delta(v)$
 
@@ -17,7 +17,7 @@ During the $(i+1)^{th}$ iteration, suppose $u_{i+1}$ is the node being explored,
         dist_{i+2}[v] = min(dist_{i+1}[v], dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v))
       \]
 \\\\
-If $(u_{i+1}, v)) \in g $, then if $dist_{i+1}[u_{i+1}]$ is the length of some $s-u_{i+1}$ path, then $(dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v))$ is the length of some $s-v$ path. Since $dist_{i+1}[v] = \delta(v)$, then based on the definition of shortest path, $dist_{i+1}[v] \leq dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v)$, and hence $dist_{i+2}[v] = dist_{i+1}[v] = \delta(v)$. 
+If $(u_{i+1}, v) \in g $, then if $dist_{i+1}[u_{i+1}]$ is the length of some $s-u_{i+1}$ path, then $(dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v))$ is the length of some $s-v$ path. Since $dist_{i+1}[v] = \delta(v)$, then based on the definition of shortest path, $dist_{i+1}[v] \leq dist_{i+1}[u_{i+1}] + weight(u_{i+1}, v)$, and hence $dist_{i+2}[v] = dist_{i+1}[v] = \delta(v)$. 
 \\
 If $u_{i+1}$ does not have an edge to $v$, then $dist_{i+2}[v] = dist_{i+1}[v] = \delta(v)$. 
 \\
@@ -49,6 +49,6 @@ P(k+1) holds under \texttt{Case 1}.
 \\
 Since $u_{i+k+1}$ does not have an edge to $v$, then $dist_{i+k+2}[v] = dist_{i+k+1}[v]$. Based on the inductive hypothesis, $dist_{i+k+1}[v] = dist_{i+1}[v] = \delta(v)$. then $dist_{i+k+2}[v] = dist_{i+1}[v] = \delta(v)$. P(k+1) holds for \texttt{Case (2)}. 
 \\
-Thus P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{Lemma 4.3} proved. 
+Thus P(k+1) holds. By the principle of prove by induction, P(n) holds. Lemma \ref{lemma4.3} proved. 
 
 \end{proof}

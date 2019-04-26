@@ -5,7 +5,7 @@
 For any node $v \in g$, for $n \geq 1$, for all $u_i$ explored during the $i^{th}$ iteration for some $1 \leq i \leq n$ ($u_i \in explored_{n+1}$), $dist_{n+1}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
 \end{sublemma}
 \begin{proof}
-We will prove Lemma 4.4 by inducting on the number $n$. 
+We will prove Lemma \ref{lemma4.4} by inducting on the number $n$. 
 \\
 Let P(n) be: for any node $v \in g$, for each $u_i \in explored_{n+1}$, $n \geq 1, 1 \leq i \leq n$, $dist_{n+1}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
 \\
@@ -20,7 +20,7 @@ Since $s$ is the only node in $explored_2$, then the above equation directly sho
 \\\\
 \textbf{Induction Hypothesis}: Suppose P(k) holds for $k > 1$. That is, for any node $v \in g$, for each $u_i \in explored_{k+1}$, $k > 1, 1 \leq i \leq k$, $dist_{k+1}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
 \\\\
-\textbf{Inductive Step}: we shall show P(k+1) holds. That is,  for $k+1 > 1$, forall nodes $v \in g$,  for each $u_i \in explored_{k+2}$, $k > 1, 1 \leq i \leq k+1$, $dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
+\textbf{Inductive Step}: We shall show P(k+1) holds. That is,  for $k+1 > 1$, forall nodes $v \in g$,  for each $u_i \in explored_{k+2}$, $k > 1, 1 \leq i \leq k+1$, $dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v)$. 
 \\
 Suppose $u_{k+1}$ is the node being explored during the $(k+1)^{th}$ iteration, then $explored_{k+2} = explored_{k+1} \cup \{u_{k+1}\}$. Forall node $v \in g$, we have: 
 \begin{align*}
@@ -35,6 +35,6 @@ The induction hypothesis implies that $dist_{k+1}[v] \leq dist_i[u_i] + weight(u
 \begin{align*}
 dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v), \forall u_i \in explored_{k+1} [E4.4.3]
 \end{align*}
-Since $explored_{k+2} = explored_{k+1} \cup \{u_{k+1}\}$, then equation [E4.4.2] and equation [E4.4.3] implies that $dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v), \forall u_i \in explored_{k+1} \cup \{u_{k+1}\} = explored_{k+2}$. P(k+1) holds. By the principle of prove by induction, P(n) holds. \texttt{Lemma 4.4} proved. 
+Since $explored_{k+2} = explored_{k+1} \cup \{u_{k+1}\}$, then equation [E4.4.2] and equation [E4.4.3] implies that $dist_{k+2}[v] \leq dist_i[u_i] + weight(u_i, v), \forall u_i \in explored_{k+1} \cup \{u_{k+1}\} = explored_{k+2}$. P(k+1) holds. By the principle of prove by induction, P(n) holds. Lemma \ref{lemma4.4} proved. 
 \end{proof}
 \tab\\
