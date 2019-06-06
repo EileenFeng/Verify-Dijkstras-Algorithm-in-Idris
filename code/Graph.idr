@@ -513,7 +513,15 @@ adj_sameNode : {g : Graph gsize weight ops} ->
                (eq : m = n) ->
                (adj_nm : inNodeset m (getNeighbors g n) = True) ->
                adj g n n
-adj_sameNode {g} {n} {m} eq refl = ?adjSN
+adj_sameNode {g} {n} {m} eq refl 
+  with (getNeighbors g n) 
+    | Nil = refl
+    | ((x, w) :: xs) with (x == n) proof x_is_n
+      | True = Refl
+      | False with (x == m) proof x_is_m 
+        | True = absurd $ nodeNotEq {a=x} {b=n} (sym x_is_n)
+                        (rewrite (sym eq) in (nodeEq {a=x} {b=m} (sym x_is_m)))
+        | False = rewrite (sym eq) in refl
 
 
 {- get the weight of certain edge adjacent to m, helper of edge_weight-}
@@ -545,8 +553,8 @@ edgeW : (g : Graph gsize weight ops) ->
         (m : Node gsize) ->
         Distance weight
 edgeW g n m with (inNodeset m (getNeighbors g n)) proof isAdj
-  | True = DVal $ edge_weight (sym isAdj)
-  | False = DInf
+  edgeW g n m | True = DVal $ edge_weight (sym isAdj)
+  edgeW g n m | False = DInf
 
 
 edgeWEq : (g : Graph gsize weight ops) ->
@@ -554,8 +562,7 @@ edgeWEq : (g : Graph gsize weight ops) ->
           (m : Node gsize) ->
           (adj_nm : adj g n m) ->
           (edgeW g n m) = (DVal $ get_weight (getNeighbors g n) m adj_nm)
-edgeWEq g n m adj_nm = ?edgeEq
-
+edgeWEq g n m adj_nm = ?edgeh
 
 
 
