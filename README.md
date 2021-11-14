@@ -9,7 +9,7 @@ This project provides the following:
   - Proof programs that **verifies the correctness of every data structures and concepts used**. 
       - Here are a few examples: 
         - [PriorityQueue.idr](https://github.com/EileenFeng/Verifying-Dijkstras-Algorithm-in-Idris/blob/master/dijkstras_verification_code/PriorityQueue.idr) file provides an Idris implementation of the priority queue data structure, which is commonly used in implemeting Dijkstra's, along with code that proves the getMin function indeed returns the minimum value in the node. 
-        - [CNat.idr](https://github.com/EileenFeng/Verifying-Dijkstras-Algorithm-in-Idris/blob/master/dijkstras_verification_code/CNat.idr), [Perm.idr]https://github.com/EileenFeng/Verifying-Dijkstras-Algorithm-in-Idris/blob/master/dijkstras_verification_code/Perm.idr) provides program that implements and proofs natural number and permutation properties.
+        - [CNat.idr](https://github.com/EileenFeng/Verifying-Dijkstras-Algorithm-in-Idris/blob/master/dijkstras_verification_code/CNat.idr), [Perm.idr](https://github.com/EileenFeng/Verifying-Dijkstras-Algorithm-in-Idris/blob/master/dijkstras_verification_code/Perm.idr) provides program that implements and proofs natural number and permutation properties.
   - **Programs that proves all lemmas and assumptions**
       - As an example, [this part of the Dijkstras.idr file](https://github.com/EileenFeng/Verifying-Dijkstras-Algorithm-in-Idris/blob/master/dijkstras_verification_code/Dijkstras.idr#L539-L744) is a intricate, yet very interesting, implementation and proof of one of the most important lemmas in our Dijkstra's verification program.
   - **Finally, an Idris program that verifies DIjkstra's correctness**
