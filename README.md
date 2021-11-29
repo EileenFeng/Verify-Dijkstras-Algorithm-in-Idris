@@ -1,6 +1,8 @@
 ### Verification of Dijkstra's Algorithm in Idris Language
 
-This is projects provides a verification program written in Idris that proves Dijkstra's correctness, which includes: 
+<meta name="google-site-verification" content="ktIykBY0aW2s13ECmn4MGcr4DnMJkXfoMma02iQ816k" />
+
+This projects provides a verification program written in Idris that proves Dijkstra's correctness, which includes: 
 - **A detailed mathematical proof of Dijkstra's algorithm, which includes elaborating and proving lemmas and assumptions that are generally ignored/assumed**
 - **An Idris implementation of Dijkstra's algorithm from scratch**, including: 
   - Idris implementation of **all definitions** used, such as graph, path, permutation, or even natural numbers. 
